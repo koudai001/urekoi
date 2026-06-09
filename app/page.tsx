@@ -1,18 +1,24 @@
+"use client"
+
 import { Sidebar } from "@/components/sidebar"
-import { ProfileRow } from "@/components/profile-row"
-import { ThumbsUp, Search, Bell } from "lucide-react"
-import { recommendedProfiles, premiumProfiles } from "@/lib/profiles"
+import { SearchCard } from "@/components/search-card"
+import { PromoCard } from "@/components/promo-card"
+import { searchProfiles } from "@/lib/profiles"
+import { ThumbsUp, Search, SlidersHorizontal, ArrowDownUp } from "lucide-react"
 
 export default function Page() {
+  // 参考レイアウト：1行目の5枚目にプロモカードを差し込む
+  const promoIndex = 4
+
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
 
-      <main className="flex-1">
+      <main className="relative flex-1">
         {/* ヘッダー */}
         <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-background/90 px-5 py-4 backdrop-blur sm:px-8">
           <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
-            おすすめ
+            検索
           </h1>
 
           <div className="flex items-center gap-3">
@@ -29,36 +35,42 @@ export default function Page() {
               <ThumbsUp className="h-4 w-4" />
               無料 × 8
             </button>
-
-            <button
-              aria-label="お知らせ"
-              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground"
-            >
-              <Bell className="h-5 w-5" />
-              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-destructive" />
-            </button>
           </div>
         </header>
 
-        {/* コンテンツ */}
-        <div className="mx-auto max-w-6xl space-y-2 px-3 py-6 sm:px-6">
-          <ProfileRow
-            title="あなたのことが好みかも"
-            badge={{ label: "いいね！無料 × 2", variant: "free" }}
-            profiles={recommendedProfiles}
-          />
+        {/* グリッド */}
+        <div className="mx-auto max-w-6xl px-4 pb-28 pt-6 sm:px-6">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-5">
+            {searchProfiles.flatMap((profile, i) =>
+              i === promoIndex
+                ? [
+                    <PromoCard key="promo" />,
+                    <SearchCard key={profile.id} profile={profile} />,
+                  ]
+                : [<SearchCard key={profile.id} profile={profile} />],
+            )}
+          </div>
+        </div>
 
-          <ProfileRow
-            title="あなたの好みかも"
-            badge={{ label: "PREMIUM 限定", variant: "premium" }}
-            profiles={premiumProfiles}
-            premium
-          />
-
-          <ProfileRow
-            title="新しく登録したお相手"
-            profiles={[...premiumProfiles].reverse()}
-          />
+        {/* フローティングバー */}
+        <div className="pointer-events-none fixed inset-x-0 bottom-6 z-20 flex justify-center px-4">
+          <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-border bg-card/95 p-1.5 shadow-lg backdrop-blur lg:pl-[16rem]">
+            <button
+              aria-label="絞り込み"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-primary transition-colors hover:bg-accent"
+            >
+              <SlidersHorizontal className="h-5 w-5" />
+            </button>
+            <span className="px-3 font-heading text-lg font-bold text-foreground">
+              9999+
+            </span>
+            <button
+              aria-label="並び替え"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-primary transition-colors hover:bg-accent"
+            >
+              <ArrowDownUp className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </main>
     </div>

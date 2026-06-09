@@ -15,7 +15,7 @@ const shipporiMincho = Shippori_Mincho({
 })
 
 export const metadata: Metadata = {
-  title: 'Anémone（アネモネ） | 大人の女性と年下男性のためのマッチング',
+  title: '熟恋（うれこい） | 大人の女性と年下男性のためのマッチング',
   description: '熟女と年下男性のための上質なマッチングアプリ',
   generator: 'v0.app',
   icons: {
