@@ -21,7 +21,7 @@ export function SearchCard({ profile }: { profile: Profile }) {
         />
 
         {profile.isNew && (
-          <span className="absolute left-2 top-2 rounded-md bg-destructive px-2 py-0.5 text-[11px] font-bold text-white shadow">
+          <span className="absolute left-2 top-2 rounded-md bg-primary px-2 py-0.5 text-[11px] font-bold text-primary-foreground shadow">
             NEW
           </span>
         )}
