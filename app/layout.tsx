@@ -1,17 +1,22 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Noto_Sans_JP, Shippori_Mincho } from 'next/font/google'
 import './globals.css'
 
-const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const notoSansJP = Noto_Sans_JP({
+  variable: '--font-geist-sans',
   subsets: ['latin'],
+  weight: ['400', '500', '700'],
+})
+const shipporiMincho = Shippori_Mincho({
+  variable: '--font-heading',
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
 })
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'Anémone（アネモネ） | 大人の女性と年下男性のためのマッチング',
+  description: '熟女と年下男性のための上質なマッチングアプリ',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -38,7 +43,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html
+      lang="ja"
+      className={`${notoSansJP.variable} ${shipporiMincho.variable} bg-background`}
+    >
       <body className="font-sans antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

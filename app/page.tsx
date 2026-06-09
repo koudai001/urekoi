@@ -1,37 +1,66 @@
+import { Sidebar } from "@/components/sidebar"
+import { ProfileRow } from "@/components/profile-row"
+import { ThumbsUp, Search, Bell } from "lucide-react"
+import { recommendedProfiles, premiumProfiles } from "@/lib/profiles"
+
 export default function Page() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-black px-6 text-neutral-400">
-      <div className="flex w-full max-w-md flex-col items-start gap-8">
-        <svg
-          fill="currentColor"
-          viewBox="0 0 147 70"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-          className="size-10 text-white"
-        >
-          <path d="M56 50.2031V14H70V60.1562C70 65.5928 65.5928 70 60.1562 70C57.5605 70 54.9982 68.9992 53.1562 67.1573L0 14H19.7969L56 50.2031Z" />
-          <path d="M147 56H133V23.9531L100.953 56H133V70H96.6875C85.8144 70 77 61.1856 77 50.3125V14H91V46.1562L123.156 14H91V0H127.312C138.186 0 147 8.81439 147 19.6875V56Z" />
-        </svg>
+    <div className="flex min-h-screen bg-background">
+      <Sidebar />
 
-        <div className="space-y-3">
-          <h1 className="text-balance text-2xl font-semibold tracking-tight text-white">
-            To get started, describe what you want to build.
+      <main className="flex-1">
+        {/* ヘッダー */}
+        <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-background/90 px-5 py-4 backdrop-blur sm:px-8">
+          <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
+            おすすめ
           </h1>
-          <p className="text-pretty text-sm leading-relaxed text-neutral-500">
-            This is the default page for a fresh v0 project. Open the prompt and
-            tell v0 what to create, or browse the{' '}
-            <a
-              href="https://v0.app/templates"
-              target="_blank"
-              rel="noreferrer"
-              className="text-neutral-300 underline underline-offset-4 hover:text-white"
+
+          <div className="flex items-center gap-3">
+            <div className="relative hidden items-center sm:flex">
+              <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
+              <input
+                type="search"
+                placeholder="お相手を検索"
+                className="h-10 w-56 rounded-full border border-border bg-card pl-9 pr-4 text-sm text-foreground outline-none ring-ring/30 placeholder:text-muted-foreground focus:ring-2"
+              />
+            </div>
+
+            <button className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-2 text-sm font-medium text-primary">
+              <ThumbsUp className="h-4 w-4" />
+              無料 × 8
+            </button>
+
+            <button
+              aria-label="お知らせ"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground"
             >
-              Community
-            </a>{' '}
-            for inspiration.
-          </p>
+              <Bell className="h-5 w-5" />
+              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-destructive" />
+            </button>
+          </div>
+        </header>
+
+        {/* コンテンツ */}
+        <div className="mx-auto max-w-6xl space-y-2 px-3 py-6 sm:px-6">
+          <ProfileRow
+            title="あなたのことが好みかも"
+            badge={{ label: "いいね！無料 × 2", variant: "free" }}
+            profiles={recommendedProfiles}
+          />
+
+          <ProfileRow
+            title="あなたの好みかも"
+            badge={{ label: "PREMIUM 限定", variant: "premium" }}
+            profiles={premiumProfiles}
+            premium
+          />
+
+          <ProfileRow
+            title="新しく登録したお相手"
+            profiles={[...premiumProfiles].reverse()}
+          />
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }
