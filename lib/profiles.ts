@@ -1,3 +1,9 @@
+export type MyTag = {
+  label: string
+  category: string
+  image: string
+}
+
 export type Profile = {
   id: number
   name: string
@@ -9,6 +15,62 @@ export type Profile = {
   tags: string[]
   bio: string
 }
+
+// マイタグのカタログ（ラベル → カテゴリ・画像）
+export const tagCatalog: Record<string, MyTag> = {
+  甘いもの大好き: {
+    label: "甘いもの大好き",
+    category: "グルメ・お酒",
+    image: "/tags/sweets.png",
+  },
+  ディズニー好き: {
+    label: "ディズニー好き",
+    category: "趣味全般",
+    image: "/tags/themepark.png",
+  },
+  漫画が好き: {
+    label: "漫画が好き",
+    category: "本・マンガ",
+    image: "/tags/manga.png",
+  },
+  寝るの幸せ: {
+    label: "寝るの幸せ",
+    category: "心と身体",
+    image: "/tags/sleep.png",
+  },
+  "ライブ・フェス好き": {
+    label: "ライブ・フェス好き",
+    category: "音楽",
+    image: "/tags/live.png",
+  },
+  食べることが大好き: {
+    label: "食べることが大好き",
+    category: "グルメ・お酒",
+    image: "/tags/food.png",
+  },
+  ワイン好き: {
+    label: "ワイン好き",
+    category: "グルメ・お酒",
+    image: "/tags/wine.png",
+  },
+  旅行好き: {
+    label: "旅行好き",
+    category: "趣味全般",
+    image: "/tags/travel.png",
+  },
+}
+
+// 各プロフィールに表示するマイタグ（参考画面に合わせた共通セット）
+export const defaultMyTags: string[] = [
+  "甘いもの大好き",
+  "ディズニー好き",
+  "漫画が好き",
+  "寝るの幸せ",
+  "ライブ・フェス好き",
+  "食べることが大好き",
+  "ワイン好き",
+  "旅行好き",
+]
 
 export const recommendedProfiles: Profile[] = [
   {

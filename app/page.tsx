@@ -1,14 +1,17 @@
 "use client"
 
+import { useState } from "react"
 import { Sidebar } from "@/components/sidebar"
 import { SearchCard } from "@/components/search-card"
 import { PromoCard } from "@/components/promo-card"
-import { searchProfiles } from "@/lib/profiles"
+import { ProfileDetailModal } from "@/components/profile-detail-modal"
+import { searchProfiles, type Profile } from "@/lib/profiles"
 import { ThumbsUp, Search, SlidersHorizontal, ArrowDownUp } from "lucide-react"
 
 export default function Page() {
   // 参考レイアウト：1行目の5枚目にプロモカードを差し込む
   const promoIndex = 4
+  const [selected, setSelected] = useState<Profile | null>(null)
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -45,9 +48,19 @@ export default function Page() {
               i === promoIndex
                 ? [
                     <PromoCard key="promo" />,
-                    <SearchCard key={profile.id} profile={profile} />,
+                    <SearchCard
+                      key={profile.id}
+                      profile={profile}
+                      onSelect={setSelected}
+                    />,
                   ]
-                : [<SearchCard key={profile.id} profile={profile} />],
+                : [
+                    <SearchCard
+                      key={profile.id}
+                      profile={profile}
+                      onSelect={setSelected}
+                    />,
+                  ],
             )}
           </div>
         </div>
@@ -73,6 +86,11 @@ export default function Page() {
           </div>
         </div>
       </main>
+
+      <ProfileDetailModal
+        profile={selected}
+        onClose={() => setSelected(null)}
+      />
     </div>
   )
 }
