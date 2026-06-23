@@ -38,7 +38,7 @@ const bottomNav: NavItem[] = [
   { label: "イイネ", icon: ThumbsUp, badge: 5 },
   { label: "足あと", icon: Footprints },
   { label: "メッセージ", icon: MessageCircle, badge: 12, href: "/messages" },
-  { label: "マイページ", icon: UserRound, badge: 79 },
+  { label: "マイページ", icon: UserRound, badge: 79, href: "/profile" },
 ]
 
 export function Sidebar({ active = "検索" }: { active?: string }) {
