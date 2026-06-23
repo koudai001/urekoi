@@ -26,7 +26,7 @@ const mainNav: NavItem[] = [
   { label: "本日限定", icon: CalendarDays },
   { label: "おすすめ", icon: LayoutGrid },
   { label: "本音マッチ", icon: Heart },
-  { label: "検索", icon: Search, active: true },
+  { label: "検索", icon: Search },
   { label: "イベント", icon: Sparkles },
   { label: "クエスチョン", icon: MessageCircleQuestion },
   { label: "マイタグ", icon: Hash },
@@ -39,7 +39,7 @@ const bottomNav: NavItem[] = [
   { label: "マイページ", icon: UserRound, badge: 79 },
 ]
 
-export function Sidebar() {
+export function Sidebar({ active = "検索" }: { active?: string }) {
   return (
     <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-sidebar lg:flex">
       <div className="flex items-center gap-2 px-6 py-6">
@@ -58,13 +58,19 @@ export function Sidebar() {
 
       <nav className="flex flex-1 flex-col gap-1 px-3">
         {mainNav.map((item) => (
-          <NavButton key={item.label} item={item} />
+          <NavButton
+            key={item.label}
+            item={{ ...item, active: item.label === active }}
+          />
         ))}
 
         <div className="my-3 border-t border-border" />
 
         {bottomNav.map((item) => (
-          <NavButton key={item.label} item={item} />
+          <NavButton
+            key={item.label}
+            item={{ ...item, active: item.label === active }}
+          />
         ))}
       </nav>
     </aside>
