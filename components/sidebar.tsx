@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import {
   LayoutGrid,
   Heart,
@@ -20,13 +21,14 @@ type NavItem = {
   icon: React.ElementType
   badge?: number
   active?: boolean
+  href?: string
 }
 
 const mainNav: NavItem[] = [
   { label: "本日限定", icon: CalendarDays },
   { label: "おすすめ", icon: LayoutGrid },
   { label: "本音マッチ", icon: Heart },
-  { label: "検索", icon: Search },
+  { label: "検索", icon: Search, href: "/" },
   { label: "イベント", icon: Sparkles },
   { label: "クエスチョン", icon: MessageCircleQuestion },
   { label: "マイタグ", icon: Hash },
@@ -35,7 +37,7 @@ const mainNav: NavItem[] = [
 const bottomNav: NavItem[] = [
   { label: "イイネ", icon: ThumbsUp, badge: 5 },
   { label: "足あと", icon: Footprints },
-  { label: "メッセージ", icon: MessageCircle, badge: 12 },
+  { label: "メッセージ", icon: MessageCircle, badge: 12, href: "/messages" },
   { label: "マイページ", icon: UserRound, badge: 79 },
 ]
 
@@ -79,15 +81,15 @@ export function Sidebar({ active = "検索" }: { active?: string }) {
 
 function NavButton({ item }: { item: NavItem }) {
   const Icon = item.icon
-  return (
-    <button
-      className={cn(
-        "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-        item.active
-          ? "bg-accent text-accent-foreground"
-          : "text-muted-foreground hover:bg-accent/60 hover:text-accent-foreground",
-      )}
-    >
+  const className = cn(
+    "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+    item.active
+      ? "bg-accent text-accent-foreground"
+      : "text-muted-foreground hover:bg-accent/60 hover:text-accent-foreground",
+  )
+
+  const content = (
+    <>
       <span className="relative">
         <Icon className="h-5 w-5" />
         {item.badge ? (
@@ -97,6 +99,16 @@ function NavButton({ item }: { item: NavItem }) {
         ) : null}
       </span>
       {item.label}
-    </button>
+    </>
   )
+
+  if (item.href) {
+    return (
+      <Link href={item.href} className={className}>
+        {content}
+      </Link>
+    )
+  }
+
+  return <button className={className}>{content}</button>
 }
