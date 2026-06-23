@@ -6,11 +6,29 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import type { Profile } from "@/lib/profiles"
 
-export function SearchCard({ profile }: { profile: Profile }) {
+export function SearchCard({
+  profile,
+  onSelect,
+}: {
+  profile: Profile
+  onSelect?: (profile: Profile) => void
+}) {
   const [faved, setFaved] = useState(false)
 
   return (
-    <div className="group flex flex-col">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect?.(profile)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          onSelect?.(profile)
+        }
+      }}
+      className="group flex w-full cursor-pointer flex-col text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+      aria-label={`${profile.name}さんのプロフィールを開く`}
+    >
       <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-muted shadow-sm">
         <Image
           src={profile.image || "/placeholder.svg"}
@@ -28,7 +46,10 @@ export function SearchCard({ profile }: { profile: Profile }) {
 
         <button
           aria-label="お気に入りに追加"
-          onClick={() => setFaved((v) => !v)}
+          onClick={(e) => {
+            e.stopPropagation()
+            setFaved((v) => !v)
+          }}
           className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/25 backdrop-blur-sm transition-colors hover:bg-black/40"
         >
           <Star

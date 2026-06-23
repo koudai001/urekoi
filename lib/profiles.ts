@@ -38,7 +38,7 @@ export const tagCatalog: Record<string, MyTag> = {
     category: "心と身体",
     image: "/tags/sleep.png",
   },
-  ライブ・フェス好き: {
+  "ライブ・フェス好き": {
     label: "ライブ・フェス好き",
     category: "音楽",
     image: "/tags/live.png",
