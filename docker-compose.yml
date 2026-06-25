@@ -15,7 +15,7 @@ services:
     image: dpage/pgadmin4:latest
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@urekoi.local
+      PGADMIN_DEFAULT_EMAIL: urekoi@example.com
       PGADMIN_DEFAULT_PASSWORD: urekoi
     ports:
       - "5050:80"
