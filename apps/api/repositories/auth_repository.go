@@ -1,10 +1,14 @@
 package repositories
 
 import (
+	"errors"
+
 	"api/models"
 
 	"gorm.io/gorm"
 )
+
+var ErrEmailAlreadyExists = errors.New("email already exists")
 
 type IAuthRepository interface {
 	GetUserByEmail(email string) (*models.User, error)
@@ -32,5 +36,12 @@ func (r *AuthRepository) GetUserByEmail(email string) (*models.User, error) {
 }
 
 func (r *AuthRepository) CreateUser(user *models.User) error {
-	return r.db.Create(user).Error
+	if err := r.db.Create(user).Error; err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return ErrEmailAlreadyExists
+		}
+		return err
+	}
+
+	return nil
 }

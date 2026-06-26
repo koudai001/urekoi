@@ -28,10 +28,10 @@ func SetupDB() *gorm.DB {
 	)
 
 	if env == "dev" {
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{TranslateError: true})
 		log.Println("Setup postgresql db")
 	} else {
-		db, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+		db, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{TranslateError: true})
 		log.Println("Setup sqlite db")
 	}
 

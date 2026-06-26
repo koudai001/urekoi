@@ -1,11 +1,15 @@
 package usecases
 
 import (
+	"errors"
+
 	"api/models"
 	"api/repositories"
 
 	"golang.org/x/crypto/bcrypt"
 )
+
+var ErrEmailAlreadyExists = errors.New("email already exists")
 
 type IAuthUsecase interface {
 	SignUp(email string, password string) (*models.User, error)
@@ -38,6 +42,9 @@ func (u *AuthUsecase) SignUp(email string, password string) (*models.User, error
 	}
 
 	if err := u.authRepo.CreateUser(&user); err != nil {
+		if errors.Is(err, repositories.ErrEmailAlreadyExists) {
+			return nil, ErrEmailAlreadyExists
+		}
 		return nil, err
 	}
 

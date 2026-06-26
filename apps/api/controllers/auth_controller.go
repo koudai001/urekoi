@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 
 	"api/dto"
@@ -29,6 +30,10 @@ func (ctrl *AuthController) SignUp(c *gin.Context) {
 
 	user, err := ctrl.authUsecase.SignUp(req.Email, req.Password)
 	if err != nil {
+		if errors.Is(err, usecases.ErrEmailAlreadyExists) {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
