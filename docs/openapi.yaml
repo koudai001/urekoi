@@ -76,13 +76,55 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /refresh:
+    post:
+      tags: [認証]
+      summary: アクセストークンの再発行
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: 再発行成功(refresh_tokenもローテーションされる)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshResponse'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: refresh_tokenが無効・期限切れ・失効済み
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /logout:
     post:
       tags: [認証]
-      summary: ログアウト
+      summary: ログアウト(refresh_tokenを失効させる)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
       responses:
-        '200':
+        '204':
           description: ログアウト成功
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /users/me:
     delete:
@@ -216,9 +258,35 @@ components:
     LoginResponse:
       type: object
       properties:
-        token:
+        access_token:
           type: string
           example: <JWT>
+        refresh_token:
+          type: string
+          example: <refresh token>
+    RefreshRequest:
+      type: object
+      required: [refresh_token]
+      properties:
+        refresh_token:
+          type: string
+          example: <refresh token>
+    RefreshResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: <JWT>
+        refresh_token:
+          type: string
+          example: <new refresh token>
+    LogoutRequest:
+      type: object
+      required: [refresh_token]
+      properties:
+        refresh_token:
+          type: string
+          example: <refresh token>
     Error:
       type: object
       properties:
