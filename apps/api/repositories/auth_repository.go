@@ -13,6 +13,9 @@ var ErrEmailAlreadyExists = errors.New("email already exists")
 type IAuthRepository interface {
 	GetUserByEmail(email string) (*models.User, error)
 	CreateUser(user *models.User) error
+	CreateRefreshToken(refreshToken *models.RefreshToken) error
+	GetRefreshTokenByHash(tokenHash string) (*models.RefreshToken, error)
+	DeleteRefreshToken(id uint64) error
 }
 
 type AuthRepository struct {
@@ -44,4 +47,21 @@ func (r *AuthRepository) CreateUser(user *models.User) error {
 	}
 
 	return nil
+}
+
+func (r *AuthRepository) CreateRefreshToken(refreshToken *models.RefreshToken) error {
+	return r.db.Create(refreshToken).Error
+}
+
+func (r *AuthRepository) GetRefreshTokenByHash(tokenHash string) (*models.RefreshToken, error) {
+	var refreshToken models.RefreshToken
+	if err := r.db.Preload("User").Where("token_hash = ?", tokenHash).First(&refreshToken).Error; err != nil {
+		return nil, err
+	}
+
+	return &refreshToken, nil
+}
+
+func (r *AuthRepository) DeleteRefreshToken(id uint64) error {
+	return r.db.Delete(&models.RefreshToken{}, id).Error
 }

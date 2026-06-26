@@ -71,7 +71,8 @@ func TestLogin_Success(t *testing.T) {
 
 	var res dto.LoginResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	assert.NotEmpty(t, res.Token)
+	assert.NotEmpty(t, res.AccessToken)
+	assert.NotEmpty(t, res.RefreshToken)
 }
 
 func TestLogin_WrongPassword(t *testing.T) {
@@ -97,6 +98,71 @@ func TestLogin_UnknownEmail(t *testing.T) {
 	w := postJSON(t, router, "/login", dto.LoginRequest{
 		Email:    "notfound@example.com",
 		Password: "password123",
+	})
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
+func loginAndGetTokens(t *testing.T, router http.Handler, email string, password string) dto.LoginResponse {
+	w := postJSON(t, router, "/login", dto.LoginRequest{
+		Email:    email,
+		Password: password,
+	})
+	require.Equal(t, http.StatusOK, w.Code)
+
+	var res dto.LoginResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	return res
+}
+
+func TestRefresh_Success(t *testing.T) {
+	router := setup(t)
+
+	signupReq := dto.SignupRequest{
+		Email:    "refresh@example.com",
+		Password: "password123",
+	}
+	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
+
+	loginRes := loginAndGetTokens(t, router, signupReq.Email, signupReq.Password)
+
+	w := postJSON(t, router, "/refresh", dto.RefreshRequest{
+		RefreshToken: loginRes.RefreshToken,
+	})
+
+	require.Equal(t, http.StatusOK, w.Code)
+
+	var res dto.RefreshResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	assert.NotEmpty(t, res.AccessToken)
+	assert.NotEmpty(t, res.RefreshToken)
+	assert.NotEqual(t, loginRes.RefreshToken, res.RefreshToken)
+}
+
+func TestRefresh_RotatedTokenCannotBeReused(t *testing.T) {
+	router := setup(t)
+
+	signupReq := dto.SignupRequest{
+		Email:    "refresh2@example.com",
+		Password: "password123",
+	}
+	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
+
+	loginRes := loginAndGetTokens(t, router, signupReq.Email, signupReq.Password)
+
+	first := postJSON(t, router, "/refresh", dto.RefreshRequest{RefreshToken: loginRes.RefreshToken})
+	require.Equal(t, http.StatusOK, first.Code)
+
+	// ローテーション済みの古いrefresh_tokenは再利用できない
+	second := postJSON(t, router, "/refresh", dto.RefreshRequest{RefreshToken: loginRes.RefreshToken})
+	assert.Equal(t, http.StatusUnauthorized, second.Code)
+}
+
+func TestRefresh_InvalidToken(t *testing.T) {
+	router := setup(t)
+
+	w := postJSON(t, router, "/refresh", dto.RefreshRequest{
+		RefreshToken: "invalid-token",
 	})
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)

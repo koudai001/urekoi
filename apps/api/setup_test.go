@@ -39,6 +39,7 @@ func setup(t *testing.T) *gin.Engine {
 		&models.Like{},
 		&models.Match{},
 		&models.Message{},
+		&models.RefreshToken{},
 	))
 
 	return setupRouter(db)

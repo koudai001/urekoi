@@ -51,7 +51,7 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := ctrl.authUsecase.Login(req.Email, req.Password)
+	accessToken, refreshToken, err := ctrl.authUsecase.Login(req.Email, req.Password)
 	if err != nil {
 		if errors.Is(err, usecases.ErrInvalidCredentials) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -62,6 +62,30 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.LoginResponse{
-		Token: *token,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	})
+}
+
+func (ctrl *AuthController) Refresh(c *gin.Context) {
+	var req dto.RefreshRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	accessToken, refreshToken, err := ctrl.authUsecase.Refresh(req.RefreshToken)
+	if err != nil {
+		if errors.Is(err, usecases.ErrInvalidRefreshToken) {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.RefreshResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	})
 }

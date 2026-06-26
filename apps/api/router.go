@@ -24,6 +24,7 @@ func setupRouter(db *gorm.DB) *gin.Engine {
 
 	router.POST("/signup", authController.SignUp)
 	router.POST("/login", authController.Login)
+	router.POST("/refresh", authController.Refresh)
 
 	return router
 }

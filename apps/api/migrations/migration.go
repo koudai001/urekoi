@@ -17,6 +17,7 @@ func main() {
 		&models.Like{},
 		&models.Match{},
 		&models.Message{},
+		&models.RefreshToken{},
 	); err != nil {
 		panic("Failed to migrate database")
 	}
