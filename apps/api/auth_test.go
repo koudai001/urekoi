@@ -52,3 +52,52 @@ func TestSignUp_DuplicateEmail(t *testing.T) {
 	second := postJSON(t, router, "/signup", body)
 	assert.Equal(t, http.StatusConflict, second.Code)
 }
+
+func TestLogin_Success(t *testing.T) {
+	router := setup(t)
+
+	signupReq := dto.SignupRequest{
+		Email:    "login@example.com",
+		Password: "password123",
+	}
+	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
+
+	w := postJSON(t, router, "/login", dto.LoginRequest{
+		Email:    signupReq.Email,
+		Password: signupReq.Password,
+	})
+
+	require.Equal(t, http.StatusOK, w.Code)
+
+	var res dto.LoginResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	assert.NotEmpty(t, res.Token)
+}
+
+func TestLogin_WrongPassword(t *testing.T) {
+	router := setup(t)
+
+	signupReq := dto.SignupRequest{
+		Email:    "login2@example.com",
+		Password: "password123",
+	}
+	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
+
+	w := postJSON(t, router, "/login", dto.LoginRequest{
+		Email:    signupReq.Email,
+		Password: "wrongpassword",
+	})
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
+func TestLogin_UnknownEmail(t *testing.T) {
+	router := setup(t)
+
+	w := postJSON(t, router, "/login", dto.LoginRequest{
+		Email:    "notfound@example.com",
+		Password: "password123",
+	})
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}
