@@ -103,18 +103,6 @@ func TestLogin_UnknownEmail(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }
 
-func loginAndGetTokens(t *testing.T, router http.Handler, email string, password string) dto.LoginResponse {
-	w := postJSON(t, router, "/login", dto.LoginRequest{
-		Email:    email,
-		Password: password,
-	})
-	require.Equal(t, http.StatusOK, w.Code)
-
-	var res dto.LoginResponse
-	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	return res
-}
-
 func TestRefresh_Success(t *testing.T) {
 	router := setup(t)
 
@@ -166,4 +154,63 @@ func TestRefresh_InvalidToken(t *testing.T) {
 	})
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
+func TestLogout_Success(t *testing.T) {
+	router := setup(t)
+
+	signupReq := dto.SignupRequest{
+		Email:    "logout@example.com",
+		Password: "password123",
+	}
+	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
+
+	loginRes := loginAndGetTokens(t, router, signupReq.Email, signupReq.Password)
+
+	w := postJSON(t, router, "/logout", dto.LogoutRequest{
+		RefreshToken: loginRes.RefreshToken,
+	})
+
+	assert.Equal(t, http.StatusNoContent, w.Code)
+}
+
+func TestLogout_RevokedTokenCannotBeReused(t *testing.T) {
+	router := setup(t)
+
+	signupReq := dto.SignupRequest{
+		Email:    "logout2@example.com",
+		Password: "password123",
+	}
+	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
+
+	loginRes := loginAndGetTokens(t, router, signupReq.Email, signupReq.Password)
+
+	first := postJSON(t, router, "/logout", dto.LogoutRequest{RefreshToken: loginRes.RefreshToken})
+	require.Equal(t, http.StatusNoContent, first.Code)
+
+	// 失効済みのrefresh_tokenでの再ログアウトは401
+	second := postJSON(t, router, "/logout", dto.LogoutRequest{RefreshToken: loginRes.RefreshToken})
+	assert.Equal(t, http.StatusUnauthorized, second.Code)
+}
+
+func TestLogout_InvalidToken(t *testing.T) {
+	router := setup(t)
+
+	w := postJSON(t, router, "/logout", dto.LogoutRequest{
+		RefreshToken: "invalid-token",
+	})
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
+func loginAndGetTokens(t *testing.T, router http.Handler, email string, password string) dto.LoginResponse {
+	w := postJSON(t, router, "/login", dto.LoginRequest{
+		Email:    email,
+		Password: password,
+	})
+	require.Equal(t, http.StatusOK, w.Code)
+
+	var res dto.LoginResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	return res
 }

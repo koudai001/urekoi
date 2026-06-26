@@ -30,6 +30,8 @@ type IAuthUsecase interface {
 	Login(email string, password string) (accessToken string, refreshToken string, err error)
 	// refresh_tokenをローテーションし、新しいaccessTokenとrefreshTokenを返す
 	Refresh(rawRefreshToken string) (accessToken string, refreshToken string, err error)
+	// refresh_tokenを失効させる
+	Logout(rawRefreshToken string) error
 	GetUserFromToken(tokenString string) (*models.User, error)
 }
 
@@ -139,6 +141,15 @@ func (u *AuthUsecase) Refresh(rawRefreshToken string) (string, string, error) {
 	}
 
 	return accessToken, newRawRefreshToken, nil
+}
+
+func (u *AuthUsecase) Logout(rawRefreshToken string) error {
+	storedToken, err := u.authRepo.GetRefreshTokenByHash(hashRefreshToken(rawRefreshToken))
+	if err != nil {
+		return ErrInvalidRefreshToken
+	}
+
+	return u.authRepo.DeleteRefreshToken(storedToken.ID)
 }
 
 func (u *AuthUsecase) GetUserFromToken(tokenString string) (*models.User, error) {
