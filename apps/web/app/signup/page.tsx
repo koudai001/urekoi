@@ -8,8 +8,6 @@ export default function SignupPage() {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
 
-  const canSubmit = email.trim().length > 0 && password.length >= 8
-
   return (
     <main className="flex min-h-svh flex-col items-center justify-center bg-background px-4 py-12">
       {/* ロゴ */}
@@ -105,10 +103,9 @@ export default function SignupPage() {
           {/* 送信ボタン */}
           <button
             type="submit"
-            disabled={!canSubmit}
-            className="mt-2 w-full rounded-full bg-primary py-3.5 text-base font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="mt-2 w-full rounded-full bg-primary py-3.5 text-base font-bold text-primary-foreground transition-opacity hover:opacity-90"
           >
-            確認メールを送信
+            メールアドレスでログイン
           </button>
         </form>
 
