@@ -11,6 +11,7 @@ import (
 
 	"api/infra"
 	"api/models"
+	"api/router"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -42,7 +43,7 @@ func setup(t *testing.T) *gin.Engine {
 		&models.RefreshToken{},
 	))
 
-	return setupRouter(db)
+	return router.SetupRouter(db)
 }
 
 func postJSON(t *testing.T, router http.Handler, path string, body any) *httptest.ResponseRecorder {

@@ -8,17 +8,23 @@ servers:
     description: ローカル開発環境
 
 tags:
-  - name: 認証
-  - name: プロフィール
-  - name: 相手の検索
-  - name: いいね
-  - name: マッチング
-  - name: メッセージ
+  - name: auth
+    x-displayName: 認証
+  - name: profile
+    x-displayName: プロフィール
+  - name: search
+    x-displayName: 相手の検索
+  - name: likes
+    x-displayName: いいね
+  - name: matches
+    x-displayName: マッチング
+  - name: messages
+    x-displayName: メッセージ
 
 paths:
   /signup:
     post:
-      tags: [認証]
+      tags: [auth]
       summary: 新規登録
       requestBody:
         required: true
@@ -39,16 +45,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: メールアドレスの形式が正しくありません
         '409':
           description: email重複
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: このメールアドレスは既に登録されています
 
   /login:
     post:
-      tags: [認証]
+      tags: [auth]
       summary: ログイン
       requestBody:
         required: true
@@ -69,16 +79,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: パスワードを入力してください
         '401':
           description: email未登録 or パスワード不一致(列挙攻撃防止のため区別せず統一)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: invalid email or password
 
   /refresh:
     post:
-      tags: [認証]
+      tags: [auth]
       summary: アクセストークンの再発行
       requestBody:
         required: true
@@ -99,16 +113,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: リフレッシュトークンを入力してください
         '401':
           description: refresh_tokenが無効・期限切れ・失効済み
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: invalid or expired refresh token
 
   /logout:
     post:
-      tags: [認証]
+      tags: [auth]
       summary: ログアウト(refresh_tokenを失効させる)
       requestBody:
         required: true
@@ -125,16 +143,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: リフレッシュトークンを入力してください
         '401':
           description: refresh_tokenが無効・期限切れ・失効済み
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                error: invalid or expired refresh token
 
   /users/me:
     delete:
-      tags: [認証]
+      tags: [auth]
       summary: 退会
       responses:
         '200':
@@ -142,19 +164,19 @@ paths:
 
   /profile:
     get:
-      tags: [プロフィール]
+      tags: [profile]
       summary: 自分のプロフィール取得
       responses:
         '200':
           description: 取得成功
     post:
-      tags: [プロフィール]
+      tags: [profile]
       summary: プロフィール作成
       responses:
         '201':
           description: 作成成功
     put:
-      tags: [プロフィール]
+      tags: [profile]
       summary: プロフィール更新
       responses:
         '200':
@@ -162,7 +184,7 @@ paths:
 
   /profiles:
     get:
-      tags: [相手の検索]
+      tags: [search]
       summary: 相手一覧取得
       responses:
         '200':
@@ -170,7 +192,7 @@ paths:
 
   /profiles/{id}:
     get:
-      tags: [相手の検索]
+      tags: [search]
       summary: 相手詳細取得
       parameters:
         - name: id
@@ -184,7 +206,7 @@ paths:
 
   /likes:
     post:
-      tags: [いいね]
+      tags: [likes]
       summary: いいねを押す
       responses:
         '201':
@@ -192,7 +214,7 @@ paths:
 
   /likes/received:
     get:
-      tags: [いいね]
+      tags: [likes]
       summary: もらったいいねを取得
       responses:
         '200':
@@ -200,7 +222,7 @@ paths:
 
   /matches:
     get:
-      tags: [マッチング]
+      tags: [matches]
       summary: マッチングした相手の一覧取得
       responses:
         '200':
@@ -214,13 +236,13 @@ paths:
         schema:
           type: integer
     get:
-      tags: [メッセージ]
+      tags: [messages]
       summary: 特定ユーザーとのメッセージ履歴を取得
       responses:
         '200':
           description: 取得成功
     post:
-      tags: [メッセージ]
+      tags: [messages]
       summary: 特定ユーザーにメッセージを送る
       responses:
         '201':

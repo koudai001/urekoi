@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useActionState, useState } from "react"
 import { Mail, Lock, Eye, EyeOff, MessageCircle, ArrowLeft } from "lucide-react"
+import { signup } from "@/actions/auth"
 
 type Step = "select" | "email"
 
@@ -10,6 +11,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [state, formAction, isPending] = useActionState(signup, null) //stateの初期値をnullに設定
 
   return (
     <main className="flex min-h-svh flex-col items-center justify-center bg-background px-4 py-12">
@@ -80,12 +82,7 @@ export default function SignupPage() {
             戻る
           </button>
 
-          <form
-            className="flex flex-col gap-7"
-            onSubmit={(e) => {
-              e.preventDefault()
-            }}
-          >
+          <form className="flex flex-col gap-7" action={formAction}>
             {/* メール */}
             <div className="flex flex-col gap-2">
               <label
@@ -96,9 +93,11 @@ export default function SignupPage() {
               </label>
               <input
                 id="email"
+                name="email"
                 type="email"
                 inputMode="email"
                 autoComplete="email"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="sample@sample.com"
@@ -117,8 +116,11 @@ export default function SignupPage() {
               <div className="flex items-center gap-3 border-b border-border pb-2 focus-within:border-primary">
                 <input
                   id="password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
+                  required
+                  minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="パスワード"
@@ -156,12 +158,25 @@ export default function SignupPage() {
               に同意したこととみなします。
             </p>
 
+            {/* 結果表示 */}
+            {state?.success === false && (
+              <p className="text-sm font-medium text-destructive">
+                {state.error}
+              </p>
+            )}
+            {state?.success === true && (
+              <p className="text-sm font-medium text-primary">
+                登録が完了しました。
+              </p>
+            )}
+
             {/* 登録ボタン */}
             <button
               type="submit"
-              className="mt-2 w-full rounded-full bg-primary py-4 text-base font-bold text-primary-foreground transition-opacity hover:opacity-90"
+              disabled={isPending}
+              className="mt-2 w-full rounded-full bg-primary py-4 text-base font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              登録する
+              {isPending ? "登録中..." : "登録する"}
             </button>
           </form>
         </div>
