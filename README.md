@@ -14,6 +14,9 @@
 - lucide-react(アイコン)
 - orval(OpenAPI仕様からAPIクライアントを自動生成)
 - @redocly/cli(OpenAPI仕様のlint・ローカルプレビュー)
+- Storybook v10(コンポーネント単位の開発・play関数によるインタラクションテスト)
+  - @storybook/addon-mcp(StorybookをMCPサーバー化し、AIコーディングエージェントが起動中のコンポーネント状態を直接参照できる)
+- Chromatic(StorybookのビジュアルテストSaaS。PR時にレビュー用リンクを生成)
 
 ### バックエンド
 - Go 1.26
