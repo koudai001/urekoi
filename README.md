@@ -12,6 +12,8 @@
 - Tailwind CSS v4
 - shadcn/ui(UIコンポーネント)
 - lucide-react(アイコン)
+- orval(OpenAPI仕様からAPIクライアントを自動生成)
+- @redocly/cli(OpenAPI仕様のlint・ローカルプレビュー)
 
 ### バックエンド
 - Go 1.26
@@ -21,6 +23,7 @@
 - golang-jwt/jwt v5(JWTによるアクセストークン)
 - golang.org/x/crypto/bcrypt(パスワードハッシュ化)
 - testify(テスト, sqliteドライバでDBをインメモリ化)
+- ozzo-validation v4(リクエストのバリデーション)
 - クリーンアーキテクチャ(controllers / usecases / repositories / models)
 
 ## ドキュメント

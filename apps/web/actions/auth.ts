@@ -1,8 +1,13 @@
-'use server' //いる？
+'use server'
 
-type SignupResult = { success: true } | { success: false; error: string }
+import { postSignup } from '@/generated/auth/auth'
 
-export async function signup(formData: FormData): Promise<SignupResult> {
+export type SignupResult = { success: true } | { success: false; error: string }
+
+export async function signup(
+  _prevState: SignupResult | null,
+  formData: FormData,
+): Promise<SignupResult> {
   const email = formData.get('email')
   const password = formData.get('password')
 
@@ -10,20 +15,19 @@ export async function signup(formData: FormData): Promise<SignupResult> {
     return { success: false, error: '入力内容を確認してください' }
   }
 
-  const res = await fetch(`${process.env.API_URL}/signup`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  })
+  const res = await postSignup({ email, password })
 
-  if (res.ok) {
-    return { success: true }
+  // 全ケース網羅
+  switch (res.status) {
+    case 201:
+      return { success: true }
+    case 409:
+      return { success: false, error: 'このメールアドレスは既に登録されています' }
+    case 400:
+      return { success: false, error: res.data.error ?? '入力内容を確認してください' }
+    default: {
+      const _exhaustive: never = res
+      return _exhaustive
+    }
   }
-
-  if (res.status === 409) {
-    return { success: false, error: 'このメールアドレスは既に登録されています' }
-  }
-
-  const body = await res.json().catch(() => null) //パースに失敗した場合はnullを返す
-  return { success: false, error: body?.error ?? '入力内容を確認してください' }
 }

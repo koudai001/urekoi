@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"net/http"
@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func setupRouter(db *gorm.DB) *gin.Engine {
+func SetupRouter(db *gorm.DB) *gin.Engine {
 	router := gin.Default()
 
 	authRepo := repositories.NewAuthRepository(db)
