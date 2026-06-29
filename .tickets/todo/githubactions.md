@@ -1,5 +1,13 @@
 storybookのdeploy
 
+push時にci走らせたい
+・types
+・linter
+・go
+
+
+
+
 # .github/workflows/storybook.yml
 name: Deploy Storybook
 
