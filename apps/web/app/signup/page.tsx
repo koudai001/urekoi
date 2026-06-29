@@ -1,8 +1,11 @@
 "use client"
 
 import { useActionState, useState } from "react"
-import { Mail, Lock, Eye, EyeOff, MessageCircle, ArrowLeft } from "lucide-react"
+import { Mail, MessageCircle, ArrowLeft } from "lucide-react"
 import { signup } from "@/actions/auth"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 
 type Step = "select" | "email"
 
@@ -10,7 +13,6 @@ export default function SignupPage() {
   const [step, setStep] = useState<Step>("select")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
   const [state, formAction, isPending] = useActionState(signup, null) //stateの初期値をnullに設定
 
   return (
@@ -30,23 +32,23 @@ export default function SignupPage() {
         <div className="flex w-full max-w-md flex-col items-center">
           <div className="flex w-full flex-col gap-4">
             {/* LINE（ダミー） */}
-            <button
+            <Button
               type="button"
-              className="flex w-full items-center justify-center gap-3 rounded-full bg-[#06c755] py-4 text-base font-bold text-white transition-opacity hover:opacity-90"
+              className="h-auto w-full gap-3 rounded-full bg-line py-4 text-base font-bold text-white hover:opacity-90"
             >
               <MessageCircle className="h-5 w-5 fill-white" />
               LINEで新規登録
-            </button>
+            </Button>
 
             {/* メールアドレス */}
-            <button
+            <Button
               type="button"
               onClick={() => setStep("email")}
-              className="flex w-full items-center justify-center gap-3 rounded-full bg-primary py-4 text-base font-bold text-primary-foreground transition-opacity hover:opacity-90"
+              className="h-auto w-full gap-3 rounded-full py-4 text-base font-bold hover:opacity-90"
             >
               <Mail className="h-5 w-5" />
               メールアドレスで新規登録
-            </button>
+            </Button>
           </div>
 
           <p className="mt-6 w-full text-left text-sm leading-relaxed text-muted-foreground">
@@ -73,14 +75,19 @@ export default function SignupPage() {
       ) : (
         /* ===== ステップ2: メールアドレス＋パスワード ===== */
         <div className="w-full max-w-md">
-          <button
+          <Button
             type="button"
-            onClick={() => setStep("select")}
-            className="mb-6 flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-card-foreground"
+            variant="ghost"
+            onClick={() => {
+              setStep("select")
+              setEmail("")
+              setPassword("")
+            }}
+            className="mb-6 h-auto gap-1.5 p-0 text-sm font-medium text-muted-foreground hover:bg-transparent hover:text-card-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
             戻る
-          </button>
+          </Button>
 
           <form className="flex flex-col gap-7" action={formAction}>
             {/* メール */}
@@ -91,7 +98,7 @@ export default function SignupPage() {
               >
                 メールアドレス
               </label>
-              <input
+              <Input
                 id="email"
                 name="email"
                 type="email"
@@ -101,7 +108,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="sample@sample.com"
-                className="w-full border-b border-border bg-transparent pb-2 text-lg text-card-foreground outline-none transition-colors focus:border-primary placeholder:text-muted-foreground/50"
+                className="h-auto w-full rounded-none border-0 border-b border-border bg-transparent p-0 pb-2 text-lg focus-visible:border-primary focus-visible:ring-0"
               />
             </div>
 
@@ -113,32 +120,16 @@ export default function SignupPage() {
               >
                 パスワード
               </label>
-              <div className="flex items-center gap-3 border-b border-border pb-2 focus-within:border-primary">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="new-password"
-                  required
-                  minLength={8}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="パスワード"
-                  className="w-full bg-transparent text-lg text-card-foreground outline-none placeholder:text-muted-foreground/50"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
-                  className="shrink-0 text-muted-foreground transition-colors hover:text-card-foreground"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
+              <PasswordInput
+                id="password"
+                name="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="パスワード"
+              />
             </div>
 
             {/* 同意文 */}
@@ -171,13 +162,13 @@ export default function SignupPage() {
             )}
 
             {/* 登録ボタン */}
-            <button
+            <Button
               type="submit"
               disabled={isPending}
-              className="mt-2 w-full rounded-full bg-primary py-4 text-base font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="mt-2 h-auto w-full rounded-full py-4 text-base font-bold hover:opacity-90"
             >
               {isPending ? "登録中..." : "登録する"}
-            </button>
+            </Button>
           </form>
         </div>
       )}

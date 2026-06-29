@@ -21,3 +21,9 @@
 ## 完了条件
 - 実際にブラウザでlogin→ページ遷移→logoutが一通り動作する
 - ブラウザの開発者ツールでaccess_token/refresh_tokenの値がどこにも(JS変数・localStorage等)露出していないことを確認する
+
+
+
+・新規登録後にaccess_token,refresh_tokenはどうするか？の設計
+・ログイン機能
+・両方とも成功したら、「/」にリダイレクトする

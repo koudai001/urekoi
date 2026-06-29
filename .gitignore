@@ -20,3 +20,8 @@ next-env.d.ts
 
 # Go build artifacts
 apps/api/tmp/
+
+# storybook
+*storybook.log
+storybook-static
+apps/web/stories-example/
