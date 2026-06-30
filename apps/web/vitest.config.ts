@@ -33,6 +33,15 @@ export default defineConfig({
           },
         },
       },
+      {
+        // Server Actionなど、ブラウザ不要なロジックを通常のNode環境でテストするプロジェクト
+        extends: true,
+        test: {
+          name: 'unit',
+          environment: 'node',
+          include: ['**/*.test.ts'],
+        },
+      },
     ],
   },
 })

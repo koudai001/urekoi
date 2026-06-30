@@ -6,8 +6,10 @@ type SignupRequest struct {
 }
 
 type SignupResponse struct {
-	ID    uint64 `json:"id"`
-	Email string `json:"email"`
+	ID           uint64 `json:"id"`
+	Email        string `json:"email"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 type LoginRequest struct {

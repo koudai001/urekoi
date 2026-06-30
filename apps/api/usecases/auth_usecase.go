@@ -15,6 +15,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// リフレッシュトークンの有効期限
 const refreshTokenTTL = 30 * 24 * time.Hour
 
 var (
@@ -25,13 +26,15 @@ var (
 )
 
 type IAuthUsecase interface {
-	SignUp(email string, password string) (*models.User, error)
+	// サインアップ成功時もログインと同様にaccessToken(JWT)とrefreshTokenを返す(自動ログイン)
+	SignUp(email string, password string) (user *models.User, accessToken string, refreshToken string, err error)
 	// ログイン成功時はaccessToken(JWT)とrefreshTokenを返す
 	Login(email string, password string) (accessToken string, refreshToken string, err error)
 	// refresh_tokenをローテーションし、新しいaccessTokenとrefreshTokenを返す
 	Refresh(rawRefreshToken string) (accessToken string, refreshToken string, err error)
 	// refresh_tokenを失効させる
 	Logout(rawRefreshToken string) error
+	// アクセストークン(JWT)からユーザー情報を取得する
 	GetUserFromToken(tokenString string) (*models.User, error)
 }
 
@@ -45,11 +48,11 @@ func NewAuthUsecase(authRepo repositories.IAuthRepository) IAuthUsecase {
 	}
 }
 
-func (u *AuthUsecase) SignUp(email string, password string) (*models.User, error) {
+func (u *AuthUsecase) SignUp(email string, password string) (*models.User, string, string, error) {
 	//パスワードをハッシュ化
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return nil, "", "", err
 	}
 
 	user := models.User{
@@ -59,12 +62,17 @@ func (u *AuthUsecase) SignUp(email string, password string) (*models.User, error
 
 	if err := u.authRepo.CreateUser(&user); err != nil {
 		if errors.Is(err, repositories.ErrEmailAlreadyExists) {
-			return nil, ErrEmailAlreadyExists
+			return nil, "", "", ErrEmailAlreadyExists
 		}
-		return nil, err
+		return nil, "", "", err
 	}
 
-	return &user, nil
+	accessToken, refreshToken, err := u.issueTokens(&user)
+	if err != nil {
+		return nil, "", "", err
+	}
+
+	return &user, accessToken, refreshToken, nil
 }
 
 func (u *AuthUsecase) Login(email string, password string) (string, string, error) {
@@ -79,18 +87,24 @@ func (u *AuthUsecase) Login(email string, password string) (string, string, erro
 		return "", "", ErrInvalidCredentials
 	}
 
+	return u.issueTokens(user)
+}
+
+// アクセストークン(JWT)とリフレッシュトークンを発行し、リフレッシュトークンのハッシュをDBに保存する
+func (u *AuthUsecase) issueTokens(user *models.User) (string, string, error) {
 	// アクセストークン(JWT)を生成
 	accessToken, err := generateAccessToken(uint(user.ID), user.Email)
 	if err != nil {
 		return "", "", err
 	}
 
-	// リフレッシュトークンを生成し、ハッシュ化したものをDBに保存
+	// リフレッシュトークンを生成
 	rawRefreshToken, hashedRefreshToken, err := generateRefreshToken()
 	if err != nil {
 		return "", "", err
 	}
 
+	// リフレッシュトークンをDBに保存
 	refreshToken := models.RefreshToken{
 		UserID:    user.ID,
 		TokenHash: hashedRefreshToken,
@@ -178,6 +192,7 @@ func (u *AuthUsecase) GetUserFromToken(tokenString string) (*models.User, error)
 	return u.authRepo.GetUserByEmail(email)
 }
 
+// アクセストークン(JWT)を生成する
 func generateAccessToken(userId uint, email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		// 1,署名のアルゴリズム
@@ -195,7 +210,7 @@ func generateAccessToken(userId uint, email string) (string, error) {
 	return signed, nil
 }
 
-// rawToken: クライアントに返す生トークン、hashedToken: DBに保存するsha256ハッシュ
+// リフレッシュトークンを生成し、ハッシュ化して返す
 func generateRefreshToken() (rawToken string, hashedToken string, err error) {
 	buf := make([]byte, 32)                   // 32個のゼロが並んだスライスを作る
 	if _, err := rand.Read(buf); err != nil { // bufにランダムな値を入れる

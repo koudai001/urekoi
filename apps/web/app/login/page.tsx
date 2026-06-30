@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from 'react'
 import { Mail, MessageCircle } from 'lucide-react'
-import { signup } from '@/actions/auth'
+import { login } from '@/actions/auth'
 import { AuthLogo } from '@/components/ui/auth-logo'
 import { BackButton } from '@/components/ui/back-button'
 import { Button } from '@/components/ui/button'
@@ -11,18 +11,18 @@ import { PasswordInput } from '@/components/ui/password-input'
 
 type Step = 'select' | 'email'
 
-export default function SignupPage() {
+export default function LoginPage() {
   const [step, setStep] = useState<Step>('select')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [state, formAction, isPending] = useActionState(signup, null) //stateの初期値をnullに設定
+  const [state, formAction, isPending] = useActionState(login, null)
 
   return (
     <main className="flex min-h-svh flex-col items-center justify-center bg-background px-4 py-12">
       <AuthLogo />
 
       {step === 'select' ? (
-        /* ===== ステップ1: 登録方法の選択 ===== */
+        /* ===== ステップ1: ログイン方法の選択 ===== */
         <div className="flex w-full max-w-md flex-col items-center">
           <div className="flex w-full flex-col gap-4">
             {/* LINE（ダミー） */}
@@ -31,7 +31,7 @@ export default function SignupPage() {
               className="h-auto w-full gap-3 rounded-full bg-line py-4 text-base font-bold text-white hover:opacity-90"
             >
               <MessageCircle className="h-5 w-5 fill-white" />
-              LINEで新規登録
+              LINEでログイン
             </Button>
 
             {/* メールアドレス */}
@@ -41,28 +41,22 @@ export default function SignupPage() {
               className="h-auto w-full gap-3 rounded-full py-4 text-base font-bold hover:opacity-90"
             >
               <Mail className="h-5 w-5" />
-              メールアドレスで新規登録
+              メールアドレスでログイン
             </Button>
           </div>
-
-          <p className="mt-6 w-full text-left text-sm leading-relaxed text-muted-foreground">
-            熟恋は、大人の女性と年下男性のためのマッチングサービスです。
-            <br />
-            18歳未満の方・独身でない方・上記をご理解いただけない方は、ご登録いただけません。
-          </p>
 
           <div className="mt-10 flex flex-col items-center gap-4">
             <a
               href="#"
               className="text-sm font-medium text-primary hover:underline"
             >
-              新規登録でお困りの方はこちら
+              ログインでお困りの方はこちら
             </a>
             <a
-              href="/login"
+              href="/signup"
               className="text-base font-bold text-card-foreground hover:underline"
             >
-              ログインはこちら
+              新規登録はこちら
             </a>
           </div>
         </div>
@@ -111,40 +105,13 @@ export default function SignupPage() {
               <PasswordInput
                 id="password"
                 name="password"
-                autoComplete="new-password"
+                autoComplete="current-password"
                 required
-                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="パスワード"
               />
             </div>
-
-            {/* 同意文 */}
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              アカウント登録すると、
-              <a
-                href="#"
-                className="font-bold text-card-foreground hover:underline"
-              >
-                利用規約
-              </a>
-              、
-              <a
-                href="#"
-                className="font-bold text-card-foreground hover:underline"
-              >
-                プライバシーポリシー
-              </a>
-              、
-              <a
-                href="#"
-                className="font-bold text-card-foreground hover:underline"
-              >
-                コミュニティガイドライン
-              </a>
-              に同意したこととみなします。
-            </p>
 
             {/* 結果表示（エラーの場合） */}
             {state?.success === false && (
@@ -153,13 +120,13 @@ export default function SignupPage() {
               </p>
             )}
 
-            {/* 登録ボタン */}
+            {/* ログインボタン */}
             <Button
               type="submit"
               disabled={isPending}
               className="mt-2 h-auto w-full rounded-full py-4 text-base font-bold hover:opacity-90"
             >
-              {isPending ? '登録中...' : '登録する'}
+              {isPending ? 'ログイン中...' : 'ログイン'}
             </Button>
           </form>
         </div>

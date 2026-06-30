@@ -1,8 +1,16 @@
 'use server'
 
-import { postSignup } from '@/generated/auth/auth'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { postLogin, postSignup } from '@/generated/auth/auth'
 
-export type SignupResult = { success: true } | { success: false; error: string }
+export type SignupResult = { success: false; error: string } // 成功時はredirect('/')するので返却されない
+
+export type LoginResult = { success: false; error: string } // 成功時はredirect('/')するので返却されない
+
+// BEのaccess_token/refresh_tokenの有効期限と合わせる(apps/api/usecases/auth_usecase.go)
+const ACCESS_TOKEN_MAX_AGE = 60 * 60
+const REFRESH_TOKEN_MAX_AGE = 60 * 60 * 24 * 30
 
 export async function signup(
   _prevState: SignupResult | null,
@@ -19,8 +27,13 @@ export async function signup(
 
   // 全ケース網羅
   switch (res.status) {
-    case 201:
-      return { success: true }
+    case 201: {
+      await setAuthCookies(
+        res.data.access_token ?? '',
+        res.data.refresh_token ?? '',
+      )
+      redirect('/')
+    }
     case 409:
       return {
         success: false,
@@ -36,4 +49,63 @@ export async function signup(
       return _exhaustive
     }
   }
+}
+
+export async function login(
+  _prevState: LoginResult | null,
+  formData: FormData,
+): Promise<LoginResult> {
+  const email = formData.get('email')
+  const password = formData.get('password')
+
+  // 型チェックのみ
+  if (typeof email !== 'string' || typeof password !== 'string') {
+    return { success: false, error: '入力内容を確認してください' }
+  }
+
+  const res = await postLogin({ email, password })
+
+  // 全ケース網羅
+  switch (res.status) {
+    case 200: {
+      await setAuthCookies(
+        res.data.access_token ?? '',
+        res.data.refresh_token ?? '',
+      )
+      redirect('/')
+    }
+    case 401:
+      return {
+        success: false,
+        error: 'メールアドレスまたはパスワードが正しくありません',
+      }
+    case 400:
+      return {
+        success: false,
+        error: res.data.error ?? '入力内容を確認してください',
+      }
+    default: {
+      const _exhaustive: never = res
+      return _exhaustive
+    }
+  }
+}
+
+// access_token/refresh_tokenをhttpOnlycookieにセットする
+async function setAuthCookies(accessToken: string, refreshToken: string) {
+  const cookieStore = await cookies()
+  cookieStore.set('access_token', accessToken, {
+    httpOnly: true, //jsからアクセス不可（xss対策）
+    sameSite: 'strict', // 他サイトからのリクエストにはこのcookieを一切付けない(csrf対策)
+    secure: true, // httpsでのみ送信
+    path: '/', // ルートパス以下の全てのリクエストにcookieを付与
+    maxAge: ACCESS_TOKEN_MAX_AGE, // 有効期限を設定
+  })
+  cookieStore.set('refresh_token', refreshToken, {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: true,
+    path: '/',
+    maxAge: REFRESH_TOKEN_MAX_AGE,
+  })
 }

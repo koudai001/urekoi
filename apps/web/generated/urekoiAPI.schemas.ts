@@ -14,6 +14,8 @@ export interface SignupRequest {
 export interface SignupResponse {
   id?: number;
   email?: string;
+  access_token?: string;
+  refresh_token?: string;
 }
 
 export interface LoginRequest {

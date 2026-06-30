@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// 正常な入力でサインアップが成功し201とユーザー情報を返すことを検証
+// 正常な入力でサインアップが成功し201・ユーザー情報・自動ログイン用のトークンを返すことを検証
 func TestSignUp_Success(t *testing.T) {
 	router := setup(t)
 
@@ -26,6 +26,8 @@ func TestSignUp_Success(t *testing.T) {
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.NotZero(t, res.ID)
 	assert.Equal(t, "test@example.com", res.Email)
+	assert.NotEmpty(t, res.AccessToken)
+	assert.NotEmpty(t, res.RefreshToken)
 }
 
 // 不正な入力(email形式エラー・パスワード短すぎ)で400を返すことを検証
