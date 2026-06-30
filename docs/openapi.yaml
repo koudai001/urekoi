@@ -272,6 +272,12 @@ components:
         email:
           type: string
           example: test@example.com
+        access_token:
+          type: string
+          example: <JWT>
+        refresh_token:
+          type: string
+          example: <refresh token>
     LoginRequest:
       type: object
       required: [email, password]

@@ -36,7 +36,7 @@ func (ctrl *AuthController) SignUp(c *gin.Context) {
 		return
 	}
 
-	user, err := ctrl.authUsecase.SignUp(req.Email, req.Password)
+	user, accessToken, refreshToken, err := ctrl.authUsecase.SignUp(req.Email, req.Password)
 	if err != nil {
 		if errors.Is(err, usecases.ErrEmailAlreadyExists) {
 			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
@@ -47,8 +47,10 @@ func (ctrl *AuthController) SignUp(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, dto.SignupResponse{
-		ID:    user.ID,
-		Email: user.Email,
+		ID:           user.ID,
+		Email:        user.Email,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	})
 }
 

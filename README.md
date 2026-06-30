@@ -16,7 +16,9 @@
 - @redocly/cli(OpenAPI仕様のlint・ローカルプレビュー)
 - ESLint(eslint-config-next)
 - Prettier
-- Vitest(@storybook/addon-vitestでStorybookのplay関数をテストとして実行。Playwright(chromium)のブラウザモードで実行するため、初回は`pnpm exec playwright install chromium`が必要)
+- Vitest(`vitest.config.ts`で2つのprojectに分割)
+  - `storybook`: @storybook/addon-vitestでStorybookのplay関数をテストとして実行。Playwright(chromium)のブラウザモードで実行するため、初回は`pnpm exec playwright install chromium`が必要。`pnpm test:storybook`
+  - `unit`: Server Actionなどブラウザ不要なロジックをNode環境でテスト。`pnpm test:unit`
 - Storybook v10(コンポーネント単位の開発・play関数によるインタラクションテスト)
   - @storybook/addon-mcp(StorybookをMCPサーバー化し、AIコーディングエージェントが起動中のコンポーネント状態を直接参照できる)
 - Chromatic(StorybookのビジュアルテストSaaS。PR時にレビュー用リンクを生成)
