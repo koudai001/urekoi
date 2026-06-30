@@ -9,7 +9,7 @@ try {
   // Intentionally a no-op. Place any pre-build injection logic here.
 } catch (error) {
   // Never fail the build because of this optional helper.
-  console.warn("[v0] inject-built-with-v0 skipped:", error?.message ?? error)
+  console.warn('[v0] inject-built-with-v0 skipped:', error?.message ?? error)
 }
 
 process.exit(0)

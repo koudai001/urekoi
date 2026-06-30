@@ -1,4 +1,4 @@
-import { Footprints } from "lucide-react"
+import { Footprints } from 'lucide-react'
 
 export function PromoCard() {
   return (

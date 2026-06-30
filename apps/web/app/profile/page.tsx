@@ -1,6 +1,6 @@
-import { Sidebar } from "@/components/sidebar"
-import { AchievementBanner, ProfilePhotos } from "@/components/profile-photos"
-import { SectionTitle, SelectRow, LinkRow } from "@/components/profile-form"
+import { Sidebar } from '@/components/sidebar'
+import { AchievementBanner, ProfilePhotos } from '@/components/profile-photos'
+import { SectionTitle, SelectRow, LinkRow } from '@/components/profile-form'
 
 export default function ProfilePage() {
   return (
@@ -41,53 +41,50 @@ export default function ProfilePage() {
             <SelectRow
               label="身長"
               value="175cm"
-              options={["165cm", "170cm", "175cm", "180cm", "185cm"]}
+              options={['165cm', '170cm', '175cm', '180cm', '185cm']}
             />
             <SelectRow
               label="体型"
               value="普通"
-              options={["スリム", "普通", "がっしり", "ぽっちゃり"]}
+              options={['スリム', '普通', 'がっしり', 'ぽっちゃり']}
             />
-            <SelectRow
-              label="血液型"
-              options={["A型", "B型", "O型", "AB型"]}
-            />
+            <SelectRow label="血液型" options={['A型', 'B型', 'O型', 'AB型']} />
             <SelectRow
               label="居住地"
               value="日本"
-              options={["日本", "海外"]}
+              options={['日本', '海外']}
               secondValue="東京"
-              secondOptions={["東京", "神奈川", "埼玉", "千葉", "大阪"]}
+              secondOptions={['東京', '神奈川', '埼玉', '千葉', '大阪']}
             />
             <SelectRow
               label="出身地"
-              options={["北海道", "東京", "大阪", "福岡", "選択しない"]}
-              secondOptions={["東京", "神奈川", "埼玉", "千葉", "選択しない"]}
+              options={['北海道', '東京', '大阪', '福岡', '選択しない']}
+              secondOptions={['東京', '神奈川', '埼玉', '千葉', '選択しない']}
             />
             <SelectRow
               label="職種"
               value="エンジニア"
-              options={["エンジニア", "営業", "企画", "公務員", "医療"]}
+              options={['エンジニア', '営業', '企画', '公務員', '医療']}
             />
             <SelectRow
               label="学歴"
               value="大学卒"
-              options={["高校卒", "専門学校卒", "大学卒", "大学院卒"]}
+              options={['高校卒', '専門学校卒', '大学卒', '大学院卒']}
             />
             <SelectRow
               label="年収"
               value="800万円以上〜"
               options={[
-                "〜400万円",
-                "400〜600万円",
-                "600〜800万円",
-                "800万円以上〜",
+                '〜400万円',
+                '400〜600万円',
+                '600〜800万円',
+                '800万円以上〜',
               ]}
             />
             <SelectRow
               label="タバコ"
               value="吸わない"
-              options={["吸わない", "吸う", "時々吸う", "電子タバコ"]}
+              options={['吸わない', '吸う', '時々吸う', '電子タバコ']}
             />
           </div>
 
@@ -113,31 +110,31 @@ export default function ProfilePage() {
             <SelectRow
               label="結婚歴"
               value="独身（未婚）"
-              options={["独身（未婚）", "離婚歴あり"]}
+              options={['独身（未婚）', '離婚歴あり']}
             />
             <SelectRow
               label="子供の有無"
-              options={["なし", "あり（同居）", "あり（別居）"]}
+              options={['なし', 'あり（同居）', 'あり（別居）']}
             />
             <SelectRow
               label="結婚に対する意思"
-              options={["すぐにでもしたい", "いずれしたい", "今は考えていない"]}
+              options={['すぐにでもしたい', 'いずれしたい', '今は考えていない']}
             />
             <SelectRow
               label="子供が欲しいか"
-              options={["欲しい", "欲しくない", "相手と相談して決めたい"]}
+              options={['欲しい', '欲しくない', '相手と相談して決めたい']}
             />
             <SelectRow
               label="家事・育児"
-              options={["積極的に参加したい", "できる範囲で参加したい"]}
+              options={['積極的に参加したい', 'できる範囲で参加したい']}
             />
             <SelectRow
               label="出会うまでの希望"
-              options={["まずはメッセージ", "気が合えば早く会いたい"]}
+              options={['まずはメッセージ', '気が合えば早く会いたい']}
             />
             <SelectRow
               label="デート費用"
-              options={["男性が多めに負担", "割り勘", "相手と相談"]}
+              options={['男性が多めに負担', '割り勘', '相手と相談']}
             />
           </div>
 
@@ -147,18 +144,22 @@ export default function ProfilePage() {
             <LinkRow label="性格・タイプ" value="几帳面, 仕事好き" />
             <SelectRow
               label="社交性"
-              options={["人見知り", "普通", "社交的"]}
+              options={['人見知り', '普通', '社交的']}
             />
             <SelectRow
               label="同居人"
               value="一人暮らし"
-              options={["一人暮らし", "実家暮らし", "ルームシェア"]}
+              options={['一人暮らし', '実家暮らし', 'ルームシェア']}
             />
             <LinkRow label="飼っているペット" placeholder="タップして編集" />
-            <SelectRow label="休日" value="土日" options={["土日", "平日", "不定期"]} />
+            <SelectRow
+              label="休日"
+              value="土日"
+              options={['土日', '平日', '不定期']}
+            />
             <SelectRow
               label="お酒"
-              options={["飲まない", "時々飲む", "よく飲む"]}
+              options={['飲まない', '時々飲む', 'よく飲む']}
             />
             <LinkRow label="好きなこと・趣味" placeholder="タップして編集" />
           </div>

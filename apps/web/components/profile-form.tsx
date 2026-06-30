@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { ChevronDown, ChevronRight } from "lucide-react"
+import { ChevronDown, ChevronRight } from 'lucide-react'
 
 export function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -15,7 +15,7 @@ export function SelectRow({
   label,
   value,
   options,
-  placeholder = "タップして選択",
+  placeholder = 'タップして選択',
   secondValue,
   secondOptions,
 }: {
@@ -62,7 +62,7 @@ function SelectControl({
   return (
     <div className="relative">
       <select
-        defaultValue={value ?? ""}
+        defaultValue={value ?? ''}
         className="min-w-28 cursor-pointer appearance-none rounded-lg border border-input bg-card py-2 pl-3 pr-8 text-sm text-foreground outline-none transition-colors hover:border-primary focus:border-primary"
       >
         <option value="" disabled>
@@ -83,7 +83,7 @@ function SelectControl({
 export function LinkRow({
   label,
   value,
-  placeholder = "タップして選択",
+  placeholder = 'タップして選択',
 }: {
   label: string
   value?: string
@@ -96,8 +96,8 @@ export function LinkRow({
         <span
           className={
             value
-              ? "text-sm font-medium text-foreground"
-              : "text-sm text-muted-foreground"
+              ? 'text-sm font-medium text-foreground'
+              : 'text-sm text-muted-foreground'
           }
         >
           {value ?? placeholder}

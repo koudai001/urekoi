@@ -1,12 +1,12 @@
-"use client"
+'use client'
 
-import { useRef, useState } from "react"
-import Image from "next/image"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { cn } from "@/lib/utils"
-import type { LikeProfile } from "@/lib/likes"
+import { useRef, useState } from 'react'
+import Image from 'next/image'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import type { LikeProfile } from '@/lib/likes'
 
-type Direction = "like" | "skip"
+type Direction = 'like' | 'skip'
 
 export function LikeSwipeCard({
   profile,
@@ -21,6 +21,7 @@ export function LikeSwipeCard({
   const [photoIndex, setPhotoIndex] = useState(0)
   const [drag, setDrag] = useState(0)
   const [leaving, setLeaving] = useState<Direction | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
   const startX = useRef<number | null>(null)
   const dragging = useRef(false)
 
@@ -39,6 +40,7 @@ export function LikeSwipeCard({
   function onPointerDown(e: React.PointerEvent) {
     if (leaving) return
     dragging.current = true
+    setIsDragging(true)
     startX.current = e.clientX
     ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
   }
@@ -51,17 +53,14 @@ export function LikeSwipeCard({
   function onPointerUp() {
     if (!dragging.current) return
     dragging.current = false
-    if (drag > threshold) fly("like")
-    else if (drag < -threshold) fly("skip")
+    setIsDragging(false)
+    if (drag > threshold) fly('like')
+    else if (drag < -threshold) fly('skip')
     setDrag(0)
     startX.current = null
   }
 
-  const translateX = leaving
-    ? leaving === "like"
-      ? 600
-      : -600
-    : drag
+  const translateX = leaving ? (leaving === 'like' ? 600 : -600) : drag
   const rotate = translateX / 28
   const likeOpacity = Math.max(0, Math.min(1, translateX / threshold))
   const skipOpacity = Math.max(0, Math.min(1, -translateX / threshold))
@@ -85,14 +84,15 @@ export function LikeSwipeCard({
       onPointerCancel={onPointerUp}
       style={{
         transform: `translateX(${translateX}px) rotate(${rotate}deg)`,
-        transition: leaving || !dragging.current ? "transform 0.28s ease-out" : "none",
+        transition:
+          leaving || !isDragging ? 'transform 0.28s ease-out' : 'none',
         opacity: leaving ? 0 : 1,
-        cursor: dragging.current ? "grabbing" : "grab",
+        cursor: isDragging ? 'grabbing' : 'grab',
       }}
     >
       <div className="relative h-full w-full overflow-hidden rounded-3xl bg-muted shadow-xl ring-1 ring-border">
         <Image
-          src={profile.photos[photoIndex] || "/placeholder.svg"}
+          src={profile.photos[photoIndex] || '/placeholder.svg'}
           alt={`${profile.name}さんの写真`}
           fill
           className="object-cover"
@@ -127,8 +127,10 @@ export function LikeSwipeCard({
             {profile.online && (
               <span
                 className={cn(
-                  "h-2.5 w-2.5 rounded-full",
-                  profile.online === "online" ? "bg-green-400" : "bg-yellow-400",
+                  'h-2.5 w-2.5 rounded-full',
+                  profile.online === 'online'
+                    ? 'bg-green-400'
+                    : 'bg-yellow-400',
                 )}
               />
             )}

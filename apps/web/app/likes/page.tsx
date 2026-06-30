@@ -1,12 +1,12 @@
-"use client"
+'use client'
 
-import { useRef, useState } from "react"
-import { Sidebar } from "@/components/sidebar"
-import { LikeSwipeCard } from "@/components/like-swipe-card"
-import { receivedLikes } from "@/lib/likes"
-import { ChevronLeft, ChevronRight, Undo2, ThumbsUp } from "lucide-react"
+import { useRef, useState } from 'react'
+import { Sidebar } from '@/components/sidebar'
+import { LikeSwipeCard } from '@/components/like-swipe-card'
+import { receivedLikes } from '@/lib/likes'
+import { ChevronLeft, ChevronRight, Undo2, ThumbsUp } from 'lucide-react'
 
-type Direction = "like" | "skip"
+type Direction = 'like' | 'skip'
 
 export default function LikesPage() {
   const [index, setIndex] = useState(0)
@@ -58,7 +58,7 @@ export default function LikesPage() {
               <div className="flex items-center gap-4 sm:gap-8">
                 <button
                   aria-label="スキップ"
-                  onClick={() => trigger("skip")}
+                  onClick={() => trigger('skip')}
                   className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-muted-foreground shadow-md ring-1 ring-border transition hover:bg-muted sm:flex"
                 >
                   <ChevronLeft className="h-6 w-6" />
@@ -75,7 +75,7 @@ export default function LikesPage() {
 
                 <button
                   aria-label="いいね！"
-                  onClick={() => trigger("like")}
+                  onClick={() => trigger('like')}
                   className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-primary shadow-md ring-1 ring-border transition hover:bg-muted sm:flex"
                 >
                   <ChevronRight className="h-6 w-6" />
@@ -86,14 +86,14 @@ export default function LikesPage() {
               <div className="flex items-center gap-6">
                 <button
                   aria-label="スキップ"
-                  onClick={() => trigger("skip")}
+                  onClick={() => trigger('skip')}
                   className="flex h-16 w-16 items-center justify-center rounded-full bg-card text-muted-foreground shadow-lg ring-1 ring-border transition hover:scale-105 hover:text-foreground"
                 >
                   <Undo2 className="h-7 w-7" />
                 </button>
                 <button
                   aria-label="いいね！を送る"
-                  onClick={() => trigger("like")}
+                  onClick={() => trigger('like')}
                   className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition hover:scale-105"
                 >
                   <ThumbsUp className="h-7 w-7" />

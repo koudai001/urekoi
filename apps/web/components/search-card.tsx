@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import { Star } from "lucide-react"
-import { useState } from "react"
-import Image from "next/image"
-import { cn } from "@/lib/utils"
-import type { Profile } from "@/lib/profiles"
+import { Star } from 'lucide-react'
+import { useState } from 'react'
+import Image from 'next/image'
+import { cn } from '@/lib/utils'
+import type { Profile } from '@/lib/profiles'
 
 export function SearchCard({
   profile,
@@ -21,7 +21,7 @@ export function SearchCard({
       tabIndex={0}
       onClick={() => onSelect?.(profile)}
       onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
+        if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
           onSelect?.(profile)
         }
@@ -31,7 +31,7 @@ export function SearchCard({
     >
       <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-muted shadow-sm">
         <Image
-          src={profile.image || "/placeholder.svg"}
+          src={profile.image || '/placeholder.svg'}
           alt={`${profile.name}さんのプロフィール写真`}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 240px"
@@ -54,8 +54,8 @@ export function SearchCard({
         >
           <Star
             className={cn(
-              "h-4 w-4 transition-colors",
-              faved ? "fill-amber-300 text-amber-300" : "text-white",
+              'h-4 w-4 transition-colors',
+              faved ? 'fill-amber-300 text-amber-300' : 'text-white',
             )}
           />
         </button>
@@ -64,12 +64,12 @@ export function SearchCard({
       <div className="mt-2 flex items-center gap-1.5">
         <span
           className={cn(
-            "h-2 w-2 shrink-0 rounded-full",
-            profile.online === "online"
-              ? "bg-green-500"
-              : profile.online === "recent"
-                ? "bg-amber-400"
-                : "bg-muted-foreground/40",
+            'h-2 w-2 shrink-0 rounded-full',
+            profile.online === 'online'
+              ? 'bg-green-500'
+              : profile.online === 'recent'
+                ? 'bg-amber-400'
+                : 'bg-muted-foreground/40',
           )}
         />
         <span className="text-sm font-medium text-foreground">

@@ -1,4 +1,4 @@
-package main
+package controllers_test
 
 import (
 	"encoding/json"
@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// 正常な入力でサインアップが成功し201とユーザー情報を返すことを検証
 func TestSignUp_Success(t *testing.T) {
 	router := setup(t)
 
@@ -27,6 +28,7 @@ func TestSignUp_Success(t *testing.T) {
 	assert.Equal(t, "test@example.com", res.Email)
 }
 
+// 不正な入力(email形式エラー・パスワード短すぎ)で400を返すことを検証
 func TestSignUp_InvalidRequest(t *testing.T) {
 	router := setup(t)
 
@@ -38,6 +40,7 @@ func TestSignUp_InvalidRequest(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
+// 同じemailで再度サインアップすると409を返すことを検証
 func TestSignUp_DuplicateEmail(t *testing.T) {
 	router := setup(t)
 
@@ -53,6 +56,7 @@ func TestSignUp_DuplicateEmail(t *testing.T) {
 	assert.Equal(t, http.StatusConflict, second.Code)
 }
 
+// 正しい認証情報でログインしアクセストークン・リフレッシュトークンを取得できることを検証
 func TestLogin_Success(t *testing.T) {
 	router := setup(t)
 
@@ -62,10 +66,7 @@ func TestLogin_Success(t *testing.T) {
 	}
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
 
-	w := postJSON(t, router, "/login", dto.LoginRequest{
-		Email:    signupReq.Email,
-		Password: signupReq.Password,
-	})
+	w := postJSON(t, router, "/login", dto.LoginRequest(signupReq))
 
 	require.Equal(t, http.StatusOK, w.Code)
 
@@ -75,6 +76,7 @@ func TestLogin_Success(t *testing.T) {
 	assert.NotEmpty(t, res.RefreshToken)
 }
 
+// 誤ったパスワードでログインすると401を返すことを検証
 func TestLogin_WrongPassword(t *testing.T) {
 	router := setup(t)
 
@@ -92,6 +94,7 @@ func TestLogin_WrongPassword(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }
 
+// 未登録のemailでログインすると401を返すことを検証
 func TestLogin_UnknownEmail(t *testing.T) {
 	router := setup(t)
 
@@ -103,6 +106,7 @@ func TestLogin_UnknownEmail(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }
 
+// refresh_tokenで新しいトークンに更新でき、トークンがローテーションされることを検証
 func TestRefresh_Success(t *testing.T) {
 	router := setup(t)
 
@@ -127,6 +131,7 @@ func TestRefresh_Success(t *testing.T) {
 	assert.NotEqual(t, loginRes.RefreshToken, res.RefreshToken)
 }
 
+// ローテーション済みの古いrefresh_tokenを再利用すると401を返すことを検証
 func TestRefresh_RotatedTokenCannotBeReused(t *testing.T) {
 	router := setup(t)
 
@@ -141,11 +146,11 @@ func TestRefresh_RotatedTokenCannotBeReused(t *testing.T) {
 	first := postJSON(t, router, "/refresh", dto.RefreshRequest{RefreshToken: loginRes.RefreshToken})
 	require.Equal(t, http.StatusOK, first.Code)
 
-	// ローテーション済みの古いrefresh_tokenは再利用できない
 	second := postJSON(t, router, "/refresh", dto.RefreshRequest{RefreshToken: loginRes.RefreshToken})
 	assert.Equal(t, http.StatusUnauthorized, second.Code)
 }
 
+// 無効なrefresh_tokenでのリフレッシュは401を返すことを検証
 func TestRefresh_InvalidToken(t *testing.T) {
 	router := setup(t)
 
@@ -156,6 +161,7 @@ func TestRefresh_InvalidToken(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }
 
+// refresh_tokenでログアウトすると204を返すことを検証
 func TestLogout_Success(t *testing.T) {
 	router := setup(t)
 
@@ -174,6 +180,7 @@ func TestLogout_Success(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, w.Code)
 }
 
+// 失効済みのrefresh_tokenで再度ログアウトすると401を返すことを検証
 func TestLogout_RevokedTokenCannotBeReused(t *testing.T) {
 	router := setup(t)
 
@@ -188,11 +195,11 @@ func TestLogout_RevokedTokenCannotBeReused(t *testing.T) {
 	first := postJSON(t, router, "/logout", dto.LogoutRequest{RefreshToken: loginRes.RefreshToken})
 	require.Equal(t, http.StatusNoContent, first.Code)
 
-	// 失効済みのrefresh_tokenでの再ログアウトは401
 	second := postJSON(t, router, "/logout", dto.LogoutRequest{RefreshToken: loginRes.RefreshToken})
 	assert.Equal(t, http.StatusUnauthorized, second.Code)
 }
 
+// 無効なrefresh_tokenでのログアウトは401を返すことを検証
 func TestLogout_InvalidToken(t *testing.T) {
 	router := setup(t)
 
@@ -203,6 +210,7 @@ func TestLogout_InvalidToken(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }
 
+// ログインしてアクセストークン・リフレッシュトークンのペアを取得するヘルパー
 func loginAndGetTokens(t *testing.T, router http.Handler, email string, password string) dto.LoginResponse {
 	w := postJSON(t, router, "/login", dto.LoginRequest{
 		Email:    email,

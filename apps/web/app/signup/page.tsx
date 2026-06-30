@@ -1,18 +1,18 @@
-"use client"
+'use client'
 
-import { useActionState, useState } from "react"
-import { Mail, MessageCircle, ArrowLeft } from "lucide-react"
-import { signup } from "@/actions/auth"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { PasswordInput } from "@/components/ui/password-input"
+import { useActionState, useState } from 'react'
+import { Mail, MessageCircle, ArrowLeft } from 'lucide-react'
+import { signup } from '@/actions/auth'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 
-type Step = "select" | "email"
+type Step = 'select' | 'email'
 
 export default function SignupPage() {
-  const [step, setStep] = useState<Step>("select")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [step, setStep] = useState<Step>('select')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [state, formAction, isPending] = useActionState(signup, null) //stateの初期値をnullに設定
 
   return (
@@ -27,7 +27,7 @@ export default function SignupPage() {
         </span>
       </div>
 
-      {step === "select" ? (
+      {step === 'select' ? (
         /* ===== ステップ1: 登録方法の選択 ===== */
         <div className="flex w-full max-w-md flex-col items-center">
           <div className="flex w-full flex-col gap-4">
@@ -43,7 +43,7 @@ export default function SignupPage() {
             {/* メールアドレス */}
             <Button
               type="button"
-              onClick={() => setStep("email")}
+              onClick={() => setStep('email')}
               className="h-auto w-full gap-3 rounded-full py-4 text-base font-bold hover:opacity-90"
             >
               <Mail className="h-5 w-5" />
@@ -79,9 +79,9 @@ export default function SignupPage() {
             type="button"
             variant="ghost"
             onClick={() => {
-              setStep("select")
-              setEmail("")
-              setPassword("")
+              setStep('select')
+              setEmail('')
+              setPassword('')
             }}
             className="mb-6 h-auto gap-1.5 p-0 text-sm font-medium text-muted-foreground hover:bg-transparent hover:text-card-foreground"
           >
@@ -135,15 +135,24 @@ export default function SignupPage() {
             {/* 同意文 */}
             <p className="text-sm leading-relaxed text-muted-foreground">
               アカウント登録すると、
-              <a href="#" className="font-bold text-card-foreground hover:underline">
+              <a
+                href="#"
+                className="font-bold text-card-foreground hover:underline"
+              >
                 利用規約
               </a>
               、
-              <a href="#" className="font-bold text-card-foreground hover:underline">
+              <a
+                href="#"
+                className="font-bold text-card-foreground hover:underline"
+              >
                 プライバシーポリシー
               </a>
               、
-              <a href="#" className="font-bold text-card-foreground hover:underline">
+              <a
+                href="#"
+                className="font-bold text-card-foreground hover:underline"
+              >
                 コミュニティガイドライン
               </a>
               に同意したこととみなします。
@@ -167,7 +176,7 @@ export default function SignupPage() {
               disabled={isPending}
               className="mt-2 h-auto w-full rounded-full py-4 text-base font-bold hover:opacity-90"
             >
-              {isPending ? "登録中..." : "登録する"}
+              {isPending ? '登録中...' : '登録する'}
             </Button>
           </form>
         </div>
