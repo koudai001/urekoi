@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import Image from "next/image"
+import Image from 'next/image'
 import {
   ChevronLeft,
   MoreHorizontal,
@@ -11,9 +11,9 @@ import {
   GraduationCap,
   Users,
   Ban,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import type { Conversation } from "@/lib/conversations"
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
+import type { Conversation } from '@/lib/conversations'
 
 const pointIcons = [MapPin, GraduationCap, Users, Ban]
 
@@ -38,7 +38,7 @@ export function ChatView({
           </button>
           <span className="h-9 w-9 overflow-hidden rounded-full">
             <Image
-              src={conversation.image || "/placeholder.svg"}
+              src={conversation.image || '/placeholder.svg'}
               alt={`${conversation.name}さん`}
               width={36}
               height={36}
@@ -63,7 +63,7 @@ export function ChatView({
               className="h-20 w-20 overflow-hidden rounded-xl bg-muted"
             >
               <Image
-                src={p || "/placeholder.svg"}
+                src={p || '/placeholder.svg'}
                 alt=""
                 width={80}
                 height={80}
@@ -106,11 +106,11 @@ export function ChatView({
               <div
                 key={msg.id}
                 className={cn(
-                  "flex items-end gap-2",
-                  msg.from === "me" ? "justify-end" : "justify-start",
+                  'flex items-end gap-2',
+                  msg.from === 'me' ? 'justify-end' : 'justify-start',
                 )}
               >
-                {msg.from === "me" && (
+                {msg.from === 'me' && (
                   <span className="mb-1 shrink-0 text-[11px] text-muted-foreground">
                     {msg.time}
                   </span>
@@ -118,21 +118,21 @@ export function ChatView({
                 <div className="flex max-w-[70%] flex-col gap-1">
                   <p
                     className={cn(
-                      "rounded-2xl px-4 py-3 text-sm leading-relaxed",
-                      msg.from === "me"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-accent text-accent-foreground",
+                      'rounded-2xl px-4 py-3 text-sm leading-relaxed',
+                      msg.from === 'me'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-accent text-accent-foreground',
                     )}
                   >
                     {msg.text}
                   </p>
-                  {msg.from === "me" && msg.read && (
+                  {msg.from === 'me' && msg.read && (
                     <span className="self-end text-[11px] text-muted-foreground">
                       既読を確認
                     </span>
                   )}
                 </div>
-                {msg.from === "them" && (
+                {msg.from === 'them' && (
                   <span className="mb-1 shrink-0 text-[11px] text-muted-foreground">
                     {msg.time}
                   </span>

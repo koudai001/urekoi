@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import Image from "next/image"
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import {
   X,
   Star,
@@ -10,9 +10,9 @@ import {
   MessageCircle,
   ShieldCheck,
   Clock,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import { type Profile, tagCatalog, defaultMyTags } from "@/lib/profiles"
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { type Profile, tagCatalog, defaultMyTags } from '@/lib/profiles'
 
 export function ProfileDetailModal({
   profile,
@@ -28,13 +28,13 @@ export function ProfileDetailModal({
   useEffect(() => {
     if (!profile) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
+      if (e.key === 'Escape') onClose()
     }
-    document.addEventListener("keydown", onKey)
-    document.body.style.overflow = "hidden"
+    document.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.removeEventListener("keydown", onKey)
-      document.body.style.overflow = ""
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
     }
   }, [profile, onClose])
 
@@ -85,10 +85,10 @@ export function ProfileDetailModal({
             >
               <Star
                 className={cn(
-                  "h-5 w-5",
+                  'h-5 w-5',
                   faved
-                    ? "fill-amber-300 text-amber-300"
-                    : "text-muted-foreground",
+                    ? 'fill-amber-300 text-amber-300'
+                    : 'text-muted-foreground',
                 )}
               />
             </button>
@@ -102,7 +102,7 @@ export function ProfileDetailModal({
 
           <div className="relative aspect-[3/4] w-full bg-muted">
             <Image
-              src={profile.image || "/placeholder.svg"}
+              src={profile.image || '/placeholder.svg'}
               alt={`${profile.name}さんのプロフィール写真`}
               fill
               sizes="320px"
@@ -139,7 +139,7 @@ export function ProfileDetailModal({
             <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
               <span className="inline-flex items-center gap-1 text-muted-foreground">
                 <Clock className="h-3.5 w-3.5 text-amber-400" />
-                {profile.online === "online" ? "オンライン" : "24時間以内"}
+                {profile.online === 'online' ? 'オンライン' : '24時間以内'}
               </span>
               <span className="inline-flex items-center gap-1 text-muted-foreground">
                 <ThumbsUp className="h-3.5 w-3.5 text-primary" />? いいね！
@@ -173,7 +173,7 @@ export function ProfileDetailModal({
                 >
                   <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-muted">
                     <Image
-                      src={tag.image || "/placeholder.svg"}
+                      src={tag.image || '/placeholder.svg'}
                       alt=""
                       fill
                       sizes="56px"
@@ -198,10 +198,10 @@ export function ProfileDetailModal({
                     aria-label={`${tag.label}にいいね`}
                     aria-pressed={liked}
                     className={cn(
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors",
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors',
                       liked
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-primary hover:bg-accent",
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-primary hover:bg-accent',
                     )}
                   >
                     <ThumbsUp className="h-5 w-5" />

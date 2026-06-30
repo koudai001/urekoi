@@ -1,14 +1,14 @@
-"use client"
+'use client'
 
-import Image from "next/image"
-import { Pencil, Plus, Gift, Check } from "lucide-react"
+import Image from 'next/image'
+import { Pencil, Plus, Gift, Check } from 'lucide-react'
 
-const photos = ["/profiles/me-1.png", "/profiles/me-2.png"]
+const photos = ['/profiles/me-1.png', '/profiles/me-2.png']
 
 const tasks = [
-  { label: "顔写真2枚以上", done: false },
-  { label: "自撮りで写真追加", done: true },
-  { label: "本音マッチに1つ以上回答", done: false },
+  { label: '顔写真2枚以上', done: false },
+  { label: '自撮りで写真追加', done: true },
+  { label: '本音マッチに1つ以上回答', done: false },
 ]
 
 export function AchievementBanner() {
@@ -27,10 +27,10 @@ export function AchievementBanner() {
           <div
             key={t.label}
             className={
-              "flex items-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-medium " +
+              'flex items-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-medium ' +
               (t.done
-                ? "border-primary/40 bg-accent/60 text-primary"
-                : "border-border bg-secondary/40 text-muted-foreground")
+                ? 'border-primary/40 bg-accent/60 text-primary'
+                : 'border-border bg-secondary/40 text-muted-foreground')
             }
           >
             {t.done ? (
@@ -60,7 +60,7 @@ export function ProfilePhotos() {
         {/* メイン写真 */}
         <div className="relative h-56 w-44 overflow-hidden rounded-2xl bg-muted">
           <Image
-            src={photos[0] || "/placeholder.svg"}
+            src={photos[0] || '/placeholder.svg'}
             alt="メインのプロフィール写真"
             fill
             className="object-cover"
@@ -72,7 +72,7 @@ export function ProfilePhotos() {
         <div className="flex flex-wrap gap-3">
           <div className="relative h-28 w-28 overflow-hidden rounded-2xl bg-muted">
             <Image
-              src={photos[1] || "/placeholder.svg"}
+              src={photos[1] || '/placeholder.svg'}
               alt="サブのプロフィール写真"
               fill
               className="object-cover"
@@ -97,11 +97,11 @@ function EditBadge({ small }: { small?: boolean }) {
     <button
       aria-label="写真を編集"
       className={
-        "absolute right-2 top-2 flex items-center justify-center rounded-full bg-card/90 text-foreground shadow transition-colors hover:bg-card " +
-        (small ? "h-7 w-7" : "h-8 w-8")
+        'absolute right-2 top-2 flex items-center justify-center rounded-full bg-card/90 text-foreground shadow transition-colors hover:bg-card ' +
+        (small ? 'h-7 w-7' : 'h-8 w-8')
       }
     >
-      <Pencil className={small ? "h-3.5 w-3.5" : "h-4 w-4"} />
+      <Pencil className={small ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
     </button>
   )
 }

@@ -1,14 +1,16 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config'
 
-import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
+import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
 
-import { playwright } from '@vitest/browser-playwright';
+import { playwright } from '@vitest/browser-playwright'
 
 const dirname =
-  typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+  typeof __dirname !== 'undefined'
+    ? __dirname
+    : path.dirname(fileURLToPath(import.meta.url))
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
@@ -27,10 +29,10 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright({}),
-            instances: [{ browser: 'chromium' }],
+            instances: [{ browser: 'chromium' }], // ブラウザモードの指定。chromium, firefox, webkitが選択可能
           },
         },
       },
     ],
   },
-});
+})

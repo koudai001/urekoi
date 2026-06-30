@@ -1,12 +1,12 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Sidebar } from "@/components/sidebar"
-import { SearchCard } from "@/components/search-card"
-import { PromoCard } from "@/components/promo-card"
-import { ProfileDetailModal } from "@/components/profile-detail-modal"
-import { searchProfiles, type Profile } from "@/lib/profiles"
-import { ThumbsUp, Search, SlidersHorizontal, ArrowDownUp } from "lucide-react"
+import { useState } from 'react'
+import { Sidebar } from '@/components/sidebar'
+import { SearchCard } from '@/components/search-card'
+import { PromoCard } from '@/components/promo-card'
+import { ProfileDetailModal } from '@/components/profile-detail-modal'
+import { searchProfiles, type Profile } from '@/lib/profiles'
+import { ThumbsUp, Search, SlidersHorizontal, ArrowDownUp } from 'lucide-react'
 
 export default function Page() {
   // 参考レイアウト：1行目の5枚目にプロモカードを差し込む

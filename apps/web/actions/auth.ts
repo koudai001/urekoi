@@ -22,9 +22,15 @@ export async function signup(
     case 201:
       return { success: true }
     case 409:
-      return { success: false, error: 'このメールアドレスは既に登録されています' }
+      return {
+        success: false,
+        error: 'このメールアドレスは既に登録されています',
+      }
     case 400:
-      return { success: false, error: res.data.error ?? '入力内容を確認してください' }
+      return {
+        success: false,
+        error: res.data.error ?? '入力内容を確認してください',
+      }
     default: {
       const _exhaustive: never = res
       return _exhaustive

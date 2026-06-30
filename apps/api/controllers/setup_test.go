@@ -1,4 +1,4 @@
-package main
+package controllers_test
 
 import (
 	"bytes"
@@ -20,7 +20,7 @@ import (
 
 // 他のすべてのテストの前に呼ばれる
 func TestMain(m *testing.M) {
-	if err := godotenv.Load(".env.test"); err != nil {
+	if err := godotenv.Load("../.env.test"); err != nil {
 		log.Fatalln("Error loading .env.test file")
 	}
 
