@@ -8,7 +8,7 @@ import {
 // ログイン不要でアクセスできるパス
 const PUBLIC_PATHS = ['/login', '/signup']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isPublicPath = PUBLIC_PATHS.includes(pathname)
 

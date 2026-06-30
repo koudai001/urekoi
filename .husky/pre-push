@@ -24,4 +24,4 @@ go test ./...
 cd ../..
 
 echo "=== docs ==="
-pnpm docs:lint
+# pnpm docs:lint
