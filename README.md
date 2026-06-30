@@ -35,9 +35,9 @@
 - golangci-lint v2(複数のlinterをまとめて実行)
 - クリーンアーキテクチャ(controllers / usecases / repositories / models)
 
-### 開発ツール
-- Husky + lint-staged(コミット時にFE: prettier/eslint、BE: gofmtを自動実行)
-- GitHub Actions(PR時にFE: format/lint/typecheck/test/build、BE: gofmt/vet/golangci-lint/testを自動実行。[.github/workflows/ci.yml](.github/workflows/ci.yml))
+### CI/CD
+- Husky + lint-staged(コミット時にFE: prettier/eslint、BE: gofmtを自動実行。pre-pushでCI相当のチェックも実行。[.husky/pre-push](.husky/pre-push))
+- GitHub Actions(PR時にFE/BEのlint・テスト・ビルド、api-client同期チェック、actionlintを実行。[.github/workflows/ci.yml](.github/workflows/ci.yml))
 
 ## ドキュメント
 - API仕様: https://koudai001.github.io/urekoi/ (ReDoc, [docs/openapi.yaml](docs/openapi.yaml)から生成)

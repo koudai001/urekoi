@@ -117,6 +117,7 @@ func (u *AuthUsecase) issueTokens(user *models.User) (string, string, error) {
 	return accessToken, rawRefreshToken, nil
 }
 
+// refresh_tokenをローテーションし、新しいaccessTokenとrefreshTokenを返す
 func (u *AuthUsecase) Refresh(rawRefreshToken string) (string, string, error) {
 	// 受け取った生トークンをハッシュ化してDBを検索
 	storedToken, err := u.authRepo.GetRefreshTokenByHash(hashRefreshToken(rawRefreshToken))
@@ -124,6 +125,7 @@ func (u *AuthUsecase) Refresh(rawRefreshToken string) (string, string, error) {
 		return "", "", ErrInvalidRefreshToken
 	}
 
+	// リフレッシュトークンの有効期限をチェック
 	if storedToken.ExpiresAt.Before(time.Now()) {
 		return "", "", ErrInvalidRefreshToken
 	}
@@ -140,6 +142,7 @@ func (u *AuthUsecase) Refresh(rawRefreshToken string) (string, string, error) {
 		return "", "", err
 	}
 
+	// 新しいリフレッシュトークンをDBに保存
 	newRefreshToken := models.RefreshToken{
 		UserID:    storedToken.UserID,
 		TokenHash: newHashedRefreshToken,
