@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4 # checkout the repository
+
+      - uses: pnpm/action-setup@v4 # setup pnpm
+
+      - uses: actions/setup-node@v4 # setup node
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile # install dependencies
+
+      - run: pnpm exec playwright install --with-deps chromium # storybookのテストでchromiumを使うために必要
+
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/api/go.mod
+
+      - name: gofmt
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - run: go vet ./...
+
+      - uses: golangci/golangci-lint-action@v6 # インストールと実行までされる
+        with:
+          version: v2.12.2
+          working-directory: apps/api
+
+      - run: go test ./...

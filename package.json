@@ -9,13 +9,16 @@
     "start": "pnpm -C apps/web start",
     "lint": "pnpm -C apps/web lint",
     "docs:lint": "redocly lint docs/openapi.yaml",
-    "docs:preview": "npx serve docs -l 4321"
+    "docs:preview": "npx serve docs -l 4321",
+    "prepare": "husky"
   },
   "dependencies": {
     "lucide-react": "^1.21.0",
     "react": "^19.2.7"
   },
   "devDependencies": {
-    "@redocly/cli": "^2.35.1"
+    "@redocly/cli": "^2.35.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8"
   }
 }
