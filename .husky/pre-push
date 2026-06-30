@@ -1,0 +1,27 @@
+set -e
+
+echo "=== frontend (apps/web) ==="
+cd apps/web
+pnpm generate:api
+git diff --exit-code -- generated
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+cd ../..
+
+echo "=== backend (apps/api) ==="
+cd apps/api
+unformatted=$(gofmt -l .)
+if [ -n "$unformatted" ]; then
+  echo "$unformatted"
+  exit 1
+fi
+go vet ./...
+golangci-lint run ./...
+go test ./...
+cd ../..
+
+echo "=== docs ==="
+pnpm docs:lint

@@ -3,14 +3,14 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { postLogin, postSignup } from '@/generated/auth/auth'
+import {
+  ACCESS_TOKEN_COOKIE_OPTIONS,
+  REFRESH_TOKEN_COOKIE_OPTIONS,
+} from '@/lib/auth'
 
 export type SignupResult = { success: false; error: string } // 成功時はredirect('/')するので返却されない
 
 export type LoginResult = { success: false; error: string } // 成功時はredirect('/')するので返却されない
-
-// BEのaccess_token/refresh_tokenの有効期限と合わせる(apps/api/usecases/auth_usecase.go)
-const ACCESS_TOKEN_MAX_AGE = 60 * 60
-const REFRESH_TOKEN_MAX_AGE = 60 * 60 * 24 * 30
 
 export async function signup(
   _prevState: SignupResult | null,
@@ -94,18 +94,6 @@ export async function login(
 // access_token/refresh_tokenをhttpOnlycookieにセットする
 async function setAuthCookies(accessToken: string, refreshToken: string) {
   const cookieStore = await cookies()
-  cookieStore.set('access_token', accessToken, {
-    httpOnly: true, //jsからアクセス不可（xss対策）
-    sameSite: 'strict', // 他サイトからのリクエストにはこのcookieを一切付けない(csrf対策)
-    secure: true, // httpsでのみ送信
-    path: '/', // ルートパス以下の全てのリクエストにcookieを付与
-    maxAge: ACCESS_TOKEN_MAX_AGE, // 有効期限を設定
-  })
-  cookieStore.set('refresh_token', refreshToken, {
-    httpOnly: true,
-    sameSite: 'strict',
-    secure: true,
-    path: '/',
-    maxAge: REFRESH_TOKEN_MAX_AGE,
-  })
+  cookieStore.set('access_token', accessToken, ACCESS_TOKEN_COOKIE_OPTIONS)
+  cookieStore.set('refresh_token', refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS)
 }

@@ -24,6 +24,11 @@ jobs:
 
       - run: pnpm exec playwright install --with-deps chromium # storybookのテストでchromiumを使うために必要
 
+      - name: api-clientがopenapi.yamlと同期しているか確認
+        run: |
+          pnpm generate:api
+          git diff --exit-code -- generated
+
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
@@ -58,3 +63,26 @@ jobs:
           working-directory: apps/api
 
       - run: go test ./...
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm docs:lint
+
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: reviewdog/action-actionlint@v1
