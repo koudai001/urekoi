@@ -52,7 +52,7 @@ jobs:
 
       - run: go vet ./...
 
-      - uses: golangci/golangci-lint-action@v6 # インストールと実行までされる
+      - uses: golangci/golangci-lint-action@v7 # インストールと実行までされる
         with:
           version: v2.12.2
           working-directory: apps/api
