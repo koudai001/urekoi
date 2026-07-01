@@ -7,6 +7,7 @@ import { PromoCard } from '@/components/promo-card'
 import { ProfileDetailModal } from '@/components/profile-detail-modal'
 import { searchProfiles, type Profile } from '@/lib/profiles'
 import { ThumbsUp, Search, SlidersHorizontal, ArrowDownUp } from 'lucide-react'
+import { logout } from '@/actions/auth'
 
 export default function Page() {
   // 参考レイアウト：1行目の5枚目にプロモカードを差し込む
@@ -25,6 +26,14 @@ export default function Page() {
           </h1>
 
           <div className="flex items-center gap-3">
+            <form action={logout}>
+              <button
+                type="submit"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                ログアウト
+              </button>
+            </form>
             <div className="relative hidden items-center sm:flex">
               <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
               <input

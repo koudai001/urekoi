@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { postRefresh } from '@/generated/auth/auth'
+import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN } from '@/lib/cookie'
 import { proxy } from './proxy'
 
 // Orval で自動生成された API クライアントをモック化
@@ -32,7 +33,9 @@ describe('proxy', () => {
 
   describe('保護パス(/)', () => {
     it('access_tokenあり → そのまま通すこと', async () => {
-      const response = await proxy(buildRequest('/', 'access_token=valid'))
+      const response = await proxy(
+        buildRequest('/', `${COOKIE_ACCESS_TOKEN}=valid`),
+      )
 
       expect(response.status).toBe(200)
     })
@@ -40,17 +43,25 @@ describe('proxy', () => {
     it('access_tokenなし・refresh成功 → そのまま通し、cookieを更新すること', async () => {
       mockRefresh(true)
 
-      const response = await proxy(buildRequest('/', 'refresh_token=valid'))
+      const response = await proxy(
+        buildRequest('/', `${COOKIE_REFRESH_TOKEN}=valid`),
+      )
 
       expect(response.status).toBe(200)
-      expect(response.cookies.get('access_token')?.value).toBe('new_access')
-      expect(response.cookies.get('refresh_token')?.value).toBe('new_refresh')
+      expect(response.cookies.get(COOKIE_ACCESS_TOKEN)?.value).toBe(
+        'new_access',
+      )
+      expect(response.cookies.get(COOKIE_REFRESH_TOKEN)?.value).toBe(
+        'new_refresh',
+      )
     })
 
     it('access_tokenなし・refresh失敗 → /loginにリダイレクトすること', async () => {
       mockRefresh(false)
 
-      const response = await proxy(buildRequest('/', 'refresh_token=invalid'))
+      const response = await proxy(
+        buildRequest('/', `${COOKIE_REFRESH_TOKEN}=invalid`),
+      )
 
       expect(response.status).toBe(307)
       expect(response.headers.get('location')).toBe(
@@ -70,7 +81,9 @@ describe('proxy', () => {
 
   describe('公開パス(/login)', () => {
     it('access_tokenあり → /にリダイレクトすること', async () => {
-      const response = await proxy(buildRequest('/login', 'access_token=valid'))
+      const response = await proxy(
+        buildRequest('/login', `${COOKIE_ACCESS_TOKEN}=valid`),
+      )
 
       expect(response.status).toBe(307)
       expect(response.headers.get('location')).toBe(`${process.env.APP_URL}/`)
@@ -80,20 +93,24 @@ describe('proxy', () => {
       mockRefresh(true)
 
       const response = await proxy(
-        buildRequest('/login', 'refresh_token=valid'),
+        buildRequest('/login', `${COOKIE_REFRESH_TOKEN}=valid`),
       )
 
       expect(response.status).toBe(307)
       expect(response.headers.get('location')).toBe(`${process.env.APP_URL}/`)
-      expect(response.cookies.get('access_token')?.value).toBe('new_access')
-      expect(response.cookies.get('refresh_token')?.value).toBe('new_refresh')
+      expect(response.cookies.get(COOKIE_ACCESS_TOKEN)?.value).toBe(
+        'new_access',
+      )
+      expect(response.cookies.get(COOKIE_REFRESH_TOKEN)?.value).toBe(
+        'new_refresh',
+      )
     })
 
     it('access_tokenなし・refresh失敗 → そのまま通し、cookieはセットしないこと', async () => {
       mockRefresh(false)
 
       const response = await proxy(
-        buildRequest('/login', 'refresh_token=invalid'),
+        buildRequest('/login', `${COOKIE_REFRESH_TOKEN}=invalid`),
       )
 
       expect(response.status).toBe(200)
