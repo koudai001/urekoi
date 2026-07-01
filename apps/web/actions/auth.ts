@@ -2,11 +2,13 @@
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { postLogin, postSignup } from '@/generated/auth/auth'
+import { postLogin, postLogout, postSignup } from '@/generated/auth/auth'
 import {
   ACCESS_TOKEN_COOKIE_OPTIONS,
+  COOKIE_ACCESS_TOKEN,
+  COOKIE_REFRESH_TOKEN,
   REFRESH_TOKEN_COOKIE_OPTIONS,
-} from '@/lib/auth'
+} from '@/lib/cookie'
 
 export type SignupResult = { success: false; error: string } // 成功時はredirect('/')するので返却されない
 
@@ -91,9 +93,27 @@ export async function login(
   }
 }
 
+// クッキーの削除とログアウトAPIの呼び出し・ログインページへのリダイレクトを行う
+export async function logout() {
+  const cookieStore = await cookies()
+  const refreshToken = cookieStore.get(COOKIE_REFRESH_TOKEN)?.value ?? ''
+
+  if (refreshToken) {
+    await postLogout({ refresh_token: refreshToken })
+  }
+
+  cookieStore.delete(COOKIE_ACCESS_TOKEN)
+  cookieStore.delete(COOKIE_REFRESH_TOKEN)
+  redirect('/login')
+}
+
 // access_token/refresh_tokenをhttpOnlycookieにセットする
 async function setAuthCookies(accessToken: string, refreshToken: string) {
   const cookieStore = await cookies()
-  cookieStore.set('access_token', accessToken, ACCESS_TOKEN_COOKIE_OPTIONS)
-  cookieStore.set('refresh_token', refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS)
+  cookieStore.set(COOKIE_ACCESS_TOKEN, accessToken, ACCESS_TOKEN_COOKIE_OPTIONS)
+  cookieStore.set(
+    COOKIE_REFRESH_TOKEN,
+    refreshToken,
+    REFRESH_TOKEN_COOKIE_OPTIONS,
+  )
 }

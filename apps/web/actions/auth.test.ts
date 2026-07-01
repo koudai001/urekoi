@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { postLogin, postSignup } from '@/generated/auth/auth'
-import { login, signup } from './auth'
+import { postLogin, postLogout, postSignup } from '@/generated/auth/auth'
+import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN } from '@/lib/cookie'
+import { login, logout, signup } from './auth'
 
 // Next.js のナビゲーションをモック化
 vi.mock('next/navigation', () => ({
@@ -20,11 +21,16 @@ vi.mock('next/headers', () => ({
 // Orval で自動生成された API クライアントをモック化
 vi.mock('@/generated/auth/auth', () => ({
   postLogin: vi.fn(),
+  postLogout: vi.fn(),
   postSignup: vi.fn(),
 }))
 
 describe('Auth Server Actions', () => {
-  let mockCookieStore: { set: ReturnType<typeof vi.fn> }
+  let mockCookieStore: {
+    set: ReturnType<typeof vi.fn>
+    get: ReturnType<typeof vi.fn>
+    delete: ReturnType<typeof vi.fn>
+  }
 
   // 各テストの前にモックをリセット
   beforeEach(() => {
@@ -33,6 +39,8 @@ describe('Auth Server Actions', () => {
     // ダミーのクッキーストアを用意
     mockCookieStore = {
       set: vi.fn(),
+      get: vi.fn(),
+      delete: vi.fn(),
     }
     vi.mocked(cookies).mockResolvedValue(
       mockCookieStore as unknown as Awaited<ReturnType<typeof cookies>>, // 型を合わせるために unknown を経由
@@ -57,7 +65,7 @@ describe('Auth Server Actions', () => {
 
       // クッキーが正しい設定で保存されたか検証
       expect(mockCookieStore.set).toHaveBeenCalledWith(
-        'access_token',
+        COOKIE_ACCESS_TOKEN,
         'mock_access',
         expect.objectContaining({
           // クッキーのオプションの一部を検証
@@ -67,7 +75,7 @@ describe('Auth Server Actions', () => {
         }),
       )
       expect(mockCookieStore.set).toHaveBeenCalledWith(
-        'refresh_token',
+        COOKIE_REFRESH_TOKEN,
         'mock_refresh',
         expect.objectContaining({
           httpOnly: true,
@@ -148,7 +156,7 @@ describe('Auth Server Actions', () => {
       await expect(signup(null, formData)).rejects.toThrow('NEXT_REDIRECT')
 
       expect(mockCookieStore.set).toHaveBeenCalledWith(
-        'access_token',
+        COOKIE_ACCESS_TOKEN,
         'new_access',
         expect.objectContaining({
           httpOnly: true,
@@ -157,7 +165,7 @@ describe('Auth Server Actions', () => {
         }),
       )
       expect(mockCookieStore.set).toHaveBeenCalledWith(
-        'refresh_token',
+        COOKIE_REFRESH_TOKEN,
         'new_refresh',
         expect.objectContaining({
           httpOnly: true,
@@ -218,6 +226,51 @@ describe('Auth Server Actions', () => {
         error: '入力内容を確認してください',
       })
       expect(postSignup).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('logout', () => {
+    it('【refresh_tokenあり】BEのlogoutを呼び、cookie削除後に/loginにリダイレクトすること', async () => {
+      mockCookieStore.get.mockReturnValue({ value: 'mock_refresh' })
+      vi.mocked(postLogout).mockResolvedValue({
+        status: 204,
+        data: undefined,
+      } as Awaited<ReturnType<typeof postLogout>>)
+
+      await expect(logout()).rejects.toThrow('NEXT_REDIRECT')
+
+      expect(postLogout).toHaveBeenCalledWith({ refresh_token: 'mock_refresh' })
+      expect(mockCookieStore.delete).toHaveBeenCalledWith(COOKIE_ACCESS_TOKEN)
+      expect(mockCookieStore.delete).toHaveBeenCalledWith(COOKIE_REFRESH_TOKEN)
+      expect(redirect).toHaveBeenCalledWith('/login')
+    })
+
+    it('【refresh_token無効・401】BEがエラーを返してもcookie削除・/loginリダイレクトすること', async () => {
+      mockCookieStore.get.mockReturnValue({ value: 'invalid_refresh' })
+      vi.mocked(postLogout).mockResolvedValue({
+        status: 401,
+        data: { error: 'invalid refresh token' },
+      } as Awaited<ReturnType<typeof postLogout>>)
+
+      await expect(logout()).rejects.toThrow('NEXT_REDIRECT')
+
+      expect(postLogout).toHaveBeenCalledWith({
+        refresh_token: 'invalid_refresh',
+      })
+      expect(mockCookieStore.delete).toHaveBeenCalledWith(COOKIE_ACCESS_TOKEN)
+      expect(mockCookieStore.delete).toHaveBeenCalledWith(COOKIE_REFRESH_TOKEN)
+      expect(redirect).toHaveBeenCalledWith('/login')
+    })
+
+    it('【refresh_tokenなし】BEのlogoutを呼ばず、cookie削除後に/loginにリダイレクトすること', async () => {
+      mockCookieStore.get.mockReturnValue(undefined)
+
+      await expect(logout()).rejects.toThrow('NEXT_REDIRECT')
+
+      expect(postLogout).not.toHaveBeenCalled()
+      expect(mockCookieStore.delete).toHaveBeenCalledWith(COOKIE_ACCESS_TOKEN)
+      expect(mockCookieStore.delete).toHaveBeenCalledWith(COOKIE_REFRESH_TOKEN)
+      expect(redirect).toHaveBeenCalledWith('/login')
     })
   })
 })

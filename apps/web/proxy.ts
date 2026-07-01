@@ -2,8 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { postRefresh } from '@/generated/auth/auth'
 import {
   ACCESS_TOKEN_COOKIE_OPTIONS,
+  COOKIE_ACCESS_TOKEN,
+  COOKIE_REFRESH_TOKEN,
   REFRESH_TOKEN_COOKIE_OPTIONS,
-} from '@/lib/auth'
+} from '@/lib/cookie'
 
 // ログイン不要でアクセスできるパス
 const PUBLIC_PATHS = ['/login', '/signup']
@@ -13,13 +15,13 @@ export async function proxy(request: NextRequest) {
   const isPublicPath = PUBLIC_PATHS.includes(pathname)
 
   // ログイン済みかどうかの判定はaccess_tokenの有無で行う
-  let isAuthenticated = request.cookies.has('access_token')
+  let isAuthenticated = request.cookies.has(COOKIE_ACCESS_TOKEN)
   let refreshedTokens: { accessToken: string; refreshToken: string } | null =
     null
 
   // access_tokenが無い(切れている)場合はrefresh_tokenで裏更新を試みる
   if (!isAuthenticated) {
-    const refreshToken = request.cookies.get('refresh_token')?.value
+    const refreshToken = request.cookies.get(COOKIE_REFRESH_TOKEN)?.value
     if (refreshToken) {
       refreshedTokens = await refresh(refreshToken)
       isAuthenticated = refreshedTokens !== null
@@ -64,12 +66,12 @@ function setAuthCookies(
   tokens: { accessToken: string; refreshToken: string },
 ) {
   response.cookies.set(
-    'access_token',
+    COOKIE_ACCESS_TOKEN,
     tokens.accessToken,
     ACCESS_TOKEN_COOKIE_OPTIONS,
   )
   response.cookies.set(
-    'refresh_token',
+    COOKIE_REFRESH_TOKEN,
     tokens.refreshToken,
     REFRESH_TOKEN_COOKIE_OPTIONS,
   )
