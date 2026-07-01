@@ -1,0 +1,54 @@
+version: "1"
+projects:
+  - name: urekoi
+    environments:
+      - name: Production
+        services:
+          - type: web
+            name: api
+            runtime: go
+            repo: https://github.com/koudai001/urekoi
+            plan: free
+            envVars:
+              - key: FE_URL
+                sync: false
+              - key: API_DOMAIN
+                sync: false
+              - key: GO_ENV
+                sync: false
+              - key: SECRET
+                sync: false
+              - key: POSTGRES_HOST
+                fromDatabase:
+                  name: db
+                  property: host
+              - key: POSTGRES_PORT
+                sync: false
+              - key: POSTGRES_DB
+                sync: false
+              - key: POSTGRES_PASSWORD
+                fromDatabase:
+                  name: db
+                  property: password
+              - key: POSTGRES_USER
+                sync: false
+              - key: PORT
+                sync: false
+            region: singapore
+            buildCommand: go build -tags netgo -ldflags '-s -w' -o app && go run ./migrations/migration.go
+            startCommand: ./app
+            healthCheckPath: /health
+            autoDeployTrigger: checksPass
+            rootDir: apps/api
+            previews:
+              generation: automatic
+        databases:
+          - name: db
+            databaseName: db_amjd
+            user: db_amjd_user
+            plan: free
+            region: singapore
+            ipAllowList:
+              - source: 0.0.0.0/0
+                description: everywhere
+            postgresMajorVersion: "18"
