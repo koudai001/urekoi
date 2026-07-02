@@ -38,6 +38,17 @@
 ### CI/CD
 - Husky + lint-staged(コミット時にFE: prettier/eslint、BE: gofmtを自動実行。pre-pushでCI相当のチェックも実行。[.husky/pre-push](.husky/pre-push))
 - GitHub Actions(PR時にFE/BEのlint・テスト・ビルド、api-client同期チェック、actionlintを実行。[.github/workflows/ci.yml](.github/workflows/ci.yml))
+- Render(GoのAPIサーバー。mainへのpush + CI通過で自動デプロイ)
+- Vercel(Next.jsフロントエンド。mainへのpush + CI通過で自動デプロイ)
+
+## インフラ
+
+### 検証環境
+- フロントエンド: https://v0-ui-chi-six.vercel.app (Vercel)
+- APIサーバー: Render (URLは非公開)
+- DB: Render PostgreSQL
+
+本番環境はAWS想定。
 
 ## ドキュメント
 - API仕様: https://koudai001.github.io/urekoi/ (ReDoc, [docs/openapi.yaml](docs/openapi.yaml)から生成)

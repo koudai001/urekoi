@@ -9,6 +9,7 @@
     "start": "pnpm -C apps/web start",
     "lint": "pnpm -C apps/web lint",
     "docs:lint": "redocly lint docs/openapi.yaml",
+    "docs:build": "redocly build-docs docs/openapi.yaml -o docs/index.html",
     "docs:preview": "npx serve docs -l 4321",
     "prepare": "husky"
   },
