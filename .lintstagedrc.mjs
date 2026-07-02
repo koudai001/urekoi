@@ -15,4 +15,7 @@ export default {
   'apps/api/**/*.go': (files) => {
     return [`gofmt -l -w ${files.join(' ')}`]
   },
+  'docs/openapi.yaml': () => {
+    return ['pnpm docs:build', 'git add docs/index.html']
+  },
 }
