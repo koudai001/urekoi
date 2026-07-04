@@ -162,7 +162,7 @@ paths:
         '200':
           description: 退会成功
 
-  /profile:
+  /myprofile:
     get:
       tags: [profile]
       summary: 自分のプロフィール取得
@@ -182,18 +182,40 @@ paths:
         '200':
           description: 更新成功
 
-  /profiles:
+  /search/all:
     get:
       tags: [search]
       summary: 相手一覧取得
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: 取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProfileSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: 登録済みプロフィールが1件もない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: no profiles found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
-  /profiles/{id}:
+  /search/all/partner/{id}:
     get:
       tags: [search]
       summary: 相手詳細取得
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -203,6 +225,22 @@ paths:
       responses:
         '200':
           description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: プロフィールが見つからない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: profile not found
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /likes:
     post:
@@ -249,6 +287,20 @@ paths:
           description: 送信成功
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Unauthorized:
+      description: 未認証
+    InternalServerError:
+      description: サーバー内部エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
     SignupRequest:
       type: object
@@ -321,6 +373,77 @@ components:
         refresh_token:
           type: string
           example: <refresh token>
+    ProfileSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        nickname:
+          type: string
+          example: たろう
+        age:
+          type: integer
+          example: 42
+        prefecture:
+          type: string
+          example: 東京都
+        image:
+          type: string
+          example: /placeholder.svg
+        is_new:
+          type: boolean
+          example: true
+        online:
+          type: string
+          example: online
+    ProfileDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        nickname:
+          type: string
+          example: たろう
+        age:
+          type: integer
+          example: 42
+        prefecture:
+          type: string
+          example: 東京都
+        bio:
+          type: string
+          example: よろしくお願いします
+        is_new:
+          type: boolean
+          example: true
+        online:
+          type: string
+          example: online
+        images:
+          type: array
+          items:
+            type: string
+          example: [/placeholder.svg]
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagSummary'
+    TagSummary:
+      type: object
+      properties:
+        label:
+          type: string
+          example: 甘いもの大好き
+        category:
+          type: string
+          example: グルメ・お酒
+        image_url:
+          type: string
+          example: /tags/sweets.png
     Error:
       type: object
       properties:

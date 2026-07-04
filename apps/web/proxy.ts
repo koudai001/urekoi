@@ -33,9 +33,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // 認証済みかつログインページやサインアップページへのアクセスはトップページにリダイレクト
+  // 認証済みかつログインページやサインアップページへのアクセスは検索ページにリダイレクト
   if (isAuthenticated && isPublicPath) {
-    const response = NextResponse.redirect(new URL('/', request.url))
+    const response = NextResponse.redirect(new URL('/search/all', request.url))
     if (refreshedTokens) setAuthCookies(response, refreshedTokens)
     return response
   }

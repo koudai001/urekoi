@@ -85,7 +85,7 @@ describe('Auth Server Actions', () => {
       )
 
       // リダイレクト先を確認
-      expect(redirect).toHaveBeenCalledWith('/')
+      expect(redirect).toHaveBeenCalledWith('/search/all')
     })
 
     it('【401 エラー】認証失敗時は適切なエラーメッセージを返すこと', async () => {
@@ -173,7 +173,7 @@ describe('Auth Server Actions', () => {
           maxAge: 60 * 60 * 24 * 30, // 30日
         }),
       )
-      expect(redirect).toHaveBeenCalledWith('/')
+      expect(redirect).toHaveBeenCalledWith('/search/all')
     })
 
     it('【409 エラー】既に登録済みのメールアドレスの場合、エラーを返すこと', async () => {

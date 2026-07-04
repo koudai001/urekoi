@@ -5,34 +5,59 @@
  * 熟女専門マッチングアプリ urekoi のAPI仕様
  * OpenAPI spec version: 0.1.0
  */
+import type {
+  Error,
+  InternalServerErrorResponse,
+  ProfileDetail,
+  ProfileSummary,
+  UnauthorizedResponse
+} from '../urekoiAPI.schemas';
+
 import { customFetch } from '../../lib/api/custom-fetch';
 
-export type getProfilesResponse200 = {
-  data: void
+export type getSearchAllResponse200 = {
+  data: ProfileSummary[]
   status: 200
 }
 
-export type getProfilesResponseSuccess = (getProfilesResponse200) & {
+export type getSearchAllResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getSearchAllResponse404 = {
+  data: Error
+  status: 404
+}
+
+export type getSearchAllResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type getSearchAllResponseSuccess = (getSearchAllResponse200) & {
   headers: Headers;
 };
-;
+export type getSearchAllResponseError = (getSearchAllResponse401 | getSearchAllResponse404 | getSearchAllResponse500) & {
+  headers: Headers;
+};
 
-export type getProfilesResponse = (getProfilesResponseSuccess)
+export type getSearchAllResponse = (getSearchAllResponseSuccess | getSearchAllResponseError)
 
-export const getGetProfilesUrl = () => {
-
-
+export const getGetSearchAllUrl = () => {
 
 
-  return `/profiles`
+
+
+  return `/search/all`
 }
 
 /**
  * @summary 相手一覧取得
  */
-export const getProfiles = async ( options?: RequestInit): Promise<getProfilesResponse> => {
+export const getSearchAll = async ( options?: RequestInit): Promise<getSearchAllResponse> => {
 
-  return customFetch<getProfilesResponse>(getGetProfilesUrl(),
+  return customFetch<getSearchAllResponse>(getGetSearchAllUrl(),
   {
     ...options,
     method: 'GET'
@@ -42,32 +67,49 @@ export const getProfiles = async ( options?: RequestInit): Promise<getProfilesRe
 );}
 
 
-export type getProfilesIdResponse200 = {
-  data: void
+export type getSearchAllPartnerIdResponse200 = {
+  data: ProfileDetail
   status: 200
 }
 
-export type getProfilesIdResponseSuccess = (getProfilesIdResponse200) & {
+export type getSearchAllPartnerIdResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getSearchAllPartnerIdResponse404 = {
+  data: Error
+  status: 404
+}
+
+export type getSearchAllPartnerIdResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type getSearchAllPartnerIdResponseSuccess = (getSearchAllPartnerIdResponse200) & {
   headers: Headers;
 };
-;
+export type getSearchAllPartnerIdResponseError = (getSearchAllPartnerIdResponse401 | getSearchAllPartnerIdResponse404 | getSearchAllPartnerIdResponse500) & {
+  headers: Headers;
+};
 
-export type getProfilesIdResponse = (getProfilesIdResponseSuccess)
+export type getSearchAllPartnerIdResponse = (getSearchAllPartnerIdResponseSuccess | getSearchAllPartnerIdResponseError)
 
-export const getGetProfilesIdUrl = (id: number,) => {
-
-
+export const getGetSearchAllPartnerIdUrl = (id: number,) => {
 
 
-  return `/profiles/${id}`
+
+
+  return `/search/all/partner/${id}`
 }
 
 /**
  * @summary 相手詳細取得
  */
-export const getProfilesId = async (id: number, options?: RequestInit): Promise<getProfilesIdResponse> => {
+export const getSearchAllPartnerId = async (id: number, options?: RequestInit): Promise<getSearchAllPartnerIdResponse> => {
 
-  return customFetch<getProfilesIdResponse>(getGetProfilesIdUrl(id),
+  return customFetch<getSearchAllPartnerIdResponse>(getGetSearchAllPartnerIdUrl(id),
   {
     ...options,
     method: 'GET'

@@ -41,7 +41,45 @@ export interface LogoutRequest {
   refresh_token: string;
 }
 
+export interface ProfileSummary {
+  id?: number;
+  nickname?: string;
+  age?: number;
+  prefecture?: string;
+  image?: string;
+  is_new?: boolean;
+  online?: string;
+}
+
+export interface TagSummary {
+  label?: string;
+  category?: string;
+  image_url?: string;
+}
+
+export interface ProfileDetail {
+  id?: number;
+  nickname?: string;
+  age?: number;
+  prefecture?: string;
+  bio?: string;
+  is_new?: boolean;
+  online?: string;
+  images?: string[];
+  tags?: TagSummary[];
+}
+
 export interface Error {
   error?: string;
 }
+
+/**
+ * 未認証
+ */
+export type UnauthorizedResponse = void;
+
+/**
+ * サーバー内部エラー
+ */
+export type InternalServerErrorResponse = Error;
 
