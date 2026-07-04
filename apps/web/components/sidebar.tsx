@@ -28,7 +28,7 @@ const mainNav: NavItem[] = [
   { label: '本日限定', icon: CalendarDays },
   { label: 'おすすめ', icon: LayoutGrid },
   { label: '本音マッチ', icon: Heart },
-  { label: '検索', icon: Search, href: '/' },
+  { label: '検索', icon: Search, href: '/search/all' },
   { label: 'イベント', icon: Sparkles },
   { label: 'クエスチョン', icon: MessageCircleQuestion },
   { label: 'マイタグ', icon: Hash },

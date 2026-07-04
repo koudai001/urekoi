@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"api/controllers"
+	"api/middlewares"
 	"api/repositories"
 	"api/usecases"
 
@@ -18,6 +19,10 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	authUsecase := usecases.NewAuthUsecase(authRepo)
 	authController := controllers.NewAuthController(authUsecase)
 
+	profileRepo := repositories.NewProfileRepository(db)
+	searchUsecase := usecases.NewSearchUsecase(profileRepo)
+	searchController := controllers.NewSearchController(searchUsecase)
+
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
@@ -26,6 +31,11 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	router.POST("/login", authController.Login)
 	router.POST("/refresh", authController.Refresh)
 	router.POST("/logout", authController.Logout)
+
+	searchRouter := router.Group("/search")
+	searchRouter.Use(middlewares.AuthRequired(authUsecase))
+	searchRouter.GET("/all", searchController.ListProfiles)
+	searchRouter.GET("/all/partner/:id", searchController.GetProfileDetail)
 
 	return router
 }

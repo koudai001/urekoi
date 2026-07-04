@@ -16,8 +16,8 @@ erDiagram
         varchar nickname "NOT NULL"
         smallint age "NOT NULL"
         smallint prefecture_code FK "NOT NULL Prefecture.ID"
-        text introduction
-        timestamptz created_at "NOT NULL DEFAULT now()"
+        text bio
+        timestamptz created_at "NOT NULL DEFAULT now() NEWバッジ判定に使用(登録n日以内なら新着、専用カラムは持たない)"
         timestamptz updated_at "NOT NULL DEFAULT now()"
     }
     PROFILE_IMAGE {
@@ -31,6 +31,19 @@ erDiagram
     PREFECTURE {
         smallint id PK "JIS X 0401コード 1〜47"
         varchar name "NOT NULL 都道府県名 例: 東京都"
+    }
+    TAG {
+        bigint id PK
+        varchar label "NOT NULL UNIQUE タグ名 例: 甘いもの大好き"
+        varchar category "NOT NULL カテゴリ 例: グルメ・お酒"
+        varchar image_url "NOT NULL"
+    }
+    PROFILE_TAG {
+        bigint id PK
+        bigint profile_id FK "NOT NULL Profile.ID"
+        bigint tag_id FK "NOT NULL Tag.ID"
+        smallint sort_order "NOT NULL 表示順"
+        timestamptz created_at "NOT NULL DEFAULT now()"
     }
     LIKE {
         bigint id PK
@@ -62,6 +75,8 @@ erDiagram
     USER ||--o| PROFILE : has
     PREFECTURE ||--o{ PROFILE : "located in"
     PROFILE ||--o{ PROFILE_IMAGE : has
+    PROFILE ||--o{ PROFILE_TAG : has
+    TAG ||--o{ PROFILE_TAG : "tagged in"
     USER ||--o{ LIKE : sends
     USER ||--o{ LIKE : receives
     USER ||--o{ MATCH : "as user1"

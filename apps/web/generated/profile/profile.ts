@@ -7,32 +7,32 @@
  */
 import { customFetch } from '../../lib/api/custom-fetch';
 
-export type getProfileResponse200 = {
+export type getMyprofileResponse200 = {
   data: void
   status: 200
 }
 
-export type getProfileResponseSuccess = (getProfileResponse200) & {
+export type getMyprofileResponseSuccess = (getMyprofileResponse200) & {
   headers: Headers;
 };
 ;
 
-export type getProfileResponse = (getProfileResponseSuccess)
+export type getMyprofileResponse = (getMyprofileResponseSuccess)
 
-export const getGetProfileUrl = () => {
-
-
+export const getGetMyprofileUrl = () => {
 
 
-  return `/profile`
+
+
+  return `/myprofile`
 }
 
 /**
  * @summary 自分のプロフィール取得
  */
-export const getProfile = async ( options?: RequestInit): Promise<getProfileResponse> => {
+export const getMyprofile = async ( options?: RequestInit): Promise<getMyprofileResponse> => {
 
-  return customFetch<getProfileResponse>(getGetProfileUrl(),
+  return customFetch<getMyprofileResponse>(getGetMyprofileUrl(),
   {
     ...options,
     method: 'GET'
@@ -42,32 +42,32 @@ export const getProfile = async ( options?: RequestInit): Promise<getProfileResp
 );}
 
 
-export type postProfileResponse201 = {
+export type postMyprofileResponse201 = {
   data: void
   status: 201
 }
 
-export type postProfileResponseSuccess = (postProfileResponse201) & {
+export type postMyprofileResponseSuccess = (postMyprofileResponse201) & {
   headers: Headers;
 };
 ;
 
-export type postProfileResponse = (postProfileResponseSuccess)
+export type postMyprofileResponse = (postMyprofileResponseSuccess)
 
-export const getPostProfileUrl = () => {
-
-
+export const getPostMyprofileUrl = () => {
 
 
-  return `/profile`
+
+
+  return `/myprofile`
 }
 
 /**
  * @summary プロフィール作成
  */
-export const postProfile = async ( options?: RequestInit): Promise<postProfileResponse> => {
+export const postMyprofile = async ( options?: RequestInit): Promise<postMyprofileResponse> => {
 
-  return customFetch<postProfileResponse>(getPostProfileUrl(),
+  return customFetch<postMyprofileResponse>(getPostMyprofileUrl(),
   {
     ...options,
     method: 'POST'
@@ -77,32 +77,32 @@ export const postProfile = async ( options?: RequestInit): Promise<postProfileRe
 );}
 
 
-export type putProfileResponse200 = {
+export type putMyprofileResponse200 = {
   data: void
   status: 200
 }
 
-export type putProfileResponseSuccess = (putProfileResponse200) & {
+export type putMyprofileResponseSuccess = (putMyprofileResponse200) & {
   headers: Headers;
 };
 ;
 
-export type putProfileResponse = (putProfileResponseSuccess)
+export type putMyprofileResponse = (putMyprofileResponseSuccess)
 
-export const getPutProfileUrl = () => {
-
-
+export const getPutMyprofileUrl = () => {
 
 
-  return `/profile`
+
+
+  return `/myprofile`
 }
 
 /**
  * @summary プロフィール更新
  */
-export const putProfile = async ( options?: RequestInit): Promise<putProfileResponse> => {
+export const putMyprofile = async ( options?: RequestInit): Promise<putMyprofileResponse> => {
 
-  return customFetch<putProfileResponse>(getPutProfileUrl(),
+  return customFetch<putMyprofileResponse>(getPutMyprofileUrl(),
   {
     ...options,
     method: 'PUT'

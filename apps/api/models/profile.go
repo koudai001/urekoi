@@ -10,7 +10,7 @@ type Profile struct {
 	Age            int16      `gorm:"not null"`
 	PrefectureCode int16      `gorm:"not null"`
 	Prefecture     Prefecture `gorm:"foreignKey:PrefectureCode"`
-	Introduction   string     `gorm:"type:text"`
+	Bio            string     `gorm:"type:text"`
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 }

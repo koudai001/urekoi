@@ -14,14 +14,14 @@ README.mdを参照
 
 ### レイヤーの依存方針
 - `models`（Entity）: 他レイヤーに依存しない。DTOやjsonタグを持たせない（gormタグのみ）
-- `usecases`: `models`・`repositories`のインターフェースに依存。`dto`には依存しない
+- `usecases`: `models`・`repositories`のインターフェースに依存。リクエストの`dto`には依存しない
   - 引数が少ない（2〜3個程度）場合はprimitive型をそのまま使う
   - 引数が多い場合は`usecases`パッケージ内に専用のinput struct（json/bindingタグなし）を定義する
-  - dto⇔primitive/input structの変換は`controllers`が担う
+  - レスポンスの`dto`は`usecases`が直接組み立てて返してよい(一覧をmodelからdtoに詰め替える処理などを`controllers`に持たせると肥大化するため)。リクエストdto→primitive/input structの変換は`controllers`が担う
 
 ### バリデーション方針
 - リクエストの形式検証(必須・email形式・文字数など)は`validators`パッケージ(ozzo-validation)で行う。`dto`に`binding`タグは付けない(Ginの`ShouldBindJSON`はパースのみ)
-- `validators`はdto→`controllers`内で呼ぶ。`usecases`は`dto`に依存しないため呼ばない
+- `validators`はdto→`controllers`内で呼ぶ。`usecases`はリクエストの`dto`に依存しないため呼ばない
 - エラーメッセージの言語方針:
   - `validators`が返すバリデーションエラー(400): 日本語(ユーザーが直接目にするため)
   - `usecases`の業務エラー(409 email重複, 401 認証失敗など): 英語のままでよい。フロントはステータスコードで判断し、表示用の日本語文言を自前で用意する
@@ -30,7 +30,7 @@ README.mdを参照
 ## フロントエンドのコンポーネント設計
 - `components/ui/`: 業務ロジック・データ取得・業務的な状態を持たない汎用コンポーネント(shadcn由来かどうかは問わない)。表示/非表示の切り替えなど見た目だけのUI状態は持ってよい
 - `components/`直下: 機能コンポーネント。`ui/`のプリミティブを組み合わせて作る。データ取得・状態管理を持ってよい
-- ドメイン単位のサブフォルダ分けはしない(今の規模では不要)
+- コンポーネント数が増えて見通しが悪くなった機能ドメインは、`components/search/`のようにサブフォルダを切ってよい。ストーリーファイルも同じフォルダに一緒に移す
 - ストーリーファイルは対象コンポーネントと同じディレクトリに置く(例: `components/ui/button.tsx` → `components/ui/button.stories.tsx`)
 - 色・余白などのデザイン値はなるべく`app/globals.css`の`@theme`トークン(CSS変数)に寄せる。`bg-[#xxxxxx]`のような直書きの値は避け、トークン化してから使う
 
