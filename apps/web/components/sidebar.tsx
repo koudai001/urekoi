@@ -7,7 +7,6 @@ import {
   Search,
   Sparkles,
   CalendarDays,
-  MessageCircleQuestion,
   Hash,
   ThumbsUp,
   Footprints,
@@ -27,10 +26,8 @@ type NavItem = {
 const mainNav: NavItem[] = [
   { label: '本日限定', icon: CalendarDays },
   { label: 'おすすめ', icon: LayoutGrid },
-  { label: '本音マッチ', icon: Heart },
   { label: '検索', icon: Search, href: '/search/all' },
-  { label: 'イベント', icon: Sparkles },
-  { label: 'クエスチョン', icon: MessageCircleQuestion },
+  { label: '新着', icon: Sparkles },
   { label: 'マイタグ', icon: Hash },
 ]
 
@@ -38,7 +35,7 @@ const bottomNav: NavItem[] = [
   { label: 'イイネ', icon: ThumbsUp, badge: 5, href: '/likes' },
   { label: '足あと', icon: Footprints },
   { label: 'メッセージ', icon: MessageCircle, badge: 12, href: '/messages' },
-  { label: 'マイページ', icon: UserRound, badge: 79, href: '/profile' },
+  { label: 'マイページ', icon: UserRound, badge: 79, href: '/myprofile' },
 ]
 
 export function Sidebar({ active = '検索' }: { active?: string }) {

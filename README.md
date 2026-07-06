@@ -2,6 +2,8 @@
 
 熟女専門マッチングアプリ。Go + Next.js のモノレポ構成。
 
+![検索画面](apps/web/public/readme.png)
+
 ## 技術スタック
 
 ### フロントエンド
