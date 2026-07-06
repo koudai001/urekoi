@@ -8,6 +8,5 @@ type ProfileTag struct {
 	Profile   Profile `gorm:"foreignKey:ProfileID"`
 	TagID     uint64  `gorm:"not null"`
 	Tag       Tag     `gorm:"foreignKey:TagID"`
-	SortOrder int16   `gorm:"not null"`
 	CreatedAt time.Time
 }

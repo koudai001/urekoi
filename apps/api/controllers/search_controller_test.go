@@ -63,8 +63,8 @@ func TestGetProfileDetail_Success(t *testing.T) {
 
 	profile := createProfile(t, db, "detail@example.com", "テスト太郎", 30, seed.PrefectureTokyo)
 
-	tag := findTagByLabel(t, db, "甘いもの大好き")
-	createProfileTag(t, db, profile.ID, tag.ID, 1)
+	tag := findTagByLabel(t, db, "旅行")
+	createProfileTag(t, db, profile.ID, tag.ID)
 
 	accessToken := signUpAndGetAccessToken(t, router, "viewer3@example.com")
 
@@ -84,7 +84,7 @@ func TestGetProfileDetail_Success(t *testing.T) {
 		Online:     "online",
 		Images:     []string{""},
 		Tags: []dto.TagSummary{
-			{Label: "甘いもの大好き", Category: "グルメ・お酒", ImageURL: "/tags/sweets.png"},
+			{Label: "旅行", Category: "好きなこと・挑戦してみたいこと", ImageURL: ""},
 		},
 	}, res)
 }
@@ -139,7 +139,7 @@ func findTagByLabel(t *testing.T, db *gorm.DB, label string) models.Tag {
 }
 
 // プロフィールにタグを紐付けるヘルパー
-func createProfileTag(t *testing.T, db *gorm.DB, profileID uint64, tagID uint64, sortOrder int16) {
-	profileTag := models.ProfileTag{ProfileID: profileID, TagID: tagID, SortOrder: sortOrder}
+func createProfileTag(t *testing.T, db *gorm.DB, profileID uint64, tagID uint64) {
+	profileTag := models.ProfileTag{ProfileID: profileID, TagID: tagID}
 	require.NoError(t, db.Create(&profileTag).Error)
 }

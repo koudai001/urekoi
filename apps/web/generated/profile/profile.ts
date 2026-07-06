@@ -5,19 +5,45 @@
  * 熟女専門マッチングアプリ urekoi のAPI仕様
  * OpenAPI spec version: 0.1.0
  */
+import type {
+  Error,
+  InternalServerErrorResponse,
+  MyProfileRequest,
+  MyProfileResponse,
+  TagOption,
+  UnauthorizedResponse
+} from '../urekoiAPI.schemas';
+
 import { customFetch } from '../../lib/api/custom-fetch';
 
 export type getMyprofileResponse200 = {
-  data: void
+  data: MyProfileResponse
   status: 200
+}
+
+export type getMyprofileResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getMyprofileResponse404 = {
+  data: Error
+  status: 404
+}
+
+export type getMyprofileResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
 }
 
 export type getMyprofileResponseSuccess = (getMyprofileResponse200) & {
   headers: Headers;
 };
-;
+export type getMyprofileResponseError = (getMyprofileResponse401 | getMyprofileResponse404 | getMyprofileResponse500) & {
+  headers: Headers;
+};
 
-export type getMyprofileResponse = (getMyprofileResponseSuccess)
+export type getMyprofileResponse = (getMyprofileResponseSuccess | getMyprofileResponseError)
 
 export const getGetMyprofileUrl = () => {
 
@@ -43,16 +69,38 @@ export const getMyprofile = async ( options?: RequestInit): Promise<getMyprofile
 
 
 export type postMyprofileResponse201 = {
-  data: void
+  data: MyProfileResponse
   status: 201
+}
+
+export type postMyprofileResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type postMyprofileResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type postMyprofileResponse409 = {
+  data: Error
+  status: 409
+}
+
+export type postMyprofileResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
 }
 
 export type postMyprofileResponseSuccess = (postMyprofileResponse201) & {
   headers: Headers;
 };
-;
+export type postMyprofileResponseError = (postMyprofileResponse400 | postMyprofileResponse401 | postMyprofileResponse409 | postMyprofileResponse500) & {
+  headers: Headers;
+};
 
-export type postMyprofileResponse = (postMyprofileResponseSuccess)
+export type postMyprofileResponse = (postMyprofileResponseSuccess | postMyprofileResponseError)
 
 export const getPostMyprofileUrl = () => {
 
@@ -65,29 +113,51 @@ export const getPostMyprofileUrl = () => {
 /**
  * @summary プロフィール作成
  */
-export const postMyprofile = async ( options?: RequestInit): Promise<postMyprofileResponse> => {
+export const postMyprofile = async (myProfileRequest: MyProfileRequest, options?: RequestInit): Promise<postMyprofileResponse> => {
 
   return customFetch<postMyprofileResponse>(getPostMyprofileUrl(),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(myProfileRequest)
   }
 );}
 
 
 export type putMyprofileResponse200 = {
-  data: void
+  data: MyProfileResponse
   status: 200
+}
+
+export type putMyprofileResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type putMyprofileResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type putMyprofileResponse404 = {
+  data: Error
+  status: 404
+}
+
+export type putMyprofileResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
 }
 
 export type putMyprofileResponseSuccess = (putMyprofileResponse200) & {
   headers: Headers;
 };
-;
+export type putMyprofileResponseError = (putMyprofileResponse400 | putMyprofileResponse401 | putMyprofileResponse404 | putMyprofileResponse500) & {
+  headers: Headers;
+};
 
-export type putMyprofileResponse = (putMyprofileResponseSuccess)
+export type putMyprofileResponse = (putMyprofileResponseSuccess | putMyprofileResponseError)
 
 export const getPutMyprofileUrl = () => {
 
@@ -100,12 +170,59 @@ export const getPutMyprofileUrl = () => {
 /**
  * @summary プロフィール更新
  */
-export const putMyprofile = async ( options?: RequestInit): Promise<putMyprofileResponse> => {
+export const putMyprofile = async (myProfileRequest: MyProfileRequest, options?: RequestInit): Promise<putMyprofileResponse> => {
 
   return customFetch<putMyprofileResponse>(getPutMyprofileUrl(),
   {
     ...options,
-    method: 'PUT'
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(myProfileRequest)
+  }
+);}
+
+
+export type getTagsResponse200 = {
+  data: TagOption[]
+  status: 200
+}
+
+export type getTagsResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getTagsResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type getTagsResponseSuccess = (getTagsResponse200) & {
+  headers: Headers;
+};
+export type getTagsResponseError = (getTagsResponse401 | getTagsResponse500) & {
+  headers: Headers;
+};
+
+export type getTagsResponse = (getTagsResponseSuccess | getTagsResponseError)
+
+export const getGetTagsUrl = () => {
+
+
+
+
+  return `/tags`
+}
+
+/**
+ * @summary 選択可能なタグ一覧取得
+ */
+export const getTags = async ( options?: RequestInit): Promise<getTagsResponse> => {
+
+  return customFetch<getTagsResponse>(getGetTagsUrl(),
+  {
+    ...options,
+    method: 'GET'
 
 
   }

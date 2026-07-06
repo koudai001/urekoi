@@ -69,6 +69,50 @@ export interface ProfileDetail {
   tags?: TagSummary[];
 }
 
+export interface TagOption {
+  id?: number;
+  label?: string;
+  category?: string;
+}
+
+export interface MyProfileRequest {
+  nickname: string;
+  age: number;
+  prefecture_code: number;
+  bio?: string;
+  occupation?: string;
+  hometown?: string;
+  blood_type?: string;
+  mbti?: string;
+  body_type?: string;
+  education?: string;
+  holiday?: string;
+  alcohol?: string;
+  smoking?: string;
+  height_cm?: number;
+  tag_ids?: number[];
+}
+
+export interface MyProfileResponse {
+  id?: number;
+  nickname?: string;
+  age?: number;
+  prefecture_code?: number;
+  prefecture?: string;
+  bio?: string;
+  occupation?: string;
+  hometown?: string;
+  blood_type?: string;
+  mbti?: string;
+  body_type?: string;
+  education?: string;
+  holiday?: string;
+  alcohol?: string;
+  smoking?: string;
+  height_cm?: number;
+  tag_ids?: number[];
+}
+
 export interface Error {
   error?: string;
 }

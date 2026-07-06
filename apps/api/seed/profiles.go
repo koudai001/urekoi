@@ -27,7 +27,7 @@ var dummyProfiles = []dummyProfile{
 		Age:            42,
 		PrefectureCode: PrefectureTokyo,
 		Bio:            "落ち着いた時間を一緒に過ごせる方を探しています。",
-		TagLabels:      []string{"ワイン好き", "旅行好き"},
+		TagLabels:      []string{"ワイン", "旅行"},
 	},
 	{
 		Email:          "seed-yukari@urekoi.local",
@@ -35,7 +35,7 @@ var dummyProfiles = []dummyProfile{
 		Age:            38,
 		PrefectureCode: 14, // 神奈川県
 		Bio:            "年下の方とお話してみたいです。よろしくお願いします。",
-		TagLabels:      []string{"旅行好き", "食べることが大好き"},
+		TagLabels:      []string{"旅行", "焼肉"},
 	},
 	{
 		Email:          "seed-chinatsu@urekoi.local",
@@ -43,7 +43,7 @@ var dummyProfiles = []dummyProfile{
 		Age:            45,
 		PrefectureCode: PrefectureTokyo,
 		Bio:            "大人の余裕を大切にしています。素敵なご縁を。",
-		TagLabels:      []string{"漫画が好き", "寝るの幸せ"},
+		TagLabels:      []string{"読書", "映画鑑賞"},
 	},
 	{
 		Email:          "seed-aya@urekoi.local",
@@ -51,7 +51,7 @@ var dummyProfiles = []dummyProfile{
 		Age:            39,
 		PrefectureCode: 11, // 埼玉県
 		Bio:            "気軽にメッセージいただけると嬉しいです。",
-		TagLabels:      []string{"旅行好き", "ディズニー好き"},
+		TagLabels:      []string{"旅行", "映画鑑賞"},
 	},
 	{
 		Email:          "seed-mai@urekoi.local",
@@ -59,7 +59,7 @@ var dummyProfiles = []dummyProfile{
 		Age:            41,
 		PrefectureCode: 12, // 千葉県
 		Bio:            "ゆっくりお話できる関係が理想です。",
-		TagLabels:      []string{"寝るの幸せ", "ライブ・フェス好き"},
+		TagLabels:      []string{"読書", "スポーツ観戦"},
 	},
 	{
 		Email:          "seed-reina@urekoi.local",
@@ -67,7 +67,7 @@ var dummyProfiles = []dummyProfile{
 		Age:            38,
 		PrefectureCode: PrefectureTokyo,
 		Bio:            "感性の合う方とお会いしたいです。",
-		TagLabels:      []string{"ワイン好き", "甘いもの大好き"},
+		TagLabels:      []string{"ワイン", "スイーツ"},
 	},
 	{
 		Email:          "seed-yoshiko@urekoi.local",
@@ -75,7 +75,7 @@ var dummyProfiles = []dummyProfile{
 		Age:            46,
 		PrefectureCode: PrefectureOsaka,
 		Bio:            "一緒に色々な場所へ行ける方を探しています。",
-		TagLabels:      []string{"旅行好き", "食べることが大好き"},
+		TagLabels:      []string{"旅行", "カフェ巡り"},
 	},
 	{
 		Email:          "seed-saori@urekoi.local",
@@ -83,7 +83,7 @@ var dummyProfiles = []dummyProfile{
 		Age:            37,
 		PrefectureCode: PrefectureTokyo,
 		Bio:            "夜のお出かけが好きです。素敵な出会いを。",
-		TagLabels:      []string{"ライブ・フェス好き", "ワイン好き"},
+		TagLabels:      []string{"スポーツ観戦", "日本酒"},
 	},
 }
 
@@ -112,13 +112,13 @@ func SeedDummyProfiles(db *gorm.DB) error {
 			return err
 		}
 
-		for i, label := range dp.TagLabels {
+		for _, label := range dp.TagLabels {
 			var tag models.Tag
 			if err := db.Where(models.Tag{Label: label}).First(&tag).Error; err != nil {
 				return err
 			}
 
-			profileTag := models.ProfileTag{ProfileID: profile.ID, TagID: tag.ID, SortOrder: int16(i)}
+			profileTag := models.ProfileTag{ProfileID: profile.ID, TagID: tag.ID}
 			if err := db.Where(models.ProfileTag{ProfileID: profile.ID, TagID: tag.ID}).
 				FirstOrCreate(&profileTag).Error; err != nil {
 				return err

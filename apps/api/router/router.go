@@ -23,6 +23,10 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	searchUsecase := usecases.NewSearchUsecase(profileRepo)
 	searchController := controllers.NewSearchController(searchUsecase)
 
+	tagRepo := repositories.NewTagRepository(db)
+	tagUsecase := usecases.NewTagUsecase(tagRepo)
+	tagController := controllers.NewTagController(tagUsecase)
+
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
@@ -36,6 +40,8 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	searchRouter.Use(middlewares.AuthRequired(authUsecase))
 	searchRouter.GET("/all", searchController.ListProfiles)
 	searchRouter.GET("/all/partner/:id", searchController.GetProfileDetail)
+
+	router.GET("/tags", middlewares.AuthRequired(authUsecase), tagController.ListTags)
 
 	return router
 }

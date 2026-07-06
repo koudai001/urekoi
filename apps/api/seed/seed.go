@@ -63,16 +63,44 @@ var prefectures = []models.Prefecture{
 	{ID: 47, Name: "沖縄県"},
 }
 
-// マイタグマスタ
+// タグマスタ(FEのプロフィール編集画面の構成に合わせたカテゴリ)
 var tags = []models.Tag{
-	{Label: "甘いもの大好き", Category: "グルメ・お酒", ImageURL: "/tags/sweets.png"},
-	{Label: "ディズニー好き", Category: "趣味全般", ImageURL: "/tags/themepark.png"},
-	{Label: "漫画が好き", Category: "本・マンガ", ImageURL: "/tags/manga.png"},
-	{Label: "寝るの幸せ", Category: "心と身体", ImageURL: "/tags/sleep.png"},
-	{Label: "ライブ・フェス好き", Category: "音楽", ImageURL: "/tags/live.png"},
-	{Label: "食べることが大好き", Category: "グルメ・お酒", ImageURL: "/tags/food.png"},
-	{Label: "ワイン好き", Category: "グルメ・お酒", ImageURL: "/tags/wine.png"},
-	{Label: "旅行好き", Category: "趣味全般", ImageURL: "/tags/travel.png"},
+	// パートナーに求めること
+	{Label: "誠実さ", Category: "パートナーに求めること"},
+	{Label: "経済力", Category: "パートナーに求めること"},
+	{Label: "価値観の一致", Category: "パートナーに求めること"},
+	{Label: "一緒にいて楽しい", Category: "パートナーに求めること"},
+	// 会える時間
+	{Label: "平日昼", Category: "会える時間"},
+	{Label: "平日夕方", Category: "会える時間"},
+	{Label: "平日夜", Category: "会える時間"},
+	{Label: "土日昼", Category: "会える時間"},
+	{Label: "土日夕方", Category: "会える時間"},
+	{Label: "土日夜", Category: "会える時間"},
+	// 待ち合わせ希望エリア
+	{Label: "新宿", Category: "待ち合わせ希望エリア"},
+	{Label: "渋谷", Category: "待ち合わせ希望エリア"},
+	{Label: "池袋", Category: "待ち合わせ希望エリア"},
+	{Label: "銀座", Category: "待ち合わせ希望エリア"},
+	{Label: "六本木", Category: "待ち合わせ希望エリア"},
+	{Label: "横浜", Category: "待ち合わせ希望エリア"},
+	// 好きなこと・挑戦してみたいこと
+	{Label: "旅行", Category: "好きなこと・挑戦してみたいこと"},
+	{Label: "料理", Category: "好きなこと・挑戦してみたいこと"},
+	{Label: "読書", Category: "好きなこと・挑戦してみたいこと"},
+	{Label: "映画鑑賞", Category: "好きなこと・挑戦してみたいこと"},
+	{Label: "スポーツ観戦", Category: "好きなこと・挑戦してみたいこと"},
+	// 好きなグルメやお酒
+	{Label: "ワイン", Category: "好きなグルメやお酒"},
+	{Label: "カフェ巡り", Category: "好きなグルメやお酒"},
+	{Label: "焼肉", Category: "好きなグルメやお酒"},
+	{Label: "スイーツ", Category: "好きなグルメやお酒"},
+	{Label: "日本酒", Category: "好きなグルメやお酒"},
+	// 価値観
+	{Label: "家族第一", Category: "価値観"},
+	{Label: "自由重視", Category: "価値観"},
+	{Label: "成長志向", Category: "価値観"},
+	{Label: "安定志向", Category: "価値観"},
 }
 
 // 都道府県・マイタグなどのマスタデータを投入する(冪等、AutoMigrateの後に呼ぶこと)
