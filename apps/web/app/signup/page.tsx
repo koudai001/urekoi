@@ -2,9 +2,20 @@
 
 import Image from "next/image"
 import { useState } from "react"
-import { Eye, EyeOff, ArrowLeft, ArrowRight, Check, Timer } from "lucide-react"
+import {
+  Eye,
+  EyeOff,
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Timer,
+  ChevronLeft,
+  ChevronRight,
+  Smile,
+} from "lucide-react"
 
-type Step = "consent" | "intro" | "email"
+type Step = "consent" | "intro" | "gender" | "email"
+type Gender = "male" | "female"
 
 export default function SignupPage() {
   const [step, setStep] = useState<Step>("consent")
@@ -13,6 +24,7 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isAdult, setIsAdult] = useState(false)
   const [agreeTerms, setAgreeTerms] = useState(false)
+  const [gender, setGender] = useState<Gender | null>(null)
   const canProceed = isAdult && agreeTerms
 
   return (
@@ -130,7 +142,7 @@ export default function SignupPage() {
 
             <button
               type="button"
-              onClick={() => setStep("email")}
+              onClick={() => setStep("gender")}
               className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3 text-base font-bold text-primary-foreground transition-opacity hover:opacity-90"
             >
               次へ
@@ -151,12 +163,94 @@ export default function SignupPage() {
             </div>
           </div>
         </div>
+      ) : step === "gender" ? (
+        /* ===== ステップ2: 性別選択 ===== */
+        <div className="flex min-h-[520px] w-full max-w-md flex-col rounded-3xl bg-card p-8 shadow-sm">
+          {/* 進捗バー */}
+          <div className="flex items-center gap-2">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <Smile className="h-5 w-5" />
+            </span>
+            <span className="flex flex-1 items-center gap-1.5 overflow-hidden">
+              {Array.from({ length: 14 }).map((_, i) => (
+                <span
+                  key={i}
+                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-border"
+                />
+              ))}
+            </span>
+          </div>
+
+          {/* 見出し */}
+          <h1 className="mt-8 text-2xl font-bold text-card-foreground text-balance">
+            あなたの性別を教えてください
+          </h1>
+
+          {/* 選択肢 */}
+          <div className="mt-8 flex justify-center gap-6">
+            {(
+              [
+                { value: "male", label: "男性", image: "/profiles/me-1.png" },
+                { value: "female", label: "女性", image: "/profiles/woman-1.png" },
+              ] as const
+            ).map((option) => {
+              const selected = gender === option.value
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setGender(option.value)}
+                  aria-pressed={selected}
+                  className={`flex flex-col items-center gap-3 rounded-full p-4 transition-all ${
+                    selected
+                      ? "bg-primary/15 ring-2 ring-primary"
+                      : "bg-secondary hover:bg-secondary/70"
+                  }`}
+                >
+                  <span className="h-24 w-24 overflow-hidden rounded-full border-2 border-card shadow-sm">
+                    <Image
+                      src={option.image || "/placeholder.svg"}
+                      alt={option.label}
+                      width={96}
+                      height={96}
+                      className="h-full w-full object-cover"
+                    />
+                  </span>
+                  <span className="text-lg font-bold text-card-foreground">
+                    {option.label}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* 下部ナビ */}
+          <div className="mt-auto flex items-center justify-between pt-8">
+            <button
+              type="button"
+              onClick={() => setStep("intro")}
+              aria-label="前へ戻る"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-card-foreground transition-colors hover:bg-secondary/70"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              disabled={!gender}
+              onClick={() => setStep("email")}
+              aria-label="次へ進む"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
       ) : (
         /* ===== ステップ2: メールアドレス＋パスワード ===== */
         <div className="w-full max-w-md">
           <button
             type="button"
-            onClick={() => setStep("intro")}
+            onClick={() => setStep("gender")}
             className="mb-6 flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-card-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
