@@ -1,15 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { Mail, Lock, Eye, EyeOff, MessageCircle, ArrowLeft } from "lucide-react"
+import { Mail, Eye, EyeOff, MessageCircle, ArrowLeft, Check } from "lucide-react"
 
-type Step = "select" | "email"
+type Step = "consent" | "select" | "email"
 
 export default function SignupPage() {
-  const [step, setStep] = useState<Step>("select")
+  const [step, setStep] = useState<Step>("consent")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [isAdult, setIsAdult] = useState(false)
+  const [agreeTerms, setAgreeTerms] = useState(false)
+  const canProceed = isAdult && agreeTerms
 
   return (
     <main className="flex min-h-svh flex-col items-center justify-center bg-background px-4 py-12">
@@ -23,7 +26,80 @@ export default function SignupPage() {
         </span>
       </div>
 
-      {step === "select" ? (
+      {step === "consent" ? (
+        /* ===== ステップ0: 注意事項への同意 ===== */
+        <div className="w-full max-w-md rounded-3xl bg-card p-8 shadow-sm">
+          <p className="mb-8 text-center text-sm leading-relaxed text-muted-foreground">
+            熟恋は、大人の女性と年下男性のためのマッチングサービスです。
+            <br />
+            ご登録の前に、以下の内容をご確認ください。
+          </p>
+
+          <div className="flex flex-col gap-4">
+            <button
+              type="button"
+              onClick={() => setIsAdult((v) => !v)}
+              className="flex w-full items-center gap-3 text-left"
+              aria-pressed={isAdult}
+            >
+              <span
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border-2 transition-colors ${
+                  isAdult
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-transparent"
+                }`}
+              >
+                {isAdult && <Check className="h-4 w-4" strokeWidth={3} />}
+              </span>
+              <span className="text-base text-card-foreground">
+                私は18歳以上で独身です
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setAgreeTerms((v) => !v)}
+              className="flex w-full items-center gap-3 text-left"
+              aria-pressed={agreeTerms}
+            >
+              <span
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border-2 transition-colors ${
+                  agreeTerms
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-transparent"
+                }`}
+              >
+                {agreeTerms && <Check className="h-4 w-4" strokeWidth={3} />}
+              </span>
+              <span className="text-base text-card-foreground">
+                すべての規約
+                <span className="text-primary">*</span>に同意します
+              </span>
+            </button>
+          </div>
+
+          <p className="mt-5 text-sm font-medium text-primary">
+            <span>*</span>
+            <a href="#" className="hover:underline">
+              利用規約
+            </a>
+            ・
+            <a href="#" className="hover:underline">
+              プライバシーポリシー
+            </a>
+            への同意が必要です
+          </p>
+
+          <button
+            type="button"
+            disabled={!canProceed}
+            onClick={() => setStep("select")}
+            className="mt-8 w-full rounded-full bg-primary py-4 text-base font-bold text-primary-foreground transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            内容に同意して進む
+          </button>
+        </div>
+      ) : step === "select" ? (
         /* ===== ステップ1: 登録方法の選択 ===== */
         <div className="flex w-full max-w-md flex-col items-center">
           <div className="flex w-full flex-col gap-4">
