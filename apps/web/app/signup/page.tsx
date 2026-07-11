@@ -1,9 +1,10 @@
 "use client"
 
+import Image from "next/image"
 import { useState } from "react"
-import { Mail, Eye, EyeOff, MessageCircle, ArrowLeft, Check } from "lucide-react"
+import { Eye, EyeOff, ArrowLeft, ArrowRight, Check, Timer } from "lucide-react"
 
-type Step = "consent" | "select" | "email"
+type Step = "consent" | "intro" | "email"
 
 export default function SignupPage() {
   const [step, setStep] = useState<Step>("consent")
@@ -93,55 +94,66 @@ export default function SignupPage() {
           <button
             type="button"
             disabled={!canProceed}
-            onClick={() => setStep("select")}
+            onClick={() => setStep("intro")}
             className="mt-8 w-full rounded-full bg-primary py-4 text-base font-bold text-primary-foreground transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             内容に同意して進む
           </button>
         </div>
-      ) : step === "select" ? (
-        /* ===== ステップ1: 登録方法の選択 ===== */
-        <div className="flex w-full max-w-md flex-col items-center">
-          <div className="flex w-full flex-col gap-4">
-            {/* LINE（ダミー） */}
-            <button
-              type="button"
-              className="flex w-full items-center justify-center gap-3 rounded-full bg-[#06c755] py-4 text-base font-bold text-white transition-opacity hover:opacity-90"
-            >
-              <MessageCircle className="h-5 w-5 fill-white" />
-              LINEで新規登録
-            </button>
+      ) : step === "intro" ? (
+        /* ===== ステップ1: オンボーディング導入 ===== */
+        <div className="w-full max-w-md overflow-hidden rounded-3xl bg-card shadow-sm">
+          {/* 上部：所要時間 */}
+          <div className="flex items-center justify-center gap-2 px-8 pt-8 text-sm font-bold text-muted-foreground">
+            <Timer className="h-4 w-4" />
+            このステップは概ね30秒で完了します
+          </div>
 
-            {/* メールアドレス */}
+          {/* Step1 チップ＋見出し */}
+          <div className="px-8 pb-8 pt-6">
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground">
+                Step1
+              </span>
+              <span className="flex gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary/40" />
+                <span className="h-1.5 w-1.5 rounded-full bg-primary/40" />
+                <span className="h-1.5 w-1.5 rounded-full bg-primary/40" />
+              </span>
+            </div>
+
+            <h1 className="mt-6 text-3xl font-bold leading-snug text-card-foreground text-balance">
+              まず、あなたのことを
+              <br />
+              教えてください
+            </h1>
+
             <button
               type="button"
               onClick={() => setStep("email")}
-              className="flex w-full items-center justify-center gap-3 rounded-full bg-primary py-4 text-base font-bold text-primary-foreground transition-opacity hover:opacity-90"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3 text-base font-bold text-primary-foreground transition-opacity hover:opacity-90"
             >
-              <Mail className="h-5 w-5" />
-              メールアドレスで新規登録
+              次へ
+              <ArrowRight className="h-4 w-4" />
             </button>
           </div>
 
-          <p className="mt-6 w-full text-left text-sm leading-relaxed text-muted-foreground">
-            熟恋は、大人の女性と年下男性のためのマッチングサービスです。
-            <br />
-            18歳未満の方・独身でない方・上記をご理解いただけない方は、ご登録いただけません。
-          </p>
-
-          <div className="mt-10 flex flex-col items-center gap-4">
-            <a
-              href="#"
-              className="text-sm font-medium text-primary hover:underline"
-            >
-              新規登録でお困りの方はこちら
-            </a>
-            <a
-              href="/login"
-              className="text-base font-bold text-card-foreground hover:underline"
-            >
-              ログインはこちら
-            </a>
+          {/* 下部：ビジュアルパネル */}
+          <div className="relative flex h-64 items-center justify-center overflow-hidden bg-accent">
+            <div className="relative">
+              <div className="h-44 w-36 overflow-hidden rounded-2xl border-4 border-card shadow-md">
+                <Image
+                  src="/profiles/woman-3.png"
+                  alt="登録イメージ"
+                  width={144}
+                  height={176}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <span className="absolute -bottom-4 -left-8 flex h-20 w-20 items-center justify-center rounded-full bg-primary font-heading text-2xl font-bold text-primary-foreground shadow-lg">
+                A.S
+              </span>
+            </div>
           </div>
         </div>
       ) : (
@@ -149,7 +161,7 @@ export default function SignupPage() {
         <div className="w-full max-w-md">
           <button
             type="button"
-            onClick={() => setStep("select")}
+            onClick={() => setStep("intro")}
             className="mb-6 flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-card-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
