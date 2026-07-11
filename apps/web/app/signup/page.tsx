@@ -12,9 +12,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Smile,
+  Cake,
 } from "lucide-react"
 
-type Step = "consent" | "intro" | "gender" | "email"
+type Step = "consent" | "intro" | "gender" | "birthday" | "email"
 type Gender = "male" | "female"
 
 export default function SignupPage() {
@@ -25,7 +26,12 @@ export default function SignupPage() {
   const [isAdult, setIsAdult] = useState(false)
   const [agreeTerms, setAgreeTerms] = useState(false)
   const [gender, setGender] = useState<Gender | null>(null)
+  const [birthYear, setBirthYear] = useState("")
+  const [birthMonth, setBirthMonth] = useState("")
+  const [birthDay, setBirthDay] = useState("")
   const canProceed = isAdult && agreeTerms
+  const birthdayComplete =
+    birthYear.length === 4 && birthMonth.length >= 1 && birthDay.length >= 1
 
   return (
     <main className="flex min-h-svh flex-col items-center justify-center bg-background px-4 py-12">
