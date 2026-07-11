@@ -139,20 +139,15 @@ export default function SignupPage() {
           </div>
 
           {/* 下部：ビジュアルパネル */}
-          <div className="relative flex h-64 items-center justify-center overflow-hidden bg-accent">
-            <div className="relative">
-              <div className="h-44 w-36 overflow-hidden rounded-2xl border-4 border-card shadow-md">
-                <Image
-                  src="/profiles/woman-3.png"
-                  alt="登録イメージ"
-                  width={144}
-                  height={176}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <span className="absolute -bottom-4 -left-8 flex h-20 w-20 items-center justify-center rounded-full bg-primary font-heading text-2xl font-bold text-primary-foreground shadow-lg">
-                A.S
-              </span>
+          <div className="relative flex h-72 items-center justify-center overflow-hidden bg-accent">
+            <div className="h-60 w-52 overflow-hidden rounded-2xl border-4 border-card shadow-lg">
+              <Image
+                src="/profiles/woman-3.png"
+                alt="登録イメージ"
+                width={208}
+                height={240}
+                className="h-full w-full object-cover"
+              />
             </div>
           </div>
         </div>
