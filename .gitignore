@@ -15,6 +15,13 @@ node_modules
 .next/
 .DS_Store
 .vercel
+next-env.d.ts
+*.tsbuildinfo
 
 # Go build artifacts
 apps/api/tmp/
+
+# storybook
+*storybook.log
+storybook-static
+apps/web/stories-example/

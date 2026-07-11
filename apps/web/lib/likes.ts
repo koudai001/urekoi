@@ -3,7 +3,7 @@ export type LikeProfile = {
   name: string
   age: number
   area: string
-  online?: "online" | "recent"
+  online?: 'online' | 'recent'
   photos: string[]
 }
 
@@ -11,52 +11,60 @@ export type LikeProfile = {
 export const receivedLikes: LikeProfile[] = [
   {
     id: 101,
-    name: "A",
+    name: 'A',
     age: 24,
-    area: "東京",
-    online: "recent",
+    area: '東京',
+    online: 'recent',
     photos: [
-      "/profiles/woman-1.png",
-      "/profiles/woman-3.png",
-      "/profiles/woman-5.png",
-      "/profiles/woman-7.png",
+      '/profiles/woman-1.png',
+      '/profiles/woman-3.png',
+      '/profiles/woman-5.png',
+      '/profiles/woman-7.png',
     ],
   },
   {
     id: 102,
-    name: "M",
+    name: 'M',
     age: 27,
-    area: "神奈川",
-    online: "online",
-    photos: ["/profiles/woman-2.png", "/profiles/woman-4.png", "/profiles/woman-6.png"],
+    area: '神奈川',
+    online: 'online',
+    photos: [
+      '/profiles/woman-2.png',
+      '/profiles/woman-4.png',
+      '/profiles/woman-6.png',
+    ],
   },
   {
     id: 103,
-    name: "Y",
+    name: 'Y',
     age: 23,
-    area: "千葉",
-    online: "recent",
-    photos: ["/profiles/woman-8.png", "/profiles/woman-5.png"],
+    area: '千葉',
+    online: 'recent',
+    photos: ['/profiles/woman-8.png', '/profiles/woman-5.png'],
   },
   {
     id: 104,
-    name: "S",
+    name: 'S',
     age: 29,
-    area: "埼玉",
-    online: "online",
+    area: '埼玉',
+    online: 'online',
     photos: [
-      "/profiles/woman-6.png",
-      "/profiles/woman-2.png",
-      "/profiles/woman-7.png",
-      "/profiles/woman-1.png",
+      '/profiles/woman-6.png',
+      '/profiles/woman-2.png',
+      '/profiles/woman-7.png',
+      '/profiles/woman-1.png',
     ],
   },
   {
     id: 105,
-    name: "K",
+    name: 'K',
     age: 26,
-    area: "東京",
-    online: "recent",
-    photos: ["/profiles/woman-4.png", "/profiles/woman-3.png", "/profiles/woman-8.png"],
+    area: '東京',
+    online: 'recent',
+    photos: [
+      '/profiles/woman-4.png',
+      '/profiles/woman-3.png',
+      '/profiles/woman-8.png',
+    ],
   },
 ]

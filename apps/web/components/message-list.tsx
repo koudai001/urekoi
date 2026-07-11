@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import Image from "next/image"
-import { ChevronRight, ShieldCheck, MoreHorizontal } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { matches, conversations, type Conversation } from "@/lib/conversations"
+import Image from 'next/image'
+import { ChevronRight, ShieldCheck, MoreHorizontal } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { matches, conversations, type Conversation } from '@/lib/conversations'
 
 export function MessageList({
   selectedId,
@@ -31,11 +31,14 @@ export function MessageList({
         <div className="relative">
           <div className="flex gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {matches.map((m) => (
-              <button key={m.id} className="flex w-16 shrink-0 flex-col items-center gap-1">
+              <button
+                key={m.id}
+                className="flex w-16 shrink-0 flex-col items-center gap-1"
+              >
                 <span className="relative">
                   <span className="block h-16 w-16 overflow-hidden rounded-full ring-2 ring-border">
                     <Image
-                      src={m.image || "/placeholder.svg"}
+                      src={m.image || '/placeholder.svg'}
                       alt={`${m.name}さん`}
                       width={64}
                       height={64}
@@ -70,13 +73,13 @@ export function MessageList({
             key={c.id}
             onClick={() => onSelect(c)}
             className={cn(
-              "flex w-full items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-accent/40",
-              selectedId === c.id && "bg-accent/60",
+              'flex w-full items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-accent/40',
+              selectedId === c.id && 'bg-accent/60',
             )}
           >
             <span className="h-14 w-14 shrink-0 overflow-hidden rounded-full">
               <Image
-                src={c.image || "/placeholder.svg"}
+                src={c.image || '/placeholder.svg'}
                 alt={`${c.name}さん`}
                 width={56}
                 height={56}
@@ -95,8 +98,8 @@ export function MessageList({
               <span className="mt-1 flex items-center gap-1.5">
                 <span
                   className={cn(
-                    "shrink-0 text-xs font-bold",
-                    c.status === "NEW" ? "text-primary" : "text-destructive",
+                    'shrink-0 text-xs font-bold',
+                    c.status === 'NEW' ? 'text-primary' : 'text-destructive',
                   )}
                 >
                   {c.status}

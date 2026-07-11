@@ -1,24 +1,48 @@
-# urekoi
-熟女専門マッチングアプリ。Go + Next.js のモノレポ構成。
+## 概要・技術・ローカル環境
+README.mdを参照
 
-## フロントエンド
-- TypeScript
-- Next.js
-- React
+## 作業の進め方
+- コードの変更は1つずつ提示し、ユーザーが読んで反応するまで次の変更には進まない。複数ファイル・複数箇所の変更をまとめて一気に出さない
 
-## バックエンド
-- GO
-- Gin（エコシステムの厚さととClaudeの学習量から）
-- PostgreSQL
-- クリーンアーキテクチャ
+## コメント方針
+- 自明な処理には書かない
+- テストケースなど「内容を把握するのに本文を読むのが面倒なもの」には、何を検証しているかが一目で分かる一言コメントを書く
+
+## ファイル内の並び順
+- exportする(公開)関数を上に、ファイル内でしか使わないprivateなヘルパー関数は下に置く
+- Goも同様。interfaceの実装メソッドを上に、それ以外のprivateなメソッド・ヘルパー関数は下に置く
 
 ### レイヤーの依存方針
 - `models`（Entity）: 他レイヤーに依存しない。DTOやjsonタグを持たせない（gormタグのみ）
-- `usecases`: `models`・`repositories`のインターフェースに依存。`dto`には依存しない
+- `usecases`: `models`・`repositories`のインターフェースに依存。リクエストの`dto`には依存しない
   - 引数が少ない（2〜3個程度）場合はprimitive型をそのまま使う
   - 引数が多い場合は`usecases`パッケージ内に専用のinput struct（json/bindingタグなし）を定義する
-  - dto⇔primitive/input structの変換は`controllers`が担う
+  - レスポンスの`dto`は`usecases`が直接組み立てて返してよい(一覧をmodelからdtoに詰め替える処理などを`controllers`に持たせると肥大化するため)。リクエストdto→primitive/input structの変換は`controllers`が担う
 
-## ローカル開発
-- 現状DBのみコンテナ化(api/webは後で検討)
-- DBクライアント: pgAdmin, APIクライアント: Insomnia
+### バリデーション方針
+- リクエストの形式検証(必須・email形式・文字数など)は`validators`パッケージ(ozzo-validation)で行う。`dto`に`binding`タグは付けない(Ginの`ShouldBindJSON`はパースのみ)
+- `validators`はdto→`controllers`内で呼ぶ。`usecases`はリクエストの`dto`に依存しないため呼ばない
+- エラーメッセージの言語方針:
+  - `validators`が返すバリデーションエラー(400): 日本語(ユーザーが直接目にするため)
+  - `usecases`の業務エラー(409 email重複, 401 認証失敗など): 英語のままでよい。フロントはステータスコードで判断し、表示用の日本語文言を自前で用意する
+- フロントの入力フォームには`required`/`minLength`等のHTML5バリデーション属性を付け、サーバーに送る前に弾けるものは弾く
+
+## フロントエンドのコンポーネント設計
+- `components/ui/`: 業務ロジック・データ取得・業務的な状態を持たない汎用コンポーネント(shadcn由来かどうかは問わない)。表示/非表示の切り替えなど見た目だけのUI状態は持ってよい
+- `components/`直下: 機能コンポーネント。`ui/`のプリミティブを組み合わせて作る。データ取得・状態管理を持ってよい
+- コンポーネント数が増えて見通しが悪くなった機能ドメインは、`components/search/`のようにサブフォルダを切ってよい。ストーリーファイルも同じフォルダに一緒に移す
+- ストーリーファイルは対象コンポーネントと同じディレクトリに置く(例: `components/ui/button.tsx` → `components/ui/button.stories.tsx`)
+- 色・余白などのデザイン値はなるべく`app/globals.css`の`@theme`トークン(CSS変数)に寄せる。`bg-[#xxxxxx]`のような直書きの値は避け、トークン化してから使う
+
+### Storybookのstory作成方針
+- 「ある」コンポーネントは基本的に全部storyを書く(デザインの一覧性、Chromaticでのvisual regression対象化、variant把握のしやすさのため)
+- 例外として書かなくてよいもの:
+  - ページ全体(`page.tsx`)レベルのもの(データフェッチが絡みStorybookで動かしにくい)
+  - 一度しか使わない超ニッチなコンポーネント(投資対効果が低い)
+  - 外部から使われない内部実装の細かい部品
+
+## チケット運用
+- チケットは`.tickets/todo/`配下にmdファイルとして作成し、着手したら`.tickets/done/`に移動する
+- ファイル名(拡張子`.md`を除いたもの)と、そのチケットに対応する作業ブランチ名を一致させる
+  - 例: チケット`.tickets/todo/fe-integration.md` → ブランチ`fe-integration`
+- やることは`## やること`配下にシンプルなチェックボックス(`- [ ]`)で書く。完了したら`- [x]`にする。背景説明や詳細な完了条件のセクションは作らず、簡潔に保つ

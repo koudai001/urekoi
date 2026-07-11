@@ -15,9 +15,19 @@ erDiagram
         bigint user_id FK "NOT NULL UNIQUE User.ID (1:1)"
         varchar nickname "NOT NULL"
         smallint age "NOT NULL"
-        smallint prefecture_code FK "NOT NULL Prefecture.ID"
-        text introduction
-        timestamptz created_at "NOT NULL DEFAULT now()"
+        smallint prefecture_code FK "NOT NULL Prefecture.ID 居住地"
+        text bio
+        varchar occupation "職業。選択肢はコード側で固定管理(マスタ化しない)"
+        varchar hometown "出身地。選択肢はコード側で固定管理"
+        varchar blood_type "血液型。選択肢はコード側で固定管理"
+        varchar mbti "MBTI。選択肢はコード側で固定管理"
+        varchar body_type "体型。選択肢はコード側で固定管理"
+        varchar education "学歴。選択肢はコード側で固定管理"
+        varchar holiday "休日。選択肢はコード側で固定管理"
+        varchar alcohol "お酒。選択肢はコード側で固定管理"
+        varchar smoking "タバコ。選択肢はコード側で固定管理"
+        smallint height_cm "身長(cm)"
+        timestamptz created_at "NOT NULL DEFAULT now() NEWバッジ判定に使用(登録n日以内なら新着、専用カラムは持たない)"
         timestamptz updated_at "NOT NULL DEFAULT now()"
     }
     PROFILE_IMAGE {
@@ -31,6 +41,18 @@ erDiagram
     PREFECTURE {
         smallint id PK "JIS X 0401コード 1〜47"
         varchar name "NOT NULL 都道府県名 例: 東京都"
+    }
+    TAG {
+        bigint id PK
+        varchar label "NOT NULL UNIQUE タグ名 例: 甘いもの大好き、平日昼、新宿"
+        varchar category "NOT NULL カテゴリ 例: グルメ・お酒、会える時間、待ち合わせ希望エリア"
+        varchar image_url "アイコン画像。会える時間・エリアなど画像不要なカテゴリはNULL"
+    }
+    PROFILE_TAG {
+        bigint id PK
+        bigint profile_id FK "NOT NULL Profile.ID"
+        bigint tag_id FK "NOT NULL Tag.ID"
+        timestamptz created_at "NOT NULL DEFAULT now()"
     }
     LIKE {
         bigint id PK
@@ -62,6 +84,8 @@ erDiagram
     USER ||--o| PROFILE : has
     PREFECTURE ||--o{ PROFILE : "located in"
     PROFILE ||--o{ PROFILE_IMAGE : has
+    PROFILE ||--o{ PROFILE_TAG : has
+    TAG ||--o{ PROFILE_TAG : "tagged in"
     USER ||--o{ LIKE : sends
     USER ||--o{ LIKE : receives
     USER ||--o{ MATCH : "as user1"

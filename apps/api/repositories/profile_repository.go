@@ -1,0 +1,105 @@
+package repositories
+
+import (
+	"errors"
+
+	"api/models"
+
+	"gorm.io/gorm"
+)
+
+var ErrProfileNotFound = errors.New("profile not found")
+
+type IProfileRepository interface {
+	GetAllProfiles() ([]models.Profile, error)
+	GetProfileByID(id uint64) (*models.Profile, error)
+	GetProfileTags(profileID uint64) ([]models.ProfileTag, error)
+	GetProfileByUserID(userID uint64) (*models.Profile, error)
+	CreateProfile(profile *models.Profile) error
+	UpdateProfile(profile *models.Profile) error
+	ReplaceProfileTags(profileID uint64, tagIDs []uint64) error
+}
+
+type ProfileRepository struct {
+	db *gorm.DB
+}
+
+// コンストラクタ
+func NewProfileRepository(db *gorm.DB) IProfileRepository {
+	return &ProfileRepository{
+		db: db,
+	}
+}
+
+func (r *ProfileRepository) GetAllProfiles() ([]models.Profile, error) {
+	var profiles []models.Profile
+	if err := r.db.Preload("Prefecture").Find(&profiles).Error; err != nil {
+		return nil, err
+	}
+
+	return profiles, nil
+}
+
+func (r *ProfileRepository) GetProfileByID(id uint64) (*models.Profile, error) {
+	var profile models.Profile
+	if err := r.db.Preload("Prefecture").First(&profile, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrProfileNotFound
+		}
+		return nil, err
+	}
+
+	return &profile, nil
+}
+
+func (r *ProfileRepository) GetProfileTags(profileID uint64) ([]models.ProfileTag, error) {
+	var profileTags []models.ProfileTag
+	if err := r.db.Preload("Tag").
+		Where("profile_id = ?", profileID).
+		Find(&profileTags).Error; err != nil {
+		return nil, err
+	}
+
+	return profileTags, nil
+}
+
+func (r *ProfileRepository) GetProfileByUserID(userID uint64) (*models.Profile, error) {
+	var profile models.Profile
+	if err := r.db.Preload("Prefecture").Where("user_id = ?", userID).First(&profile).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrProfileNotFound
+		}
+		return nil, err
+	}
+
+	return &profile, nil
+}
+
+func (r *ProfileRepository) CreateProfile(profile *models.Profile) error {
+	return r.db.Create(profile).Error
+}
+
+func (r *ProfileRepository) UpdateProfile(profile *models.Profile) error {
+	return r.db.Save(profile).Error
+}
+
+// 既存のタグ紐付けを全て削除し、tagIDsで渡されたものに入れ替える
+func (r *ProfileRepository) ReplaceProfileTags(profileID uint64, tagIDs []uint64) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("profile_id = ?", profileID).Delete(&models.ProfileTag{}).Error; err != nil {
+			return err
+		}
+
+		for _, tagID := range tagIDs {
+			profileTag := models.ProfileTag{
+				ProfileID: profileID,
+				TagID:     tagID,
+			}
+			if err := tx.Create(&profileTag).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+}
