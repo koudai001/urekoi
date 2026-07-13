@@ -16,6 +16,10 @@ type IAuthRepository interface {
 	CreateRefreshToken(refreshToken *models.RefreshToken) error
 	GetRefreshTokenByHash(tokenHash string) (*models.RefreshToken, error)
 	DeleteRefreshToken(id uint64) error
+	// トランザクション用のDBハンドル(tx)にバインドした新しいrepositoryを返す
+	WithTx(tx *gorm.DB) IAuthRepository
+	// fn内の処理をひとつのトランザクションとして実行する
+	Transaction(fn func(tx *gorm.DB) error) error
 }
 
 type AuthRepository struct {
@@ -27,6 +31,14 @@ func NewAuthRepository(db *gorm.DB) IAuthRepository {
 	return &AuthRepository{
 		db: db,
 	}
+}
+
+func (r *AuthRepository) WithTx(tx *gorm.DB) IAuthRepository {
+	return &AuthRepository{db: tx}
+}
+
+func (r *AuthRepository) Transaction(fn func(tx *gorm.DB) error) error {
+	return r.db.Transaction(fn)
 }
 
 func (r *AuthRepository) GetUserByEmail(email string) (*models.User, error) {

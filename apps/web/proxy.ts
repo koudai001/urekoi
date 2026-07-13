@@ -77,7 +77,7 @@ function setAuthCookies(
   )
 }
 
-// _next/static, _next/image, favicon.icoなどの静的アセットは除外
+// _next/static, _next/image、および拡張子を持つパス(public/配下の静的アセット)は除外
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|.*\\..*).*)'],
 }

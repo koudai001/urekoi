@@ -14,14 +14,15 @@ README.mdを参照
 
 ### レイヤーの依存方針
 - `models`（Entity）: 他レイヤーに依存しない。DTOやjsonタグを持たせない（gormタグのみ）
-- `usecases`: `models`・`repositories`のインターフェースに依存。リクエストの`dto`には依存しない
+- `usecases`: `models`・`repositories`のインターフェースに依存。リクエストの`dto`への依存は許可(下記参照)
   - 引数が少ない（2〜3個程度）場合はprimitive型をそのまま使う
-  - 引数が多い場合は`usecases`パッケージ内に専用のinput struct（json/bindingタグなし）を定義する
-  - レスポンスの`dto`は`usecases`が直接組み立てて返してよい(一覧をmodelからdtoに詰め替える処理などを`controllers`に持たせると肥大化するため)。リクエストdto→primitive/input structの変換は`controllers`が担う
+  - リクエストdtoとusecasesが必要とする形が実質同じ場合は、`dto`をそのまま引数に受け取ってよい(usecases専用のinput structへ機械的に詰め替えるだけの層は作らない)
+  - usecases側で追加の計算や別ソースからの値の合成が必要など、dtoの形と乖離する場合は`usecases`パッケージ内に専用のinput struct（json/bindingタグなし）を定義する
+  - レスポンスの`dto`は`usecases`が直接組み立てて返してよい(一覧をmodelからdtoに詰め替える処理などを`controllers`に持たせると肥大化するため)
 
 ### バリデーション方針
 - リクエストの形式検証(必須・email形式・文字数など)は`validators`パッケージ(ozzo-validation)で行う。`dto`に`binding`タグは付けない(Ginの`ShouldBindJSON`はパースのみ)
-- `validators`はdto→`controllers`内で呼ぶ。`usecases`はリクエストの`dto`に依存しないため呼ばない
+- `validators`はdto→`controllers`内で呼ぶ。形式検証は`usecases`に到達する前に済ませておく責務のため、`usecases`からは呼ばない
 - エラーメッセージの言語方針:
   - `validators`が返すバリデーションエラー(400): 日本語(ユーザーが直接目にするため)
   - `usecases`の業務エラー(409 email重複, 401 認証失敗など): 英語のままでよい。フロントはステータスコードで判断し、表示用の日本語文言を自前で用意する

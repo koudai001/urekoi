@@ -2,8 +2,10 @@ package controllers_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"api/dto"
 
@@ -15,10 +17,7 @@ import (
 func TestSignUp_Success(t *testing.T) {
 	router := setup(t)
 
-	w := postJSON(t, router, "/signup", dto.SignupRequest{
-		Email:    "test@example.com",
-		Password: "password123",
-	})
+	w := postJSON(t, router, "/signup", validSignupRequest("test@example.com"))
 
 	require.Equal(t, http.StatusCreated, w.Code)
 
@@ -30,26 +29,82 @@ func TestSignUp_Success(t *testing.T) {
 	assert.NotEmpty(t, res.RefreshToken)
 }
 
-// 不正な入力(email形式エラー・パスワード短すぎ)で400を返すことを検証
-func TestSignUp_InvalidRequest(t *testing.T) {
+// 不正な入力(形式エラー・必須未入力・年齢制限違反)で400を返すことを検証 table-driven-test
+func TestSignUp_ValidationErrors(t *testing.T) {
 	router := setup(t)
 
-	w := postJSON(t, router, "/signup", dto.SignupRequest{
-		Email:    "not-an-email",
-		Password: "short",
-	})
+	cases := []struct {
+		name   string
+		mutate func(req *dto.SignupRequest) // リクエストを不正に変形する関数
+	}{
+		{"emailの形式が不正", func(r *dto.SignupRequest) { r.Email = "not-an-email" }},
+		{"passwordが短すぎる", func(r *dto.SignupRequest) { r.Password = "short" }},
+		{"genderが空", func(r *dto.SignupRequest) { r.Gender = "" }},
+		{"genderが不正な値", func(r *dto.SignupRequest) { r.Gender = "other" }},
+		{"nicknameが空", func(r *dto.SignupRequest) { r.Nickname = "" }},
+		{"prefecture_codeが未指定", func(r *dto.SignupRequest) { r.PrefectureCode = 0 }},
+		{"birthdateが空", func(r *dto.SignupRequest) { r.Birthdate = "" }},
+		{"birthdateの形式が不正", func(r *dto.SignupRequest) { r.Birthdate = "2024/01/01" }},
+		{"実在しない日付(2月30日)", func(r *dto.SignupRequest) { r.Birthdate = "2024-02-30" }},
+		{"18歳未満", func(r *dto.SignupRequest) {
+			r.Birthdate = time.Now().AddDate(-17, 0, 0).Format("2006-01-02")
+		}},
+		{"100歳超え", func(r *dto.SignupRequest) {
+			r.Birthdate = time.Now().AddDate(-101, 0, 0).Format("2006-01-02")
+		}},
+		{"女性30歳未満", func(r *dto.SignupRequest) {
+			r.Gender = "female"
+			r.Birthdate = time.Now().AddDate(-25, 0, 0).Format("2006-01-02")
+		}},
+		{"男性35歳超え", func(r *dto.SignupRequest) {
+			r.Gender = "male"
+			r.Birthdate = time.Now().AddDate(-40, 0, 0).Format("2006-01-02")
+		}},
+	}
 
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	for i, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			req := validSignupRequest(fmt.Sprintf("signup-invalid-%d@example.com", i))
+			c.mutate(&req)
+
+			w := postJSON(t, router, "/signup", req)
+
+			assert.Equal(t, http.StatusBadRequest, w.Code)
+		})
+	}
+}
+
+// 性別×年齢の境界値(女性ちょうど30歳・男性ちょうど35歳)は許可されることを検証　table-driven-test
+func TestSignUp_AgeGenderBoundary_Success(t *testing.T) {
+	router := setup(t)
+
+	cases := []struct {
+		name   string
+		gender string
+		age    int
+	}{
+		{"女性ちょうど30歳", "female", 30},
+		{"男性ちょうど35歳", "male", 35},
+	}
+
+	for i, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			req := validSignupRequest(fmt.Sprintf("signup-boundary-%d@example.com", i))
+			req.Gender = c.gender
+			req.Birthdate = time.Now().AddDate(-c.age, 0, 0).Format("2006-01-02")
+
+			w := postJSON(t, router, "/signup", req)
+
+			assert.Equal(t, http.StatusCreated, w.Code)
+		})
+	}
 }
 
 // 同じemailで再度サインアップすると409を返すことを検証
 func TestSignUp_DuplicateEmail(t *testing.T) {
 	router := setup(t)
 
-	body := dto.SignupRequest{
-		Email:    "dup@example.com",
-		Password: "password123",
-	}
+	body := validSignupRequest("dup@example.com")
 
 	first := postJSON(t, router, "/signup", body)
 	require.Equal(t, http.StatusCreated, first.Code)
@@ -62,13 +117,13 @@ func TestSignUp_DuplicateEmail(t *testing.T) {
 func TestLogin_Success(t *testing.T) {
 	router := setup(t)
 
-	signupReq := dto.SignupRequest{
-		Email:    "login@example.com",
-		Password: "password123",
-	}
+	signupReq := validSignupRequest("login@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
 
-	w := postJSON(t, router, "/login", dto.LoginRequest(signupReq))
+	w := postJSON(t, router, "/login", dto.LoginRequest{
+		Email:    signupReq.Email,
+		Password: signupReq.Password,
+	})
 
 	require.Equal(t, http.StatusOK, w.Code)
 
@@ -82,10 +137,7 @@ func TestLogin_Success(t *testing.T) {
 func TestLogin_WrongPassword(t *testing.T) {
 	router := setup(t)
 
-	signupReq := dto.SignupRequest{
-		Email:    "login2@example.com",
-		Password: "password123",
-	}
+	signupReq := validSignupRequest("login2@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
 
 	w := postJSON(t, router, "/login", dto.LoginRequest{
@@ -112,10 +164,7 @@ func TestLogin_UnknownEmail(t *testing.T) {
 func TestRefresh_Success(t *testing.T) {
 	router := setup(t)
 
-	signupReq := dto.SignupRequest{
-		Email:    "refresh@example.com",
-		Password: "password123",
-	}
+	signupReq := validSignupRequest("refresh@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
 
 	loginRes := loginAndGetTokens(t, router, signupReq.Email, signupReq.Password)
@@ -137,10 +186,7 @@ func TestRefresh_Success(t *testing.T) {
 func TestRefresh_RotatedTokenCannotBeReused(t *testing.T) {
 	router := setup(t)
 
-	signupReq := dto.SignupRequest{
-		Email:    "refresh2@example.com",
-		Password: "password123",
-	}
+	signupReq := validSignupRequest("refresh2@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
 
 	loginRes := loginAndGetTokens(t, router, signupReq.Email, signupReq.Password)
@@ -167,10 +213,7 @@ func TestRefresh_InvalidToken(t *testing.T) {
 func TestLogout_Success(t *testing.T) {
 	router := setup(t)
 
-	signupReq := dto.SignupRequest{
-		Email:    "logout@example.com",
-		Password: "password123",
-	}
+	signupReq := validSignupRequest("logout@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
 
 	loginRes := loginAndGetTokens(t, router, signupReq.Email, signupReq.Password)
@@ -186,10 +229,7 @@ func TestLogout_Success(t *testing.T) {
 func TestLogout_RevokedTokenCannotBeReused(t *testing.T) {
 	router := setup(t)
 
-	signupReq := dto.SignupRequest{
-		Email:    "logout2@example.com",
-		Password: "password123",
-	}
+	signupReq := validSignupRequest("logout2@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
 
 	loginRes := loginAndGetTokens(t, router, signupReq.Email, signupReq.Password)
@@ -210,17 +250,4 @@ func TestLogout_InvalidToken(t *testing.T) {
 	})
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
-}
-
-// ログインしてアクセストークン・リフレッシュトークンのペアを取得するヘルパー
-func loginAndGetTokens(t *testing.T, router http.Handler, email string, password string) dto.LoginResponse {
-	w := postJSON(t, router, "/login", dto.LoginRequest{
-		Email:    email,
-		Password: password,
-	})
-	require.Equal(t, http.StatusOK, w.Code)
-
-	var res dto.LoginResponse
-	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	return res
 }

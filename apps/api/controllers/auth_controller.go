@@ -36,7 +36,7 @@ func (ctrl *AuthController) SignUp(c *gin.Context) {
 		return
 	}
 
-	user, accessToken, refreshToken, err := ctrl.authUsecase.SignUp(req.Email, req.Password)
+	user, accessToken, refreshToken, err := ctrl.authUsecase.SignUp(req)
 	if err != nil {
 		if errors.Is(err, usecases.ErrEmailAlreadyExists) {
 			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})

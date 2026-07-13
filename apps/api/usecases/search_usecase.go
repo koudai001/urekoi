@@ -54,7 +54,7 @@ func (u *SearchUsecase) ListProfiles() ([]dto.ProfileSummary, error) {
 		res = append(res, dto.ProfileSummary{
 			ID:         p.ID,
 			Nickname:   p.Nickname,
-			Age:        p.Age,
+			Age:        p.User.Age(),
 			Prefecture: p.Prefecture.Name,
 			Image:      dummyImagePath,
 			IsNew:      isNewProfile(p.CreatedAt),
@@ -91,7 +91,7 @@ func (u *SearchUsecase) GetProfileDetail(id uint64) (dto.ProfileDetail, error) {
 	return dto.ProfileDetail{
 		ID:         profile.ID,
 		Nickname:   profile.Nickname,
-		Age:        profile.Age,
+		Age:        profile.User.Age(),
 		Prefecture: profile.Prefecture.Name,
 		Bio:        profile.Bio,
 		IsNew:      isNewProfile(profile.CreatedAt),

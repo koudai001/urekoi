@@ -7,7 +7,6 @@ type Profile struct {
 	UserID         uint64     `gorm:"not null;uniqueIndex"`
 	User           User       `gorm:"foreignKey:UserID"`
 	Nickname       string     `gorm:"type:varchar(50);not null"`
-	Age            int16      `gorm:"not null"`
 	PrefectureCode int16      `gorm:"not null"`
 	Prefecture     Prefecture `gorm:"foreignKey:PrefectureCode"`
 	Bio            string     `gorm:"type:text"`
