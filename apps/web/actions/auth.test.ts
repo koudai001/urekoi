@@ -144,15 +144,22 @@ describe('Auth Server Actions', () => {
   // signup アクションのテスト
   describe('signup', () => {
     it('【201 成功】ユーザー登録が成功し、クッキー保存後にリダイレクトすること', async () => {
+      // Goバックエンドの成功レスポンスをモック化
       vi.mocked(postSignup).mockResolvedValue({
         status: 201,
         data: { access_token: 'new_access', refresh_token: 'new_refresh' },
       } as Awaited<ReturnType<typeof postSignup>>)
 
+      // テストデータを作成
       const formData = new FormData()
       formData.append('email', 'new@example.com')
       formData.append('password', 'password123')
+      formData.append('gender', 'female')
+      formData.append('birthdate', '1990-01-01')
+      formData.append('nickname', 'テスト')
+      formData.append('prefecture_code', '13')
 
+      // テスト実行＋検証
       await expect(signup(null, formData)).rejects.toThrow('NEXT_REDIRECT')
 
       expect(mockCookieStore.set).toHaveBeenCalledWith(
@@ -185,6 +192,10 @@ describe('Auth Server Actions', () => {
       const formData = new FormData()
       formData.append('email', 'duplicate@example.com')
       formData.append('password', 'password123')
+      formData.append('gender', 'female')
+      formData.append('birthdate', '1990-01-01')
+      formData.append('nickname', 'テスト')
+      formData.append('prefecture_code', '13')
 
       const result = await signup(null, formData)
 
@@ -204,6 +215,10 @@ describe('Auth Server Actions', () => {
       const formData = new FormData()
       formData.append('email', 'new@example.com')
       formData.append('password', 'short')
+      formData.append('gender', 'female')
+      formData.append('birthdate', '1990-01-01')
+      formData.append('nickname', 'テスト')
+      formData.append('prefecture_code', '13')
 
       const result = await signup(null, formData)
 

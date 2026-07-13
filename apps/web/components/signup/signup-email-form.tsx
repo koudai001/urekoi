@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import type { SignupFormValues } from './schema'
+import { startTransition } from 'react'
 
 // signupフローの最終ステップ。メールアドレス・パスワードを入力して送信する
 export function SignupEmailForm({
@@ -21,19 +22,25 @@ export function SignupEmailForm({
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useFormContext<SignupFormValues>()
 
-  const birthYear = watch('birthYear')
-  const birthMonth = watch('birthMonth')
-  const birthDay = watch('birthDay')
-  const birthdate = `${birthYear}-${birthMonth.padStart(2, '0')}-${birthDay.padStart(2, '0')}`
+  // zodバリデーションを通ってから、既存のsignup Server Actionに委譲する。
+  // DOMからではなくバリデーション済みのdataから直接FormDataを組み立てる
+  const onSubmit = handleSubmit((data) => {
+    const birthdate = `${data.birthYear}-${data.birthMonth.padStart(2, '0')}-${data.birthDay.padStart(2, '0')}`
 
-  // zodバリデーションを通ってから、既存のsignup Server Actionに委譲する
-  const onSubmit = handleSubmit((_data, event) => {
-    const form = event?.currentTarget
-    if (form instanceof HTMLFormElement) formAction(new FormData(form))
+    const formData = new FormData()
+    formData.set('email', data.email)
+    formData.set('password', data.password)
+    formData.set('gender', data.gender ?? '')
+    formData.set('prefecture_code', String(data.prefectureCode ?? ''))
+    formData.set('nickname', data.nickname)
+    formData.set('birthdate', birthdate)
+
+    startTransition(async () => {
+      await formAction(formData)
+    })
   })
 
   return (
@@ -48,16 +55,6 @@ export function SignupEmailForm({
       </p>
 
       <form className="mt-8 flex flex-1 flex-col gap-7" onSubmit={onSubmit}>
-        {/* gender・birthday・location・nicknameステップで入力済みの値をhiddenで送信 */}
-        <input type="hidden" name="gender" value={watch('gender') ?? ''} />
-        <input
-          type="hidden"
-          name="prefecture_code"
-          value={watch('prefectureCode') ?? ''}
-        />
-        <input type="hidden" name="nickname" value={watch('nickname')} />
-        <input type="hidden" name="birthdate" value={birthdate} />
-
         {/* メール */}
         <div className="flex flex-col gap-2">
           <label
