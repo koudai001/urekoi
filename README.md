@@ -14,6 +14,7 @@
 - Tailwind CSS v4
 - shadcn/ui(UIコンポーネント)
 - lucide-react(アイコン)
+- React Hook Form + Zod(フォーム状態管理・バリデーション)
 - orval(OpenAPI仕様からAPIクライアントを自動生成)
 - @redocly/cli(OpenAPI仕様のlint・ローカルプレビュー)
 - ESLint(eslint-config-next)
@@ -36,6 +37,8 @@
 - ozzo-validation v4(リクエストのバリデーション)
 - golangci-lint v2(複数のlinterをまとめて実行)
 - クリーンアーキテクチャ(controllers / usecases / repositories / models)
+- Atlas(GORMモデルからマイグレーションSQLを自動生成)
+- golang-migrate v4(マイグレーションの適用)
 
 ### CI/CD
 - Husky + lint-staged(コミット時にFE: prettier/eslint、BE: gofmtを自動実行。pre-pushでCI相当のチェックも実行。[.husky/pre-push](.husky/pre-push))
@@ -54,7 +57,7 @@
 
 ## ドキュメント
 - API仕様: https://koudai001.github.io/urekoi/ (ReDoc, [docs/openapi.yaml](docs/openapi.yaml)から生成)
-- DBテーブル定義: [docs/table-definitions.md](docs/table-definitions.md)
+- DBテーブル定義: [apps/api/models/](apps/api/models/)(AtlasがGORMモデルからマイグレーションを生成するため、モデルが正)
 
 ## ローカル環境
 - 現状DBのみコンテナ化(`docker-compose up -d`)

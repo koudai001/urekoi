@@ -15,17 +15,21 @@ import (
 func SetupRouter(db *gorm.DB) *gin.Engine {
 	router := gin.Default()
 
+	profileRepo := repositories.NewProfileRepository(db)
+
 	authRepo := repositories.NewAuthRepository(db)
-	authUsecase := usecases.NewAuthUsecase(authRepo)
+	authUsecase := usecases.NewAuthUsecase(authRepo, profileRepo)
 	authController := controllers.NewAuthController(authUsecase)
 
-	profileRepo := repositories.NewProfileRepository(db)
 	searchUsecase := usecases.NewSearchUsecase(profileRepo)
 	searchController := controllers.NewSearchController(searchUsecase)
 
 	tagRepo := repositories.NewTagRepository(db)
 	tagUsecase := usecases.NewTagUsecase(tagRepo)
 	tagController := controllers.NewTagController(tagUsecase)
+
+	myProfileUsecase := usecases.NewMyProfileUsecase(profileRepo)
+	myProfileController := controllers.NewMyProfileController(myProfileUsecase)
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
@@ -36,12 +40,16 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	router.POST("/refresh", authController.Refresh)
 	router.POST("/logout", authController.Logout)
 
-	searchRouter := router.Group("/search")
-	searchRouter.Use(middlewares.AuthRequired(authUsecase))
+	// 認証が必要なルートをグループ化
+	authRequired := router.Group("")
+	authRequired.Use(middlewares.AuthRequired(authUsecase))
+
+	searchRouter := authRequired.Group("/search")
 	searchRouter.GET("/all", searchController.ListProfiles)
 	searchRouter.GET("/all/partner/:id", searchController.GetProfileDetail)
 
-	router.GET("/tags", middlewares.AuthRequired(authUsecase), tagController.ListTags)
+	authRequired.GET("/tags", tagController.ListTags)
+	authRequired.GET("/myprofile", myProfileController.GetMyProfile)
 
 	return router
 }

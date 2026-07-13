@@ -1,6 +1,8 @@
-export function AuthLogo() {
+export function AuthLogo({ align = 'center' }: { align?: 'center' | 'left' }) {
   return (
-    <div className="mb-8 flex flex-col items-center leading-none">
+    <div
+      className={`mb-8 flex flex-col leading-none ${align === 'center' ? 'items-center' : 'items-start'}`}
+    >
       <span className="font-heading text-5xl font-bold tracking-tight text-primary">
         熟恋
       </span>

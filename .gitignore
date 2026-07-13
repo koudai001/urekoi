@@ -20,6 +20,7 @@ next-env.d.ts
 
 # Go build artifacts
 apps/api/tmp/
+apps/api/migrations/loader/loader
 
 # storybook
 *storybook.log

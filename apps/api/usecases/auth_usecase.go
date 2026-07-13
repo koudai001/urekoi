@@ -8,15 +8,19 @@ import (
 	"os"
 	"time"
 
+	"api/dto"
 	"api/models"
 	"api/repositories"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // リフレッシュトークンの有効期限
 const refreshTokenTTL = 30 * 24 * time.Hour
+
+const birthdateLayout = "2006-01-02"
 
 var (
 	ErrEmailAlreadyExists  = errors.New("email already exists")
@@ -26,8 +30,9 @@ var (
 )
 
 type IAuthUsecase interface {
-	// サインアップ成功時もログインと同様にaccessToken(JWT)とrefreshTokenを返す(自動ログイン)
-	SignUp(email string, password string) (user *models.User, accessToken string, refreshToken string, err error)
+	// サインアップ成功時もログインと同様にaccessToken(JWT)とrefreshTokenを返す(自動ログイン)。
+	// signup時にUser(認証情報・性別・生年月日)とProfile(ニックネーム・居住地)をまとめて作成する
+	SignUp(req dto.SignupRequest) (user *models.User, accessToken string, refreshToken string, err error)
 	// ログイン成功時はaccessToken(JWT)とrefreshTokenを返す
 	Login(email string, password string) (accessToken string, refreshToken string, err error)
 	// refresh_tokenをローテーションし、新しいaccessTokenとrefreshTokenを返す
@@ -39,28 +44,48 @@ type IAuthUsecase interface {
 }
 
 type AuthUsecase struct {
-	authRepo repositories.IAuthRepository
+	authRepo    repositories.IAuthRepository
+	profileRepo repositories.IProfileRepository
 }
 
-func NewAuthUsecase(authRepo repositories.IAuthRepository) IAuthUsecase {
+func NewAuthUsecase(authRepo repositories.IAuthRepository, profileRepo repositories.IProfileRepository) IAuthUsecase {
 	return &AuthUsecase{
-		authRepo: authRepo,
+		authRepo:    authRepo,
+		profileRepo: profileRepo,
 	}
 }
 
-func (u *AuthUsecase) SignUp(email string, password string) (*models.User, string, string, error) {
+func (u *AuthUsecase) SignUp(req dto.SignupRequest) (*models.User, string, string, error) {
 	//パスワードをハッシュ化
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, "", "", err
 	}
 
+	// controllerでバリデーション済み
+	birthdate, _ := time.Parse(birthdateLayout, req.Birthdate)
+
 	user := models.User{
-		Email:    email,
-		Password: string(hashedPassword),
+		Email:     req.Email,
+		Password:  string(hashedPassword),
+		Gender:    req.Gender,
+		Birthdate: birthdate,
 	}
 
-	if err := u.authRepo.CreateUser(&user); err != nil {
+	// User・Profileの作成をひとつのトランザクションにまとめる
+	err = u.authRepo.Transaction(func(tx *gorm.DB) error {
+		if err := u.authRepo.WithTx(tx).CreateUser(&user); err != nil {
+			return err
+		}
+
+		profile := models.Profile{
+			UserID:         user.ID,
+			Nickname:       req.Nickname,
+			PrefectureCode: req.PrefectureCode,
+		}
+		return u.profileRepo.WithTx(tx).CreateProfile(&profile)
+	})
+	if err != nil {
 		if errors.Is(err, repositories.ErrEmailAlreadyExists) {
 			return nil, "", "", ErrEmailAlreadyExists
 		}

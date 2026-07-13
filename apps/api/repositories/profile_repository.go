@@ -18,6 +18,8 @@ type IProfileRepository interface {
 	CreateProfile(profile *models.Profile) error
 	UpdateProfile(profile *models.Profile) error
 	ReplaceProfileTags(profileID uint64, tagIDs []uint64) error
+	// トランザクション用のDBハンドル(tx)にバインドした新しいrepositoryを返す
+	WithTx(tx *gorm.DB) IProfileRepository
 }
 
 type ProfileRepository struct {
@@ -31,9 +33,14 @@ func NewProfileRepository(db *gorm.DB) IProfileRepository {
 	}
 }
 
+func (r *ProfileRepository) WithTx(tx *gorm.DB) IProfileRepository {
+	// rは触らず、新しいインスタンスを作って返す（txを使った新しいrepositoryを返す）
+	return &ProfileRepository{db: tx}
+}
+
 func (r *ProfileRepository) GetAllProfiles() ([]models.Profile, error) {
 	var profiles []models.Profile
-	if err := r.db.Preload("Prefecture").Find(&profiles).Error; err != nil {
+	if err := r.db.Preload("Prefecture").Preload("User").Find(&profiles).Error; err != nil {
 		return nil, err
 	}
 
@@ -42,7 +49,7 @@ func (r *ProfileRepository) GetAllProfiles() ([]models.Profile, error) {
 
 func (r *ProfileRepository) GetProfileByID(id uint64) (*models.Profile, error) {
 	var profile models.Profile
-	if err := r.db.Preload("Prefecture").First(&profile, id).Error; err != nil {
+	if err := r.db.Preload("Prefecture").Preload("User").First(&profile, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrProfileNotFound
 		}
@@ -65,7 +72,7 @@ func (r *ProfileRepository) GetProfileTags(profileID uint64) ([]models.ProfileTa
 
 func (r *ProfileRepository) GetProfileByUserID(userID uint64) (*models.Profile, error) {
 	var profile models.Profile
-	if err := r.db.Preload("Prefecture").Where("user_id = ?", userID).First(&profile).Error; err != nil {
+	if err := r.db.Preload("Prefecture").Preload("User").Where("user_id = ?", userID).First(&profile).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrProfileNotFound
 		}
