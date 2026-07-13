@@ -402,7 +402,7 @@ components:
   schemas:
     SignupRequest:
       type: object
-      required: [email, password]
+      required: [email, password, gender, birthdate, nickname, prefecture_code]
       properties:
         email:
           type: string
@@ -412,6 +412,20 @@ components:
           type: string
           minLength: 8
           example: password123
+        gender:
+          type: string
+          enum: [male, female]
+          example: female
+        birthdate:
+          type: string
+          format: date
+          example: '1990-01-01'
+        nickname:
+          type: string
+          example: たろう
+        prefecture_code:
+          type: integer
+          example: 13
     SignupResponse:
       type: object
       properties:

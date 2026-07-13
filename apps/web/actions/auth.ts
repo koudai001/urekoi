@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { postLogin, postLogout, postSignup } from '@/generated/auth/auth'
+import type { SignupRequestGender } from '@/generated/urekoiAPI.schemas'
 import {
   ACCESS_TOKEN_COOKIE_OPTIONS,
   COOKIE_ACCESS_TOKEN,
@@ -20,12 +21,31 @@ export async function signup(
 ): Promise<SignupResult> {
   const email = formData.get('email')
   const password = formData.get('password')
+  const gender = formData.get('gender')
+  const birthdate = formData.get('birthdate')
+  const nickname = formData.get('nickname')
+  const prefectureCode = formData.get('prefecture_code')
 
-  if (typeof email !== 'string' || typeof password !== 'string') {
+  // 型ガード
+  if (
+    typeof email !== 'string' ||
+    typeof password !== 'string' ||
+    typeof gender !== 'string' ||
+    typeof birthdate !== 'string' ||
+    typeof nickname !== 'string' ||
+    typeof prefectureCode !== 'string'
+  ) {
     return { success: false, error: '入力内容を確認してください' }
   }
 
-  const res = await postSignup({ email, password })
+  const res = await postSignup({
+    email,
+    password,
+    gender: gender as SignupRequestGender,
+    birthdate,
+    nickname,
+    prefecture_code: Number(prefectureCode),
+  })
 
   // 全ケース網羅
   switch (res.status) {
