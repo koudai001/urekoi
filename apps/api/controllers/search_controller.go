@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"api/middlewares"
+	"api/models"
 	"api/usecases"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +23,9 @@ func NewSearchController(searchUsecase usecases.ISearchUsecase) *SearchControlle
 }
 
 func (ctrl *SearchController) ListProfiles(c *gin.Context) {
-	profiles, err := ctrl.searchUsecase.ListProfiles()
+	user := c.MustGet(middlewares.ContextUserKey).(*models.User)
+
+	profiles, err := ctrl.searchUsecase.ListProfiles(user.ID)
 	if err != nil {
 		if errors.Is(err, usecases.ErrNoProfilesFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -35,13 +39,13 @@ func (ctrl *SearchController) ListProfiles(c *gin.Context) {
 }
 
 func (ctrl *SearchController) GetProfileDetail(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	userID, err := strconv.ParseUint(c.Param("userId"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid userId"})
 		return
 	}
 
-	profile, err := ctrl.searchUsecase.GetProfileDetail(id)
+	profile, err := ctrl.searchUsecase.GetProfileDetail(userID)
 	if err != nil {
 		if errors.Is(err, usecases.ErrProfileNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

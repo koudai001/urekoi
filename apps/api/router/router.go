@@ -46,7 +46,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	searchRouter := authRequired.Group("/search")
 	searchRouter.GET("/all", searchController.ListProfiles)
-	searchRouter.GET("/all/partner/:id", searchController.GetProfileDetail)
+	searchRouter.GET("/all/partner/:userId", searchController.GetProfileDetail)
 
 	authRequired.GET("/tags", tagController.ListTags)
 	authRequired.GET("/myprofile", myProfileController.GetMyProfile)

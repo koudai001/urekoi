@@ -1,7 +1,10 @@
 import { cookies } from 'next/headers'
 import { ProfileCardGrid } from '@/components/profile/profile-card-grid'
 import { ProfileDetailModal } from '@/components/profile/profile-detail-modal'
-import { getSearchAll, getSearchAllPartnerId } from '@/generated/search/search'
+import {
+  getSearchAll,
+  getSearchAllPartnerUserId,
+} from '@/generated/search/search'
 import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
 
 // 直接URLアクセス・リロード時は裏の一覧が無いため、一覧+詳細を両方取得して自分で組み立てる
@@ -16,7 +19,7 @@ export default async function Page({
 
   const [listRes, detailRes] = await Promise.all([
     getSearchAll(authHeaders),
-    getSearchAllPartnerId(Number(id), authHeaders),
+    getSearchAllPartnerUserId(Number(id), authHeaders),
   ])
 
   return (

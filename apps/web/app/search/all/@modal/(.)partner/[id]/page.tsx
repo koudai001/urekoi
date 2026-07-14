@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
 import { ProfileDetailModal } from '@/components/profile/profile-detail-modal'
-import { getSearchAllPartnerId } from '@/generated/search/search'
+import { getSearchAllPartnerUserId } from '@/generated/search/search'
 import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
 
 // サーバーコンポーネントで検索結果を取得し、ProfileDetailModalに渡す
@@ -12,7 +12,7 @@ export default async function Modal({
   const { id } = await params
   const accessToken = (await cookies()).get(COOKIE_ACCESS_TOKEN)?.value ?? ''
 
-  const res = await getSearchAllPartnerId(Number(id), {
+  const res = await getSearchAllPartnerUserId(Number(id), {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
 

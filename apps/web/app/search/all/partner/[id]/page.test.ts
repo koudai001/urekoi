@@ -1,7 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { ReactElement } from 'react'
 import { cookies } from 'next/headers'
-import { getSearchAll, getSearchAllPartnerId } from '@/generated/search/search'
+import {
+  getSearchAll,
+  getSearchAllPartnerUserId,
+} from '@/generated/search/search'
 import { ProfileCardGrid } from '@/components/profile/profile-card-grid'
 import { ProfileDetailModal } from '@/components/profile/profile-detail-modal'
 import Page from './page'
@@ -14,7 +17,7 @@ vi.mock('next/headers', () => ({
 // Orval で自動生成された API クライアントをモック化
 vi.mock('@/generated/search/search', () => ({
   getSearchAll: vi.fn(),
-  getSearchAllPartnerId: vi.fn(),
+  getSearchAllPartnerUserId: vi.fn(),
 }))
 
 describe('Page', () => {
@@ -32,10 +35,10 @@ describe('Page', () => {
       status: 200,
       data: profiles,
     } as Awaited<ReturnType<typeof getSearchAll>>)
-    vi.mocked(getSearchAllPartnerId).mockResolvedValue({
+    vi.mocked(getSearchAllPartnerUserId).mockResolvedValue({
       status: 200,
       data: profile,
-    } as Awaited<ReturnType<typeof getSearchAllPartnerId>>)
+    } as Awaited<ReturnType<typeof getSearchAllPartnerUserId>>)
 
     const element = await Page({ params: Promise.resolve({ id: '1' }) })
     const children = element.props.children as ReactElement[]
@@ -43,7 +46,7 @@ describe('Page', () => {
     expect(getSearchAll).toHaveBeenCalledWith({
       headers: { Authorization: 'Bearer mock_access_token' },
     })
-    expect(getSearchAllPartnerId).toHaveBeenCalledWith(1, {
+    expect(getSearchAllPartnerUserId).toHaveBeenCalledWith(1, {
       headers: { Authorization: 'Bearer mock_access_token' },
     })
     expect(children[0].type).toBe(ProfileCardGrid)
@@ -61,10 +64,10 @@ describe('Page', () => {
       status: 404,
       data: { error: 'not found' },
     } as Awaited<ReturnType<typeof getSearchAll>>)
-    vi.mocked(getSearchAllPartnerId).mockResolvedValue({
+    vi.mocked(getSearchAllPartnerUserId).mockResolvedValue({
       status: 200,
       data: { id: 1, nickname: '美咲', age: 42, prefecture: '東京都' },
-    } as Awaited<ReturnType<typeof getSearchAllPartnerId>>)
+    } as Awaited<ReturnType<typeof getSearchAllPartnerUserId>>)
 
     const element = await Page({ params: Promise.resolve({ id: '1' }) })
     const children = element.props.children as ReactElement[]
@@ -81,10 +84,10 @@ describe('Page', () => {
       status: 200,
       data: [],
     } as unknown as Awaited<ReturnType<typeof getSearchAll>>)
-    vi.mocked(getSearchAllPartnerId).mockResolvedValue({
+    vi.mocked(getSearchAllPartnerUserId).mockResolvedValue({
       status: 404,
       data: { error: 'not found' },
-    } as Awaited<ReturnType<typeof getSearchAllPartnerId>>)
+    } as Awaited<ReturnType<typeof getSearchAllPartnerUserId>>)
 
     const element = await Page({ params: Promise.resolve({ id: '9999' }) })
     const children = element.props.children as ReactElement[]
