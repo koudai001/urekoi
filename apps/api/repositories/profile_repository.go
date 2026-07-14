@@ -11,8 +11,8 @@ import (
 var ErrProfileNotFound = errors.New("profile not found")
 
 type IProfileRepository interface {
-	GetAllProfiles() ([]models.Profile, error)
-	GetProfileByID(id uint64) (*models.Profile, error)
+	// excludeUserIDのプロフィールは結果から除外する(自分自身を一覧に出さないため)
+	GetAllProfiles(excludeUserID uint64) ([]models.Profile, error)
 	GetProfileTags(profileID uint64) ([]models.ProfileTag, error)
 	GetProfileByUserID(userID uint64) (*models.Profile, error)
 	CreateProfile(profile *models.Profile) error
@@ -38,25 +38,15 @@ func (r *ProfileRepository) WithTx(tx *gorm.DB) IProfileRepository {
 	return &ProfileRepository{db: tx}
 }
 
-func (r *ProfileRepository) GetAllProfiles() ([]models.Profile, error) {
+func (r *ProfileRepository) GetAllProfiles(excludeUserID uint64) ([]models.Profile, error) {
 	var profiles []models.Profile
-	if err := r.db.Preload("Prefecture").Preload("User").Find(&profiles).Error; err != nil {
+	if err := r.db.Preload("Prefecture").Preload("User").
+		Where("user_id != ?", excludeUserID).
+		Find(&profiles).Error; err != nil {
 		return nil, err
 	}
 
 	return profiles, nil
-}
-
-func (r *ProfileRepository) GetProfileByID(id uint64) (*models.Profile, error) {
-	var profile models.Profile
-	if err := r.db.Preload("Prefecture").Preload("User").First(&profile, id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrProfileNotFound
-		}
-		return nil, err
-	}
-
-	return &profile, nil
 }
 
 func (r *ProfileRepository) GetProfileTags(profileID uint64) ([]models.ProfileTag, error) {

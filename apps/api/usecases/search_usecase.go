@@ -23,10 +23,10 @@ const dummyImagePath = ""
 const mockOnlineStatus = "online"
 
 type ISearchUsecase interface {
-	// 登録済みユーザーのプロフィール一覧を取得する
-	ListProfiles() ([]dto.ProfileSummary, error)
-	// プロフィール1件の詳細を取得する
-	GetProfileDetail(id uint64) (dto.ProfileDetail, error)
+	// 登録済みユーザーのプロフィール一覧を取得する(requestingUserID自身は除外)
+	ListProfiles(requestingUserID uint64) ([]dto.ProfileSummary, error)
+	// プロフィール1件の詳細をuser_idで取得する
+	GetProfileDetail(userID uint64) (dto.ProfileDetail, error)
 }
 
 type SearchUsecase struct {
@@ -39,8 +39,8 @@ func NewSearchUsecase(profileRepo repositories.IProfileRepository) ISearchUsecas
 	}
 }
 
-func (u *SearchUsecase) ListProfiles() ([]dto.ProfileSummary, error) {
-	profiles, err := u.profileRepo.GetAllProfiles()
+func (u *SearchUsecase) ListProfiles(requestingUserID uint64) ([]dto.ProfileSummary, error) {
+	profiles, err := u.profileRepo.GetAllProfiles(requestingUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (u *SearchUsecase) ListProfiles() ([]dto.ProfileSummary, error) {
 	res := make([]dto.ProfileSummary, 0, len(profiles))
 	for _, p := range profiles {
 		res = append(res, dto.ProfileSummary{
-			ID:         p.ID,
+			ID:         p.UserID,
 			Nickname:   p.Nickname,
 			Age:        p.User.Age(),
 			Prefecture: p.Prefecture.Name,
@@ -65,8 +65,8 @@ func (u *SearchUsecase) ListProfiles() ([]dto.ProfileSummary, error) {
 	return res, nil
 }
 
-func (u *SearchUsecase) GetProfileDetail(id uint64) (dto.ProfileDetail, error) {
-	profile, err := u.profileRepo.GetProfileByID(id)
+func (u *SearchUsecase) GetProfileDetail(userID uint64) (dto.ProfileDetail, error) {
+	profile, err := u.profileRepo.GetProfileByUserID(userID)
 	if err != nil {
 		if errors.Is(err, repositories.ErrProfileNotFound) {
 			return dto.ProfileDetail{}, ErrProfileNotFound
@@ -74,7 +74,7 @@ func (u *SearchUsecase) GetProfileDetail(id uint64) (dto.ProfileDetail, error) {
 		return dto.ProfileDetail{}, err
 	}
 
-	profileTags, err := u.profileRepo.GetProfileTags(id)
+	profileTags, err := u.profileRepo.GetProfileTags(profile.ID)
 	if err != nil {
 		return dto.ProfileDetail{}, err
 	}
@@ -89,7 +89,7 @@ func (u *SearchUsecase) GetProfileDetail(id uint64) (dto.ProfileDetail, error) {
 	}
 
 	return dto.ProfileDetail{
-		ID:         profile.ID,
+		ID:         profile.UserID,
 		Nickname:   profile.Nickname,
 		Age:        profile.User.Age(),
 		Prefecture: profile.Prefecture.Name,

@@ -14,8 +14,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// 複数人登録されている場合に全員分の一覧(id・年齢・都道府県)を取得できることを検証
-// (signupは自動でプロフィールも作るため、一覧確認用のviewer自身も1件としてカウントされる)
+// 複数人登録されている場合に、自分以外の全員分の一覧(id・年齢・都道府県)を取得できることを検証
+// (signupは自動でプロフィールも作るため、一覧確認用のviewer自身は結果から除外されること)
 func TestListProfiles_Success(t *testing.T) {
 	router, db := setupWithDB(t)
 
@@ -23,8 +23,6 @@ func TestListProfiles_Success(t *testing.T) {
 	profile2 := createProfile(t, db, "profile2@example.com", "テスト花子", 25, seed.PrefectureOsaka)
 
 	viewerRes := signUp(t, router, "viewer@example.com")
-	var viewerProfile models.Profile
-	require.NoError(t, db.Where("user_id = ?", viewerRes.ID).First(&viewerProfile).Error)
 
 	w := getJSONWithAuth(t, router, "/search/all", viewerRes.AccessToken)
 
@@ -32,11 +30,10 @@ func TestListProfiles_Success(t *testing.T) {
 
 	var res []dto.ProfileSummary
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res)) //レスポンスボディを構造体に変換し、resに格納
-	require.Len(t, res, 3)
+	require.Len(t, res, 2)
 	assert.ElementsMatch(t, []dto.ProfileSummary{
-		{ID: profile1.ID, Nickname: "テスト太郎", Age: 30, Prefecture: "東京都", Image: "", IsNew: true, Online: "online"},
-		{ID: profile2.ID, Nickname: "テスト花子", Age: 25, Prefecture: "大阪府", Image: "", IsNew: true, Online: "online"},
-		{ID: viewerProfile.ID, Nickname: "テストユーザー", Age: defaultTestAge, Prefecture: "東京都", Image: "", IsNew: true, Online: "online"},
+		{ID: profile1.UserID, Nickname: "テスト太郎", Age: 30, Prefecture: "東京都", Image: "", IsNew: true, Online: "online"},
+		{ID: profile2.UserID, Nickname: "テスト花子", Age: 25, Prefecture: "大阪府", Image: "", IsNew: true, Online: "online"},
 	}, res)
 }
 
@@ -73,14 +70,14 @@ func TestGetProfileDetail_Success(t *testing.T) {
 
 	accessToken := signUpAndGetAccessToken(t, router, "viewer3@example.com")
 
-	w := getJSONWithAuth(t, router, fmt.Sprintf("/search/all/partner/%d", profile.ID), accessToken)
+	w := getJSONWithAuth(t, router, fmt.Sprintf("/search/all/partner/%d", profile.UserID), accessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
 	var res dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.Equal(t, dto.ProfileDetail{
-		ID:         profile.ID,
+		ID:         profile.UserID,
 		Nickname:   "テスト太郎",
 		Age:        30,
 		Prefecture: "東京都",

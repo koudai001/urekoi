@@ -284,6 +284,7 @@ paths:
     get:
       tags: [search]
       summary: 相手一覧取得
+      description: 認証済みユーザー自身のプロフィールは結果から除外される
       security:
         - bearerAuth: []
       responses:
@@ -308,16 +309,17 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /search/all/partner/{id}:
+  /search/all/partner/{userId}:
     get:
       tags: [search]
       summary: 相手詳細取得
       security:
         - bearerAuth: []
       parameters:
-        - name: id
+        - name: userId
           in: path
           required: true
+          description: 相手のUser.ID(Profile.IDではない)
           schema:
             type: integer
       responses:

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { cookies } from 'next/headers'
-import { getSearchAllPartnerId } from '@/generated/search/search'
+import { getSearchAllPartnerUserId } from '@/generated/search/search'
 import Modal from './page'
 
 // クッキーをモック化
@@ -10,7 +10,7 @@ vi.mock('next/headers', () => ({
 
 // Orval で自動生成された API クライアントをモック化
 vi.mock('@/generated/search/search', () => ({
-  getSearchAllPartnerId: vi.fn(),
+  getSearchAllPartnerUserId: vi.fn(),
 }))
 
 describe('Modal', () => {
@@ -20,14 +20,14 @@ describe('Modal', () => {
     } as unknown as Awaited<ReturnType<typeof cookies>>)
 
     const profile = { id: 1, nickname: '美咲', age: 42, prefecture: '東京都' }
-    vi.mocked(getSearchAllPartnerId).mockResolvedValue({
+    vi.mocked(getSearchAllPartnerUserId).mockResolvedValue({
       status: 200,
       data: profile,
-    } as Awaited<ReturnType<typeof getSearchAllPartnerId>>)
+    } as Awaited<ReturnType<typeof getSearchAllPartnerUserId>>)
 
     const element = await Modal({ params: Promise.resolve({ id: '1' }) })
 
-    expect(getSearchAllPartnerId).toHaveBeenCalledWith(1, {
+    expect(getSearchAllPartnerUserId).toHaveBeenCalledWith(1, {
       headers: { Authorization: 'Bearer mock_access_token' },
     })
     expect(element?.props).toEqual({ profile })
@@ -38,10 +38,10 @@ describe('Modal', () => {
       get: vi.fn().mockReturnValue({ value: 'mock_access_token' }),
     } as unknown as Awaited<ReturnType<typeof cookies>>)
 
-    vi.mocked(getSearchAllPartnerId).mockResolvedValue({
+    vi.mocked(getSearchAllPartnerUserId).mockResolvedValue({
       status: 404,
       data: { error: 'not found' },
-    } as Awaited<ReturnType<typeof getSearchAllPartnerId>>)
+    } as Awaited<ReturnType<typeof getSearchAllPartnerUserId>>)
 
     const element = await Modal({ params: Promise.resolve({ id: '9999' }) })
 

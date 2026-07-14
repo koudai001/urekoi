@@ -53,6 +53,7 @@ export const getGetSearchAllUrl = () => {
 }
 
 /**
+ * 認証済みユーザー自身のプロフィールは結果から除外される
  * @summary 相手一覧取得
  */
 export const getSearchAll = async ( options?: RequestInit): Promise<getSearchAllResponse> => {
@@ -67,49 +68,49 @@ export const getSearchAll = async ( options?: RequestInit): Promise<getSearchAll
 );}
 
 
-export type getSearchAllPartnerIdResponse200 = {
+export type getSearchAllPartnerUserIdResponse200 = {
   data: ProfileDetail
   status: 200
 }
 
-export type getSearchAllPartnerIdResponse401 = {
+export type getSearchAllPartnerUserIdResponse401 = {
   data: UnauthorizedResponse
   status: 401
 }
 
-export type getSearchAllPartnerIdResponse404 = {
+export type getSearchAllPartnerUserIdResponse404 = {
   data: Error
   status: 404
 }
 
-export type getSearchAllPartnerIdResponse500 = {
+export type getSearchAllPartnerUserIdResponse500 = {
   data: InternalServerErrorResponse
   status: 500
 }
 
-export type getSearchAllPartnerIdResponseSuccess = (getSearchAllPartnerIdResponse200) & {
+export type getSearchAllPartnerUserIdResponseSuccess = (getSearchAllPartnerUserIdResponse200) & {
   headers: Headers;
 };
-export type getSearchAllPartnerIdResponseError = (getSearchAllPartnerIdResponse401 | getSearchAllPartnerIdResponse404 | getSearchAllPartnerIdResponse500) & {
+export type getSearchAllPartnerUserIdResponseError = (getSearchAllPartnerUserIdResponse401 | getSearchAllPartnerUserIdResponse404 | getSearchAllPartnerUserIdResponse500) & {
   headers: Headers;
 };
 
-export type getSearchAllPartnerIdResponse = (getSearchAllPartnerIdResponseSuccess | getSearchAllPartnerIdResponseError)
+export type getSearchAllPartnerUserIdResponse = (getSearchAllPartnerUserIdResponseSuccess | getSearchAllPartnerUserIdResponseError)
 
-export const getGetSearchAllPartnerIdUrl = (id: number,) => {
-
-
+export const getGetSearchAllPartnerUserIdUrl = (userId: number,) => {
 
 
-  return `/search/all/partner/${id}`
+
+
+  return `/search/all/partner/${userId}`
 }
 
 /**
  * @summary 相手詳細取得
  */
-export const getSearchAllPartnerId = async (id: number, options?: RequestInit): Promise<getSearchAllPartnerIdResponse> => {
+export const getSearchAllPartnerUserId = async (userId: number, options?: RequestInit): Promise<getSearchAllPartnerUserIdResponse> => {
 
-  return customFetch<getSearchAllPartnerIdResponse>(getGetSearchAllPartnerIdUrl(id),
+  return customFetch<getSearchAllPartnerUserIdResponse>(getGetSearchAllPartnerUserIdUrl(userId),
   {
     ...options,
     method: 'GET'
