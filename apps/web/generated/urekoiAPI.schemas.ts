@@ -79,6 +79,8 @@ export interface ProfileDetail {
   online?: string;
   images?: string[];
   tags?: TagSummary[];
+  /** 閲覧者が既にこの相手にいいね済みか */
+  already_liked?: boolean;
 }
 
 export interface TagOption {

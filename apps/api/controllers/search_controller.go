@@ -45,7 +45,9 @@ func (ctrl *SearchController) GetProfileDetail(c *gin.Context) {
 		return
 	}
 
-	profile, err := ctrl.searchUsecase.GetProfileDetail(userID)
+	viewer := c.MustGet(middlewares.ContextUserKey).(*models.User)
+
+	profile, err := ctrl.searchUsecase.GetProfileDetail(viewer.ID, userID)
 	if err != nil {
 		if errors.Is(err, usecases.ErrProfileNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

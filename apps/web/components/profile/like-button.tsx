@@ -5,9 +5,15 @@ import { ThumbsUp } from 'lucide-react'
 import { sendLike } from '@/actions/likes'
 import { cn } from '@/lib/utils'
 
-export function LikeButton({ toUserId }: { toUserId: number }) {
+export function LikeButton({
+  toUserId,
+  alreadyLiked,
+}: {
+  toUserId: number
+  alreadyLiked: boolean
+}) {
   const [isPending, startTransition] = useTransition()
-  const [liked, setLiked] = useState(false)
+  const [liked, setLiked] = useState(alreadyLiked)
   const [error, setError] = useState('')
 
   const onClick = () => {

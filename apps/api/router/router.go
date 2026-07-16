@@ -21,7 +21,9 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	authUsecase := usecases.NewAuthUsecase(authRepo, profileRepo)
 	authController := controllers.NewAuthController(authUsecase)
 
-	searchUsecase := usecases.NewSearchUsecase(profileRepo)
+	likeRepo := repositories.NewLikeRepository(db)
+
+	searchUsecase := usecases.NewSearchUsecase(profileRepo, likeRepo)
 	searchController := controllers.NewSearchController(searchUsecase)
 
 	tagRepo := repositories.NewTagRepository(db)
@@ -31,7 +33,6 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	myProfileUsecase := usecases.NewMyProfileUsecase(profileRepo)
 	myProfileController := controllers.NewMyProfileController(myProfileUsecase)
 
-	likeRepo := repositories.NewLikeRepository(db)
 	likeUsecase := usecases.NewLikeUsecase(likeRepo, authRepo)
 	likeController := controllers.NewLikeController(likeUsecase)
 

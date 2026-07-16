@@ -9,6 +9,7 @@ const meta = {
   component: LikeButton,
   args: {
     toUserId: 1,
+    alreadyLiked: false,
   },
   // 各storyでの上書き設定が無い場合の既定の戻り値(Storybook上で実際にクリックしても落ちないように)
   beforeEach: () => {
@@ -20,6 +21,17 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
+
+// 既にいいね済みの場合、最初から押せない見た目になっていることを確認
+export const AlreadyLiked: Story = {
+  args: { alreadyLiked: true },
+  play: async ({ canvas }) => {
+    const button = canvas.getByRole('button', { name: 'いいね' })
+
+    await expect(button).toBeDisabled()
+    await expect(button).toHaveClass('bg-muted')
+  },
+}
 
 // クリックしていいねが成功すると、ボタンが押せなくなり見た目が変わることを確認
 export const LikeSuccess: Story = {

@@ -592,6 +592,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TagSummary"
+        already_liked:
+          type: boolean
+          description: 閲覧者が既にこの相手にいいね済みか
+          example: false
     TagSummary:
       type: object
       properties:
