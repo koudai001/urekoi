@@ -57,8 +57,8 @@ erDiagram
     }
     LIKE {
         bigint id PK
-        bigint from_user_id FK "NOT NULL User.ID"
-        bigint to_user_id FK "NOT NULL User.ID"
+        bigint from_user_id FK "NOT NULL User.ID UNIQUE(from_user_id, to_user_id) 重複いいね防止"
+        bigint to_user_id FK "NOT NULL User.ID UNIQUE(from_user_id, to_user_id) 重複いいね防止"
         timestamptz created_at "NOT NULL DEFAULT now()"
     }
     MATCH {

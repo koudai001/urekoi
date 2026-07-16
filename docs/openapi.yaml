@@ -31,28 +31,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignupRequest'
+              $ref: "#/components/schemas/SignupRequest"
       responses:
-        '201':
+        "201":
           description: 登録成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SignupResponse'
-        '400':
+                $ref: "#/components/schemas/SignupResponse"
+        "400":
           description: バリデーションエラー(email形式・password 8文字未満など)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: メールアドレスの形式が正しくありません
-        '409':
+        "409":
           description: email重複
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: このメールアドレスは既に登録されています
 
@@ -65,28 +65,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '200':
+        "200":
           description: ログイン成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
-        '400':
+                $ref: "#/components/schemas/LoginResponse"
+        "400":
           description: バリデーションエラー
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: パスワードを入力してください
-        '401':
+        "401":
           description: email未登録 or パスワード不一致(列挙攻撃防止のため区別せず統一)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: invalid email or password
 
@@ -99,28 +99,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshRequest'
+              $ref: "#/components/schemas/RefreshRequest"
       responses:
-        '200':
+        "200":
           description: 再発行成功(refresh_tokenもローテーションされる)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RefreshResponse'
-        '400':
+                $ref: "#/components/schemas/RefreshResponse"
+        "400":
           description: バリデーションエラー
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: リフレッシュトークンを入力してください
-        '401':
+        "401":
           description: refresh_tokenが無効・期限切れ・失効済み
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: invalid or expired refresh token
 
@@ -133,24 +133,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LogoutRequest'
+              $ref: "#/components/schemas/LogoutRequest"
       responses:
-        '204':
+        "204":
           description: ログアウト成功
-        '400':
+        "400":
           description: バリデーションエラー
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: リフレッシュトークンを入力してください
-        '401':
+        "401":
           description: refresh_tokenが無効・期限切れ・失効済み
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: invalid or expired refresh token
 
@@ -159,7 +159,7 @@ paths:
       tags: [auth]
       summary: 退会
       responses:
-        '200':
+        "200":
           description: 退会成功
 
   /myprofile:
@@ -169,24 +169,24 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: 取得成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MyProfileResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
+                $ref: "#/components/schemas/MyProfileResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
           description: プロフィール未作成
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: profile not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       tags: [profile]
       summary: プロフィール作成
@@ -197,32 +197,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MyProfileRequest'
+              $ref: "#/components/schemas/MyProfileRequest"
       responses:
-        '201':
+        "201":
           description: 作成成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MyProfileResponse'
-        '400':
+                $ref: "#/components/schemas/MyProfileResponse"
+        "400":
           description: バリデーションエラー
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '409':
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
           description: プロフィール作成済み
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: profile already exists
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     put:
       tags: [profile]
       summary: プロフィール更新
@@ -233,32 +233,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MyProfileRequest'
+              $ref: "#/components/schemas/MyProfileRequest"
       responses:
-        '200':
+        "200":
           description: 更新成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MyProfileResponse'
-        '400':
+                $ref: "#/components/schemas/MyProfileResponse"
+        "400":
           description: バリデーションエラー
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
           description: プロフィール未作成
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: profile not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /tags:
     get:
@@ -267,18 +267,18 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: 取得成功
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TagOption'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                  $ref: "#/components/schemas/TagOption"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /search/all:
     get:
@@ -288,26 +288,26 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: 取得成功
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ProfileSummary'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
+                  $ref: "#/components/schemas/ProfileSummary"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
           description: 登録済みプロフィールが1件もない
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: no profiles found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /search/all/partner/{userId}:
     get:
@@ -323,47 +323,93 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: 取得成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProfileDetail'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
+                $ref: "#/components/schemas/ProfileDetail"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
           description: プロフィールが見つからない
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 error: profile not found
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /likes:
     post:
       tags: [likes]
-      summary: いいねを押す
+      summary: いいねを送る
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LikeRequest"
       responses:
-        '201':
+        "201":
           description: いいね成功
+        "400":
+          description: バリデーションエラー(自分自身へのいいねなど)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: 相手が見つからない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: user not found
+        "409":
+          description: 既にいいね済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: already liked
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /likes/received:
     get:
       tags: [likes]
-      summary: もらったいいねを取得
+      summary: もらったいいね一覧を取得(ポーリングでの利用を想定)
+      security:
+        - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: 取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProfileSummary"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /matches:
     get:
       tags: [matches]
       summary: マッチングした相手の一覧取得
       responses:
-        '200':
+        "200":
           description: 取得成功
 
   /matches/{match_id}/messages:
@@ -377,13 +423,13 @@ paths:
       tags: [messages]
       summary: 特定ユーザーとのメッセージ履歴を取得
       responses:
-        '200':
+        "200":
           description: 取得成功
     post:
       tags: [messages]
       summary: 特定ユーザーにメッセージを送る
       responses:
-        '201':
+        "201":
           description: 送信成功
 
 components:
@@ -400,7 +446,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
   schemas:
     SignupRequest:
       type: object
@@ -421,7 +467,7 @@ components:
         birthdate:
           type: string
           format: date
-          example: '1990-01-01'
+          example: "1990-01-01"
         nickname:
           type: string
           example: たろう
@@ -545,7 +591,7 @@ components:
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/TagSummary'
+            $ref: "#/components/schemas/TagSummary"
     TagSummary:
       type: object
       properties:
@@ -571,6 +617,14 @@ components:
         category:
           type: string
           example: グルメ・お酒
+    LikeRequest:
+      type: object
+      required: [to_user_id]
+      properties:
+        to_user_id:
+          type: integer
+          format: int64
+          example: 1
     MyProfileRequest:
       type: object
       required: [nickname, age, prefecture_code]

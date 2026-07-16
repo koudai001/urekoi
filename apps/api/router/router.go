@@ -31,6 +31,10 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	myProfileUsecase := usecases.NewMyProfileUsecase(profileRepo)
 	myProfileController := controllers.NewMyProfileController(myProfileUsecase)
 
+	likeRepo := repositories.NewLikeRepository(db)
+	likeUsecase := usecases.NewLikeUsecase(likeRepo, authRepo)
+	likeController := controllers.NewLikeController(likeUsecase)
+
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
@@ -50,6 +54,10 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	authRequired.GET("/tags", tagController.ListTags)
 	authRequired.GET("/myprofile", myProfileController.GetMyProfile)
+
+	likeRouter := authRequired.Group("/likes")
+	likeRouter.POST("", likeController.SendLike)
+	likeRouter.GET("/received", likeController.GetReceivedLikes)
 
 	return router
 }

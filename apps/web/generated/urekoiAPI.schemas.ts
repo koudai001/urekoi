@@ -87,6 +87,10 @@ export interface TagOption {
   category?: string;
 }
 
+export interface LikeRequest {
+  to_user_id: number;
+}
+
 export interface MyProfileRequest {
   nickname: string;
   age: number;
