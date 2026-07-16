@@ -27,9 +27,14 @@ describe('Page', () => {
     } as unknown as Awaited<ReturnType<typeof cookies>>)
 
     const profiles = [
-      { id: 1, nickname: '美咲', age: 42, prefecture: '東京都' },
+      { user_id: 1, nickname: '美咲', age: 42, prefecture: '東京都' },
     ]
-    const profile = { id: 1, nickname: '美咲', age: 42, prefecture: '東京都' }
+    const profile = {
+      user_id: 1,
+      nickname: '美咲',
+      age: 42,
+      prefecture: '東京都',
+    }
 
     vi.mocked(getSearchAll).mockResolvedValue({
       status: 200,
@@ -66,7 +71,7 @@ describe('Page', () => {
     } as Awaited<ReturnType<typeof getSearchAll>>)
     vi.mocked(getSearchAllPartnerUserId).mockResolvedValue({
       status: 200,
-      data: { id: 1, nickname: '美咲', age: 42, prefecture: '東京都' },
+      data: { user_id: 1, nickname: '美咲', age: 42, prefecture: '東京都' },
     } as Awaited<ReturnType<typeof getSearchAllPartnerUserId>>)
 
     const element = await Page({ params: Promise.resolve({ id: '1' }) })

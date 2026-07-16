@@ -32,8 +32,8 @@ func TestListProfiles_Success(t *testing.T) {
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res)) //レスポンスボディを構造体に変換し、resに格納
 	require.Len(t, res, 2)
 	assert.ElementsMatch(t, []dto.ProfileSummary{
-		{ID: profile1.UserID, Nickname: "テスト太郎", Age: 30, Prefecture: "東京都", Image: "", IsNew: true, Online: "online"},
-		{ID: profile2.UserID, Nickname: "テスト花子", Age: 25, Prefecture: "大阪府", Image: "", IsNew: true, Online: "online"},
+		{UserID: profile1.UserID, Nickname: "テスト太郎", Age: 30, Prefecture: "東京都", Image: "", IsNew: true, Online: "online"},
+		{UserID: profile2.UserID, Nickname: "テスト花子", Age: 25, Prefecture: "大阪府", Image: "", IsNew: true, Online: "online"},
 	}, res)
 }
 
@@ -77,7 +77,7 @@ func TestGetProfileDetail_Success(t *testing.T) {
 	var res dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.Equal(t, dto.ProfileDetail{
-		ID:         profile.UserID,
+		UserID:     profile.UserID,
 		Nickname:   "テスト太郎",
 		Age:        30,
 		Prefecture: "東京都",

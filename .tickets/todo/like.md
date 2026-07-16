@@ -14,6 +14,11 @@
 
 - [x] test
 
-- [ ] FE: いいねボタンから`POST /likes`を叩く
+- [x] FE: いいねボタンから`POST /likes`を叩く
 
 - [ ] FE: `GET /likes/received`をポーリングして新着いいねを取得
+
+# like2でやること
+
+- [x] いいねを押す。のフロント。
+- [ ] 既にいいね済みの相手はボタンをずっとdisableにする(要API対応: `already_liked`をProfileDetail/ProfileSummaryに追加)
