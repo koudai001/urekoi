@@ -28,7 +28,7 @@ describe('Page', () => {
     } as unknown as Awaited<ReturnType<typeof cookies>>)
 
     const profiles = [
-      { id: 1, nickname: '美咲', age: 42, prefecture: '東京都' },
+      { user_id: 1, nickname: '美咲', age: 42, prefecture: '東京都' },
     ]
     vi.mocked(getSearchAll).mockResolvedValue({
       status: 200,

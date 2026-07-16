@@ -54,7 +54,7 @@ export interface LogoutRequest {
 }
 
 export interface ProfileSummary {
-  id?: number;
+  user_id?: number;
   nickname?: string;
   age?: number;
   prefecture?: string;
@@ -70,7 +70,7 @@ export interface TagSummary {
 }
 
 export interface ProfileDetail {
-  id?: number;
+  user_id?: number;
   nickname?: string;
   age?: number;
   prefecture?: string;

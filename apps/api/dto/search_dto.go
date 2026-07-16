@@ -1,7 +1,7 @@
 package dto
 
 type ProfileSummary struct {
-	ID         uint64 `json:"id"`
+	UserID     uint64 `json:"user_id"`
 	Nickname   string `json:"nickname"`
 	Age        int16  `json:"age"`
 	Prefecture string `json:"prefecture"`
@@ -11,7 +11,7 @@ type ProfileSummary struct {
 }
 
 type ProfileDetail struct {
-	ID         uint64       `json:"id"`
+	UserID     uint64       `json:"user_id"`
 	Nickname   string       `json:"nickname"`
 	Age        int16        `json:"age"`
 	Prefecture string       `json:"prefecture"`

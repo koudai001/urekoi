@@ -1,10 +1,12 @@
 import Image from 'next/image'
-import { ThumbsUp, MessageCircle, ShieldCheck, Clock } from 'lucide-react'
+import { ThumbsUp, ShieldCheck, Clock } from 'lucide-react'
 import { dummyProfileImageFor } from '@/lib/dummy-profile-image'
+import { LikeButton } from './like-button'
 import type { ProfileDetail } from '@/generated/urekoiAPI.schemas'
 
 export function ProfileDetailCard({ profile }: { profile: ProfileDetail }) {
-  const image = profile.images?.[0] || dummyProfileImageFor(profile.id ?? 0)
+  const image =
+    profile.images?.[0] || dummyProfileImageFor(profile.user_id ?? 0)
 
   return (
     <div className="relative w-full overflow-hidden rounded-3xl bg-card shadow-xl lg:w-80 lg:shrink-0">
@@ -16,20 +18,9 @@ export function ProfileDetailCard({ profile }: { profile: ProfileDetail }) {
           sizes="320px"
           className="object-cover"
         />
-        {/* いいねボタン（写真下端に重ねる） */}
-        <div className="absolute -bottom-7 left-1/2 flex -translate-x-1/2 gap-4">
-          <button
-            aria-label="メッセージ付きいいね"
-            className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-card text-primary shadow-lg ring-1 ring-border transition-transform hover:scale-105"
-          >
-            <MessageCircle className="h-6 w-6" />
-          </button>
-          <button
-            aria-label="いいね"
-            className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105"
-          >
-            <ThumbsUp className="h-6 w-6" />
-          </button>
+        {/* いいねボタン（写真下端中央に重ねる） */}
+        <div className="absolute -bottom-7 left-1/2 -translate-x-1/2">
+          <LikeButton toUserId={profile.user_id ?? 0} />
         </div>
       </div>
 

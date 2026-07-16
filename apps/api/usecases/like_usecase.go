@@ -65,7 +65,7 @@ func (u *LikeUsecase) GetReceivedLikes(userID uint64) ([]dto.ProfileSummary, err
 	res := make([]dto.ProfileSummary, 0, len(profiles))
 	for _, p := range profiles {
 		res = append(res, dto.ProfileSummary{
-			ID:         p.UserID,
+			UserID:     p.UserID,
 			Nickname:   p.Nickname,
 			Age:        p.User.Age(),
 			Prefecture: p.Prefecture.Name,

@@ -6,7 +6,7 @@ import type { ProfileSummary } from '@/generated/urekoiAPI.schemas'
 
 const profiles: ProfileSummary[] = [
   {
-    id: 1,
+    user_id: 1,
     nickname: '美咲',
     age: 42,
     prefecture: '東京都',
@@ -15,7 +15,7 @@ const profiles: ProfileSummary[] = [
     is_new: true,
   },
   {
-    id: 2,
+    user_id: 2,
     nickname: '由香里',
     age: 38,
     prefecture: '神奈川県',
@@ -23,7 +23,7 @@ const profiles: ProfileSummary[] = [
     online: 'recent',
   },
   {
-    id: 3,
+    user_id: 3,
     nickname: '千夏',
     age: 45,
     prefecture: '東京都',

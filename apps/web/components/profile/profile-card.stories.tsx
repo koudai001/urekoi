@@ -5,7 +5,7 @@ import { ProfileCard } from './profile-card'
 import type { ProfileSummary } from '@/generated/urekoiAPI.schemas'
 
 const baseProfile: ProfileSummary = {
-  id: 1,
+  user_id: 1,
   nickname: '美咲',
   age: 42,
   prefecture: '東京都',
@@ -43,7 +43,7 @@ export const Default: Story = {
     })
     await expect(link).toHaveAttribute(
       'href',
-      `/search/all/partner/${baseProfile.id}`,
+      `/search/all/partner/${baseProfile.user_id}`,
     )
   },
 }

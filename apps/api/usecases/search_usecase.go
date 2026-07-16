@@ -52,7 +52,7 @@ func (u *SearchUsecase) ListProfiles(requestingUserID uint64) ([]dto.ProfileSumm
 	res := make([]dto.ProfileSummary, 0, len(profiles))
 	for _, p := range profiles {
 		res = append(res, dto.ProfileSummary{
-			ID:         p.UserID,
+			UserID:     p.UserID,
 			Nickname:   p.Nickname,
 			Age:        p.User.Age(),
 			Prefecture: p.Prefecture.Name,
@@ -89,7 +89,7 @@ func (u *SearchUsecase) GetProfileDetail(userID uint64) (dto.ProfileDetail, erro
 	}
 
 	return dto.ProfileDetail{
-		ID:         profile.UserID,
+		UserID:     profile.UserID,
 		Nickname:   profile.Nickname,
 		Age:        profile.User.Age(),
 		Prefecture: profile.Prefecture.Name,

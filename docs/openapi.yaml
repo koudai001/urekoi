@@ -536,7 +536,7 @@ components:
     ProfileSummary:
       type: object
       properties:
-        id:
+        user_id:
           type: integer
           format: int64
           example: 1
@@ -561,7 +561,7 @@ components:
     ProfileDetail:
       type: object
       properties:
-        id:
+        user_id:
           type: integer
           format: int64
           example: 1

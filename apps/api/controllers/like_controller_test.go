@@ -103,7 +103,7 @@ func TestGetReceivedLikes_Success(t *testing.T) {
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	// サインアップ時のデフォルトプロフィール情報が返ることを検証
 	assert.ElementsMatch(t, []dto.ProfileSummary{
-		{ID: from.ID, Nickname: "テストユーザー", Age: defaultTestAge, Prefecture: "東京都", Image: "", IsNew: true, Online: "online"},
+		{UserID: from.ID, Nickname: "テストユーザー", Age: defaultTestAge, Prefecture: "東京都", Image: "", IsNew: true, Online: "online"},
 	}, res)
 }
 

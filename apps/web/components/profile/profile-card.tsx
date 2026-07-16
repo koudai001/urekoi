@@ -8,14 +8,14 @@ import { FavoriteButton } from '@/components/ui/favorite-button'
 export function ProfileCard({ profile }: { profile: ProfileSummary }) {
   return (
     <Link
-      href={`/search/all/partner/${profile.id}`}
+      href={`/search/all/partner/${profile.user_id}`}
       prefetch={false}
       className="group flex w-full flex-col text-left outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
       aria-label={`${profile.nickname}さんのプロフィールを開く`}
     >
       <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-muted shadow-sm">
         <Image
-          src={profile.image || dummyProfileImageFor(profile.id ?? 0)}
+          src={profile.image || dummyProfileImageFor(profile.user_id ?? 0)}
           alt={`${profile.nickname}さんのプロフィール写真`}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 240px"

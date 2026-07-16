@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import { expect, userEvent } from 'storybook/test'
+import { expect, mocked, userEvent } from 'storybook/test'
 import { getRouter } from '@storybook/nextjs-vite/navigation.mock'
+import * as likesActions from '@/actions/likes'
 
 import { ProfileDetailModal } from './profile-detail-modal'
 import type { ProfileDetail } from '@/generated/urekoiAPI.schemas'
 
 const baseProfile: ProfileDetail = {
-  id: 1,
+  user_id: 1,
   nickname: '美咲',
   age: 42,
   prefecture: '東京都',
@@ -39,6 +40,10 @@ const meta = {
     nextjs: {
       appDirectory: true,
     },
+  },
+  // 中に含まれるいいねボタンをクリックしても落ちないよう、既定の戻り値を設定しておく
+  beforeEach: () => {
+    mocked(likesActions.sendLike).mockResolvedValue({ success: true })
   },
 } satisfies Meta<typeof ProfileDetailModal>
 

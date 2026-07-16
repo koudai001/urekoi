@@ -19,7 +19,12 @@ describe('Modal', () => {
       get: vi.fn().mockReturnValue({ value: 'mock_access_token' }),
     } as unknown as Awaited<ReturnType<typeof cookies>>)
 
-    const profile = { id: 1, nickname: '美咲', age: 42, prefecture: '東京都' }
+    const profile = {
+      user_id: 1,
+      nickname: '美咲',
+      age: 42,
+      prefecture: '東京都',
+    }
     vi.mocked(getSearchAllPartnerUserId).mockResolvedValue({
       status: 200,
       data: profile,
