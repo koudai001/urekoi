@@ -5,6 +5,14 @@
  * 熟女専門マッチングアプリ urekoi のAPI仕様
  * OpenAPI spec version: 0.1.0
  */
+import type {
+  Error,
+  InternalServerErrorResponse,
+  LikeRequest,
+  ProfileSummary,
+  UnauthorizedResponse
+} from '../urekoiAPI.schemas';
+
 import { customFetch } from '../../lib/api/custom-fetch';
 
 export type postLikesResponse201 = {
@@ -12,12 +20,39 @@ export type postLikesResponse201 = {
   status: 201
 }
 
+export type postLikesResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type postLikesResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type postLikesResponse404 = {
+  data: Error
+  status: 404
+}
+
+export type postLikesResponse409 = {
+  data: Error
+  status: 409
+}
+
+export type postLikesResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
 export type postLikesResponseSuccess = (postLikesResponse201) & {
   headers: Headers;
 };
-;
+export type postLikesResponseError = (postLikesResponse400 | postLikesResponse401 | postLikesResponse404 | postLikesResponse409 | postLikesResponse500) & {
+  headers: Headers;
+};
 
-export type postLikesResponse = (postLikesResponseSuccess)
+export type postLikesResponse = (postLikesResponseSuccess | postLikesResponseError)
 
 export const getPostLikesUrl = () => {
 
@@ -28,31 +63,43 @@ export const getPostLikesUrl = () => {
 }
 
 /**
- * @summary いいねを押す
+ * @summary いいねを送る
  */
-export const postLikes = async ( options?: RequestInit): Promise<postLikesResponse> => {
+export const postLikes = async (likeRequest: LikeRequest, options?: RequestInit): Promise<postLikesResponse> => {
 
   return customFetch<postLikesResponse>(getPostLikesUrl(),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(likeRequest)
   }
 );}
 
 
 export type getLikesReceivedResponse200 = {
-  data: void
+  data: ProfileSummary[]
   status: 200
+}
+
+export type getLikesReceivedResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getLikesReceivedResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
 }
 
 export type getLikesReceivedResponseSuccess = (getLikesReceivedResponse200) & {
   headers: Headers;
 };
-;
+export type getLikesReceivedResponseError = (getLikesReceivedResponse401 | getLikesReceivedResponse500) & {
+  headers: Headers;
+};
 
-export type getLikesReceivedResponse = (getLikesReceivedResponseSuccess)
+export type getLikesReceivedResponse = (getLikesReceivedResponseSuccess | getLikesReceivedResponseError)
 
 export const getGetLikesReceivedUrl = () => {
 
@@ -63,7 +110,7 @@ export const getGetLikesReceivedUrl = () => {
 }
 
 /**
- * @summary もらったいいねを取得
+ * @summary もらったいいね一覧を取得(ポーリングでの利用を想定)
  */
 export const getLikesReceived = async ( options?: RequestInit): Promise<getLikesReceivedResponse> => {
 

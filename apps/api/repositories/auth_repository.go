@@ -8,10 +8,14 @@ import (
 	"gorm.io/gorm"
 )
 
-var ErrEmailAlreadyExists = errors.New("email already exists")
+var (
+	ErrEmailAlreadyExists = errors.New("email already exists")
+	ErrUserNotFound       = errors.New("user not found")
+)
 
 type IAuthRepository interface {
 	GetUserByEmail(email string) (*models.User, error)
+	GetUserByID(id uint64) (*models.User, error)
 	CreateUser(user *models.User) error
 	CreateRefreshToken(refreshToken *models.RefreshToken) error
 	GetRefreshTokenByHash(tokenHash string) (*models.RefreshToken, error)
@@ -44,6 +48,18 @@ func (r *AuthRepository) Transaction(fn func(tx *gorm.DB) error) error {
 func (r *AuthRepository) GetUserByEmail(email string) (*models.User, error) {
 	var user models.User
 	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (r *AuthRepository) GetUserByID(id uint64) (*models.User, error) {
+	var user models.User
+	if err := r.db.First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrUserNotFound
+		}
 		return nil, err
 	}
 

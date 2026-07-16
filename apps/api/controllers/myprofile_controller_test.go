@@ -22,7 +22,7 @@ func TestGetMyProfile_Success(t *testing.T) {
 	req.Nickname = "テスト太郎"
 	req.PrefectureCode = seed.PrefectureTokyo
 	req.Birthdate = time.Now().AddDate(-30, 0, 0).Format("2006-01-02")
-	signupRes := signUpWithRequest(t, router, req)
+	signupRes := signUpWithFields(t, router, req)
 
 	var profile models.Profile
 	require.NoError(t, db.Where("user_id = ?", signupRes.ID).First(&profile).Error)
@@ -50,7 +50,7 @@ func TestGetMyProfile_Success(t *testing.T) {
 func TestGetMyProfile_NotFound(t *testing.T) {
 	router, db := setupWithDB(t)
 
-	signupRes := signUp(t, router, "myprofilenonexistent@example.com")
+	signupRes := signUpOnlyEmail(t, router, "myprofilenonexistent@example.com")
 
 	// signupで自動作成されたプロフィールが無い状態を仕込む
 	require.NoError(t, db.Where("user_id = ?", signupRes.ID).Delete(&models.Profile{}).Error)

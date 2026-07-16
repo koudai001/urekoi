@@ -15,7 +15,7 @@ import (
 func TestListTags_Success(t *testing.T) {
 	router := setup(t)
 
-	accessToken := signUpAndGetAccessToken(t, router, "tags-viewer@example.com")
+	accessToken := signUpOnlyEmail(t, router, "tags-viewer@example.com").AccessToken
 
 	w := getJSONWithAuth(t, router, "/tags", accessToken)
 

@@ -22,7 +22,7 @@ func TestListProfiles_Success(t *testing.T) {
 	profile1 := createProfile(t, db, "profile1@example.com", "テスト太郎", 30, seed.PrefectureTokyo)
 	profile2 := createProfile(t, db, "profile2@example.com", "テスト花子", 25, seed.PrefectureOsaka)
 
-	viewerRes := signUp(t, router, "viewer@example.com")
+	viewerRes := signUpOnlyEmail(t, router, "viewer@example.com")
 
 	w := getJSONWithAuth(t, router, "/search/all", viewerRes.AccessToken)
 
@@ -42,7 +42,7 @@ func TestListProfiles_Success(t *testing.T) {
 func TestListProfiles_NotFound(t *testing.T) {
 	router, db := setupWithDB(t)
 
-	viewerRes := signUp(t, router, "viewer2@example.com")
+	viewerRes := signUpOnlyEmail(t, router, "viewer2@example.com")
 	require.NoError(t, db.Where("user_id = ?", viewerRes.ID).Delete(&models.Profile{}).Error)
 
 	w := getJSONWithAuth(t, router, "/search/all", viewerRes.AccessToken)
@@ -68,7 +68,7 @@ func TestGetProfileDetail_Success(t *testing.T) {
 	tag := findTagByLabel(t, db, "旅行")
 	createProfileTag(t, db, profile.ID, tag.ID)
 
-	accessToken := signUpAndGetAccessToken(t, router, "viewer3@example.com")
+	accessToken := signUpOnlyEmail(t, router, "viewer3@example.com").AccessToken
 
 	w := getJSONWithAuth(t, router, fmt.Sprintf("/search/all/partner/%d", profile.UserID), accessToken)
 
@@ -94,7 +94,7 @@ func TestGetProfileDetail_Success(t *testing.T) {
 func TestGetProfileDetail_NotFound(t *testing.T) {
 	router := setup(t)
 
-	accessToken := signUpAndGetAccessToken(t, router, "viewer4@example.com")
+	accessToken := signUpOnlyEmail(t, router, "viewer4@example.com").AccessToken
 
 	w := getJSONWithAuth(t, router, "/search/all/partner/9999", accessToken)
 

@@ -27,23 +27,19 @@ func validSignupRequest(email string) dto.SignupRequest {
 	}
 }
 
-// サインアップしてレスポンス全体(id・access_tokenなど)を取得するヘルパー
-func signUp(t *testing.T, router http.Handler, email string) dto.SignupResponse {
-	return signUpWithRequest(t, router, validSignupRequest(email))
+// emailだけ差し替えてサインアップし、レスポンス全体(id・access_tokenなど)を取得するヘルパー
+func signUpOnlyEmail(t *testing.T, router http.Handler, email string) dto.SignupResponse {
+	return signUpWithFields(t, router, validSignupRequest(email))
 }
 
-func signUpWithRequest(t *testing.T, router http.Handler, req dto.SignupRequest) dto.SignupResponse {
+// nickname・生年月日などを個別にカスタムしたリクエストでサインアップするヘルパー
+func signUpWithFields(t *testing.T, router http.Handler, req dto.SignupRequest) dto.SignupResponse {
 	w := postJSON(t, router, "/signup", req)
 	require.Equal(t, http.StatusCreated, w.Code)
 
 	var res dto.SignupResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	return res
-}
-
-// サインアップしてaccess_tokenだけ取得するヘルパー
-func signUpAndGetAccessToken(t *testing.T, router http.Handler, email string) string {
-	return signUp(t, router, email).AccessToken
 }
 
 // ログインしてアクセストークン・リフレッシュトークンのペアを取得するヘルパー
