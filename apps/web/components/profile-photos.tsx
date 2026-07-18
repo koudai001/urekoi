@@ -49,9 +49,7 @@ export function AchievementBanner() {
 export function ProfilePhotos() {
   return (
     <section className="mt-8">
-      <h2 className="font-heading text-lg font-bold text-foreground">
-        プロフィール写真
-      </h2>
+      <h2 className="text-lg font-bold text-foreground">プロフィール写真</h2>
       <p className="mt-1 text-sm text-muted-foreground">
         写真を長押しすると、順番を入れ替えられます
       </p>

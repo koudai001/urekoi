@@ -3,7 +3,7 @@ export function AuthLogo({ align = 'center' }: { align?: 'center' | 'left' }) {
     <div
       className={`mb-8 flex flex-col leading-none ${align === 'center' ? 'items-center' : 'items-start'}`}
     >
-      <span className="font-heading text-5xl font-bold tracking-tight text-primary">
+      <span className="text-5xl font-bold tracking-tight text-primary">
         熟恋
       </span>
       <span className="mt-2 text-xs font-medium tracking-[0.3em] text-muted-foreground">
