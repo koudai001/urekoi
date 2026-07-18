@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// いいねを送ると201を返すことを検証
+// いいねを送ると201を返すことを検証(相手からはまだいいねをもらっていないのでマッチはしない)
 func TestSendLike_Success(t *testing.T) {
 	router := setup(t)
 
@@ -22,8 +22,31 @@ func TestSendLike_Success(t *testing.T) {
 	// いいねを送信
 	w := postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: to.ID}, from.AccessToken)
 
-	// 201 Createdが返ることを検証
-	assert.Equal(t, http.StatusCreated, w.Code)
+	require.Equal(t, http.StatusCreated, w.Code)
+
+	var res dto.LikeResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	assert.False(t, res.Matched)
+}
+
+// 既に相手からいいねをもらっている相手にいいねを送ると、マッチが成立してmatched: trueが返ることを検証
+func TestSendLike_ResultsInMatch(t *testing.T) {
+	router := setup(t)
+
+	from := signUpOnlyEmail(t, router, "like-match-from@example.com")
+	to := signUpOnlyEmail(t, router, "like-match-to@example.com")
+
+	// 先にtoからfromへいいねを送っておく
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: from.ID}, to.AccessToken).Code)
+
+	// fromからtoへいいねを送ると相互いいねになりマッチする
+	w := postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: to.ID}, from.AccessToken)
+
+	require.Equal(t, http.StatusCreated, w.Code)
+
+	var res dto.LikeResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	assert.True(t, res.Matched)
 }
 
 // 自分自身にいいねすると400を返すことを検証

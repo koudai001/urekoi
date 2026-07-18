@@ -37,7 +37,8 @@ func (ctrl *LikeController) SendLike(c *gin.Context) {
 
 	user := c.MustGet(middlewares.ContextUserKey).(*models.User)
 
-	if err := ctrl.likeUsecase.SendLike(user.ID, req.ToUserID); err != nil {
+	matched, err := ctrl.likeUsecase.SendLike(user.ID, req.ToUserID)
+	if err != nil {
 		switch {
 		case errors.Is(err, usecases.ErrCannotLikeSelf):
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -51,7 +52,7 @@ func (ctrl *LikeController) SendLike(c *gin.Context) {
 		return
 	}
 
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusCreated, dto.LikeResponse{Matched: matched})
 }
 
 func (ctrl *LikeController) GetReceivedLikes(c *gin.Context) {

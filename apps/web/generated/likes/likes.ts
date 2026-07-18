@@ -10,13 +10,14 @@ import type {
   InternalServerErrorResponse,
   LikeProfile,
   LikeRequest,
+  LikeResponse,
   UnauthorizedResponse
 } from '../urekoiAPI.schemas';
 
 import { customFetch } from '../../lib/api/custom-fetch';
 
 export type postLikesResponse201 = {
-  data: void
+  data: LikeResponse
   status: 201
 }
 

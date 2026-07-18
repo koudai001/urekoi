@@ -5,19 +5,37 @@
  * 熟女専門マッチングアプリ urekoi のAPI仕様
  * OpenAPI spec version: 0.1.0
  */
+import type {
+  InternalServerErrorResponse,
+  MatchProfile,
+  UnauthorizedResponse
+} from '../urekoiAPI.schemas';
+
 import { customFetch } from '../../lib/api/custom-fetch';
 
 export type getMatchesResponse200 = {
-  data: void
+  data: MatchProfile[]
   status: 200
+}
+
+export type getMatchesResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getMatchesResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
 }
 
 export type getMatchesResponseSuccess = (getMatchesResponse200) & {
   headers: Headers;
 };
-;
+export type getMatchesResponseError = (getMatchesResponse401 | getMatchesResponse500) & {
+  headers: Headers;
+};
 
-export type getMatchesResponse = (getMatchesResponseSuccess)
+export type getMatchesResponse = (getMatchesResponseSuccess | getMatchesResponseError)
 
 export const getGetMatchesUrl = () => {
 

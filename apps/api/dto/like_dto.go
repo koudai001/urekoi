@@ -4,6 +4,10 @@ type LikeRequest struct {
 	ToUserID uint64 `json:"to_user_id"`
 }
 
+type LikeResponse struct {
+	Matched bool `json:"matched"`
+}
+
 type LikeProfile struct {
 	UserID     uint64   `json:"user_id"`
 	Nickname   string   `json:"nickname"`
