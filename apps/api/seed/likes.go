@@ -25,6 +25,10 @@ func SeedDummyLikes(db *gorm.DB) error {
 			return err
 		}
 
+		if fromUser.ID == toUser.ID {
+			continue
+		}
+
 		like := models.Like{FromUserID: fromUser.ID, ToUserID: toUser.ID}
 		if err := db.Where(models.Like{FromUserID: fromUser.ID, ToUserID: toUser.ID}).
 			FirstOrCreate(&like).Error; err != nil {
