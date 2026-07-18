@@ -47,7 +47,7 @@ export function Sidebar({ active = '検索' }: { active?: string }) {
           <Heart className="h-5 w-5 fill-primary-foreground text-primary-foreground" />
         </div>
         <div className="flex flex-col leading-none">
-          <span className="font-heading text-2xl font-bold tracking-tight text-primary">
+          <span className="text-2xl font-bold tracking-tight text-primary">
             熟恋
           </span>
           <span className="text-[10px] font-medium tracking-widest text-muted-foreground">

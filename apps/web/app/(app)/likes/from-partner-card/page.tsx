@@ -5,6 +5,9 @@ import { Sidebar } from '@/components/sidebar'
 import { LikeSwipeCard } from '@/components/likes/like-swipe-card'
 import { LikeEmptyState } from '@/components/likes/like-empty-state'
 import { useReceivedLikes } from '@/components/likes/use-received-likes'
+import { showMatchToast } from '@/components/likes/match-toast'
+import { PageHeader } from '@/components/ui/page-header'
+import { sendLike } from '@/actions/likes'
 import { ChevronRight } from 'lucide-react'
 
 export default function LikesPage() {
@@ -16,8 +19,13 @@ export default function LikesPage() {
   const current = likes[index]
   const done = !isLoading && index >= likes.length
 
-  const handleSwipe = () => {
-    // apiもここで叩く
+  const handleSwipe = async (dir: 'like' | 'skip') => {
+    if (dir === 'like') {
+      const result = await sendLike(current.user_id ?? 0)
+      if (result.success && result.matched) {
+        showMatchToast(current.nickname ?? '', current.age ?? 0)
+      }
+    }
     setIndex((i) => i + 1)
   }
 
@@ -25,18 +33,16 @@ export default function LikesPage() {
     <div className="flex min-h-screen bg-background">
       <Sidebar active="イイネ" />
 
-      <main className="flex flex-1 flex-col px-6 py-8 lg:px-12">
-        <header className="mx-auto flex w-full max-w-4xl items-center justify-between">
-          <h1 className="font-heading text-3xl font-bold text-foreground">
-            いいね！
-          </h1>
+      <main className="flex flex-1 flex-col">
+        <PageHeader>
+          <h1 className="text-3xl font-bold text-foreground">いいね！</h1>
           <button className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
             スキップ一覧
             <ChevronRight className="h-4 w-4" />
           </button>
-        </header>
+        </PageHeader>
 
-        <div className="flex flex-1 flex-col items-center justify-center gap-8 py-8">
+        <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-8 lg:px-12">
           {isLoading ? (
             <p className="text-sm text-muted-foreground">読み込み中...</p>
           ) : done ? (

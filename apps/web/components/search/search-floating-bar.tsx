@@ -10,9 +10,7 @@ export function SearchFloatingBar() {
         >
           <SlidersHorizontal className="h-5 w-5" />
         </button>
-        <span className="px-3 font-heading text-lg font-bold text-foreground">
-          9999+
-        </span>
+        <span className="px-3 text-lg font-bold text-foreground">9999+</span>
         <button
           aria-label="並び替え"
           className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-primary transition-colors hover:bg-accent"

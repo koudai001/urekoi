@@ -1,12 +1,11 @@
 import { ThumbsUp, Search } from 'lucide-react'
 import { logout } from '@/actions/auth'
+import { PageHeader } from '@/components/ui/page-header'
 
 export function SearchHeader() {
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-background/90 px-5 py-4 backdrop-blur sm:px-8">
-      <h1 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
-        検索
-      </h1>
+    <PageHeader>
+      <h1 className="text-2xl font-bold text-foreground sm:text-3xl">検索</h1>
 
       <div className="flex items-center gap-3">
         <form action={logout}>
@@ -31,6 +30,6 @@ export function SearchHeader() {
           無料 × 8
         </button>
       </div>
-    </header>
+    </PageHeader>
   )
 }

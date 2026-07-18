@@ -16,9 +16,7 @@ export function MessageList({
     <div className="flex h-screen w-full shrink-0 flex-col border-r border-border bg-card md:w-[360px]">
       {/* ヘッダー */}
       <div className="flex items-center justify-between px-5 pb-3 pt-6">
-        <h1 className="font-heading text-2xl font-bold text-foreground">
-          メッセージ
-        </h1>
+        <h1 className="text-2xl font-bold text-foreground">メッセージ</h1>
         <div className="flex items-center gap-3 text-muted-foreground">
           <ShieldCheck className="h-5 w-5" />
           <MoreHorizontal className="h-5 w-5" />

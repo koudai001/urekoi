@@ -76,7 +76,7 @@ export function LikeSwipeCard({
 
   return (
     <>
-      <div className="relative mx-auto aspect-[3/4] w-[380px] max-w-[78vw] shrink-0">
+      <div className="relative mx-auto aspect-[3/4] w-[300px] max-w-[65vw] shrink-0">
         {/* 次の人（背後に少し覗かせるだけ、操作不可） */}
         {nextProfile && (
           <div className="absolute inset-x-3 bottom-0 top-2">

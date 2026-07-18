@@ -1,13 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import { expect, fn, userEvent, waitFor } from 'storybook/test'
+import { expect, fn, mocked, userEvent, waitFor } from 'storybook/test'
+import * as likesActions from '@/actions/likes'
 
 import { LikeSwipeCard } from './like-swipe-card'
+import { showMatchToast } from './match-toast'
+import { Toaster } from '@/components/ui/sonner'
 import type { LikeProfile } from '@/generated/urekoiAPI.schemas'
 
 const baseProfile: LikeProfile = {
   user_id: 1,
   nickname: '美咲',
-  age: 24,
+  age: 42,
   prefecture: '東京都',
   online: 'online',
   photos: ['/profiles/woman-1.png', '/profiles/woman-2.png'],
@@ -102,6 +105,45 @@ export const DragLeftBeyondThreshold: Story = {
     ])
 
     await waitFor(() => expect(args.onSwipe).toHaveBeenCalledWith('skip'))
+  },
+}
+
+// いいねを送ってマッチが成立した場合、マッチトーストが表示されることを確認
+export const MatchOnLike: Story = {
+  args: {
+    // 実際のページと同じく、onSwipe側でいいね送信とトースト表示を行う
+    onSwipe: fn(async (dir: 'like' | 'skip') => {
+      if (dir !== 'like') return
+      const result = await likesActions.sendLike(baseProfile.user_id ?? 0)
+      if (result.success && result.matched) {
+        showMatchToast(baseProfile.nickname ?? '', baseProfile.age ?? 0)
+      }
+    }),
+  },
+  decorators: [
+    (StoryFn) => (
+      <>
+        <StoryFn />
+        <Toaster />
+      </>
+    ),
+  ],
+  beforeEach: () => {
+    mocked(likesActions.sendLike).mockResolvedValue({
+      success: true,
+      matched: true,
+    })
+  },
+  play: async ({ canvas }) => {
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'いいね！を送る' }),
+    )
+
+    await waitFor(() =>
+      expect(
+        canvas.getByText('美咲さん(42)とマッチング！'),
+      ).toBeInTheDocument(),
+    )
   },
 }
 

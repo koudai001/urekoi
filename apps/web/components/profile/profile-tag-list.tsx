@@ -5,9 +5,7 @@ export function ProfileTagList({ tags }: { tags: TagSummary[] }) {
   return (
     <div className="w-full overflow-hidden rounded-3xl bg-card shadow-xl">
       <div className="px-6 pt-6">
-        <h3 className="font-heading text-xl font-bold text-foreground">
-          マイタグ
-        </h3>
+        <h3 className="text-xl font-bold text-foreground">マイタグ</h3>
       </div>
       <ul className="flex flex-col px-4 py-3">
         {tags.map((tag) => {

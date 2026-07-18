@@ -4,9 +4,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react'
 
 export function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="mb-1 mt-10 font-heading text-lg font-bold text-foreground">
-      {children}
-    </h2>
+    <h2 className="mb-1 mt-10 text-lg font-bold text-foreground">{children}</h2>
   )
 }
 

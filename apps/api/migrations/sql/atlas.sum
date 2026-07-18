@@ -1,3 +1,4 @@
-h1:Kww5gbHNBTvjZ3eLTGKoGiY7kHVo8seWcbQsCjqt7JU=
+h1:TUhsUkodckFrOklHAMuvoUhIovSKCQyXl/AeUrgiAJM=
 20260707030904_init_schema.up.sql h1:4Mn9UWGZdh5EoktZdUwi76ZWOTXiGlqKG2RIR71d5Uc=
 20260713033610_add_user_gender_birthdate.up.sql h1:Cb4UAkQFBrYNP5U4Dma3EPUl6CO8qqZ2IX9ZIrDu94U=
+20260718140317_add_likes_no_self_like_check.up.sql h1:S+3SNNXOM8UurKP9qyJMIfOzazEHJD1ZjAZu4QBSN1k=

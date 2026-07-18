@@ -10,7 +10,7 @@ export function PromoCard() {
           <br />
           マッチング率
         </p>
-        <p className="font-heading text-3xl font-bold leading-tight">
+        <p className="text-3xl font-bold leading-tight">
           3倍<span className="text-xl">UP</span>
         </p>
       </div>

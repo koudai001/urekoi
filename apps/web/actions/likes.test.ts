@@ -33,7 +33,7 @@ describe('sendLike', () => {
     )
   })
 
-  it('【201 成功】access_tokenをAuthorizationヘッダーに付けてリクエストし、successを返すこと', async () => {
+  it('【201 成功・マッチなし】access_tokenをAuthorizationヘッダーに付けてリクエストし、matched: falseを返すこと', async () => {
     // cookies().get('...') をした時に { value: 'mock_access' } が返るように設定
     mockCookieStore.get.mockReturnValue({ value: 'mock_access' })
     // postLikes() が実行されたら、ステータスコード 201 を返すように設定
@@ -50,8 +50,19 @@ describe('sendLike', () => {
       { to_user_id: 42 },
       { headers: { Authorization: 'Bearer mock_access' } },
     )
-    // sendLike() の戻り値が { success: true } であることを検証
-    expect(result).toEqual({ success: true })
+    expect(result).toEqual({ success: true, matched: false })
+  })
+
+  it('【201 成功・マッチ成立】matched: trueを返すこと', async () => {
+    mockCookieStore.get.mockReturnValue({ value: 'mock_access' })
+    vi.mocked(postLikes).mockResolvedValue({
+      status: 201,
+      data: { matched: true },
+    } as Awaited<ReturnType<typeof postLikes>>)
+
+    const result = await sendLike(42)
+
+    expect(result).toEqual({ success: true, matched: true })
   })
 
   it('【400 自分自身へのいいね】専用のエラーメッセージを返すこと', async () => {

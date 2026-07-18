@@ -13,7 +13,10 @@ const meta = {
   },
   // 各storyでの上書き設定が無い場合の既定の戻り値(Storybook上で実際にクリックしても落ちないように)
   beforeEach: () => {
-    mocked(likesActions.sendLike).mockResolvedValue({ success: true })
+    mocked(likesActions.sendLike).mockResolvedValue({
+      success: true,
+      matched: false,
+    })
   },
 } satisfies Meta<typeof LikeButton>
 
@@ -36,7 +39,10 @@ export const AlreadyLiked: Story = {
 // クリックしていいねが成功すると、ボタンが押せなくなり見た目が変わることを確認
 export const LikeSuccess: Story = {
   play: async ({ canvas, args }) => {
-    mocked(likesActions.sendLike).mockResolvedValue({ success: true })
+    mocked(likesActions.sendLike).mockResolvedValue({
+      success: true,
+      matched: false,
+    })
 
     const button = canvas.getByRole('button', { name: 'いいね' })
     await userEvent.click(button)

@@ -73,7 +73,7 @@ export function LikeProfileCard({
               )}
             />
           )}
-          <span className="font-heading text-2xl font-bold text-white">
+          <span className="text-2xl font-bold text-white">
             {profile.nickname}
           </span>
         </div>

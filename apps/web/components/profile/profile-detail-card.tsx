@@ -31,7 +31,7 @@ export function ProfileDetailCard({ profile }: { profile: ProfileDetail }) {
         {profile.is_new && (
           <p className="text-sm font-bold text-primary">新着のお相手</p>
         )}
-        <h2 className="mt-1 font-heading text-3xl font-bold text-foreground">
+        <h2 className="mt-1 text-3xl font-bold text-foreground">
           {profile.nickname}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">

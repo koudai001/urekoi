@@ -44,7 +44,10 @@ const meta = {
   },
   // 中に含まれるいいねボタンをクリックしても落ちないよう、既定の戻り値を設定しておく
   beforeEach: () => {
-    mocked(likesActions.sendLike).mockResolvedValue({ success: true })
+    mocked(likesActions.sendLike).mockResolvedValue({
+      success: true,
+      matched: false,
+    })
   },
 } satisfies Meta<typeof ProfileDetailModal>
 

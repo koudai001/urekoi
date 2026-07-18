@@ -165,7 +165,7 @@ export function ChatView({
 export function EmptyChat() {
   return (
     <div className="hidden h-screen flex-1 flex-col items-center justify-center bg-card md:flex">
-      <p className="font-heading text-xl font-bold text-foreground">
+      <p className="text-xl font-bold text-foreground">
         選択中のやりとりはありません
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
