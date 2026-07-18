@@ -14,6 +14,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { LikeNavItem } from '@/components/likes/like-nav-item'
 
 type NavItem = {
   label: string
@@ -32,7 +33,7 @@ const mainNav: NavItem[] = [
 ]
 
 const bottomNav: NavItem[] = [
-  { label: 'イイネ', icon: ThumbsUp, badge: 5, href: '/likes' },
+  { label: 'イイネ', icon: ThumbsUp, href: '/likes/from-partner-card' },
   { label: '足あと', icon: Footprints },
   { label: 'メッセージ', icon: MessageCircle, badge: 12, href: '/messages' },
   { label: 'マイページ', icon: UserRound, badge: 79, href: '/myprofile' },
@@ -85,19 +86,22 @@ function NavButton({ item }: { item: NavItem }) {
       : 'text-muted-foreground hover:bg-accent/60 hover:text-accent-foreground',
   )
 
-  const content = (
-    <>
-      <span className="relative">
-        <Icon className="h-5 w-5" />
-        {item.badge ? (
-          <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white">
-            {item.badge}
-          </span>
-        ) : null}
-      </span>
-      {item.label}
-    </>
-  )
+  const content =
+    item.label === 'イイネ' ? (
+      <LikeNavItem />
+    ) : (
+      <>
+        <span className="relative">
+          <Icon className="h-5 w-5" />
+          {item.badge ? (
+            <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white">
+              {item.badge}
+            </span>
+          ) : null}
+        </span>
+        {item.label}
+      </>
+    )
 
   if (item.href) {
     return (

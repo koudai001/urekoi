@@ -59,7 +59,7 @@ func TestListProfiles_Unauthorized(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }
 
-// タグ付きプロフィールの詳細(nickname・タグ・NEWバッジ判定など)を取得できることを検証
+// タグ付きプロフィールの詳細(nickname・タグ・NEWバッジ判定など)を取得できることを検証（未いいね）
 func TestGetProfileDetail_Success(t *testing.T) {
 	router, db := setupWithDB(t)
 
@@ -77,17 +77,36 @@ func TestGetProfileDetail_Success(t *testing.T) {
 	var res dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.Equal(t, dto.ProfileDetail{
-		UserID:     profile.UserID,
-		Nickname:   "テスト太郎",
-		Age:        30,
-		Prefecture: "東京都",
-		IsNew:      true, // 作成直後なので新着
-		Online:     "online",
-		Images:     []string{""},
+		UserID:       profile.UserID,
+		Nickname:     "テスト太郎",
+		Age:          30,
+		Prefecture:   "東京都",
+		IsNew:        true, // 作成直後なので新着
+		Online:       "online",
+		Images:       []string{""},
+		AlreadyLiked: false, // まだいいねしていない
 		Tags: []dto.TagSummary{
 			{Label: "旅行", Category: "好きなこと・挑戦してみたいこと", ImageURL: ""},
 		},
 	}, res)
+}
+
+// 既にいいね済みの相手はalready_liked: trueで返ることを検証
+func TestGetProfileDetail_AlreadyLiked(t *testing.T) {
+	router, db := setupWithDB(t)
+
+	profile := createProfile(t, db, "already-liked@example.com", "テスト花子", 28, seed.PrefectureTokyo)
+
+	viewer := signUpOnlyEmail(t, router, "viewer5@example.com")
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: profile.UserID}, viewer.AccessToken).Code)
+
+	w := getJSONWithAuth(t, router, fmt.Sprintf("/search/all/partner/%d", profile.UserID), viewer.AccessToken)
+
+	require.Equal(t, http.StatusOK, w.Code)
+
+	var res dto.ProfileDetail
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	assert.True(t, res.AlreadyLiked)
 }
 
 // 存在しないIDの場合404を返すことを検証

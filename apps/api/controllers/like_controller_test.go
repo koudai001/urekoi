@@ -94,16 +94,16 @@ func TestGetReceivedLikes_Success(t *testing.T) {
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: to.ID}, from.AccessToken).Code)
 
 	// 送信先にログインして、もらったいいねの送信元プロフィール一覧を取得
-	w := getJSONWithAuth(t, router, "/likes/received", to.AccessToken)
+	w := getJSONWithAuth(t, router, "/likes/from-partner-card", to.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
 	// レスポンスの内容を検証
-	var res []dto.ProfileSummary
+	var res []dto.LikeProfile
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	// サインアップ時のデフォルトプロフィール情報が返ることを検証
-	assert.ElementsMatch(t, []dto.ProfileSummary{
-		{UserID: from.ID, Nickname: "テストユーザー", Age: defaultTestAge, Prefecture: "東京都", Image: "", IsNew: true, Online: "online"},
+	assert.ElementsMatch(t, []dto.LikeProfile{
+		{UserID: from.ID, Nickname: "テストユーザー", Age: defaultTestAge, Prefecture: "東京都", Online: "online", Photos: []string{""}},
 	}, res)
 }
 
@@ -115,11 +115,11 @@ func TestGetReceivedLikes_Empty(t *testing.T) {
 	me := signUpOnlyEmail(t, router, "like-received-empty@example.com")
 
 	// いいねをもらっていないので、空配列が返ることを検証
-	w := getJSONWithAuth(t, router, "/likes/received", me.AccessToken)
+	w := getJSONWithAuth(t, router, "/likes/from-partner-card", me.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.ProfileSummary
+	var res []dto.LikeProfile
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.Empty(t, res)
 }
@@ -128,7 +128,7 @@ func TestGetReceivedLikes_Empty(t *testing.T) {
 func TestGetReceivedLikes_Unauthorized(t *testing.T) {
 	router := setup(t)
 
-	w := getJSON(t, router, "/likes/received")
+	w := getJSON(t, router, "/likes/from-partner-card")
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }

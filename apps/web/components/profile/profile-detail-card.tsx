@@ -20,7 +20,10 @@ export function ProfileDetailCard({ profile }: { profile: ProfileDetail }) {
         />
         {/* いいねボタン（写真下端中央に重ねる） */}
         <div className="absolute -bottom-7 left-1/2 -translate-x-1/2">
-          <LikeButton toUserId={profile.user_id ?? 0} />
+          <LikeButton
+            toUserId={profile.user_id ?? 0}
+            alreadyLiked={profile.already_liked ?? false}
+          />
         </div>
       </div>
 

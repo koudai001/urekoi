@@ -13,6 +13,7 @@ var ErrLikeAlreadyExists = errors.New("already liked")
 type ILikeRepository interface {
 	CreateLike(like *models.Like) error
 	GetLikedProfiles(userID uint64) ([]models.Profile, error)
+	HasLiked(fromUserID uint64, toUserID uint64) (bool, error)
 }
 
 type LikeRepository struct {
@@ -49,4 +50,19 @@ func (r *LikeRepository) GetLikedProfiles(userID uint64) ([]models.Profile, erro
 	}
 
 	return profiles, nil
+}
+
+// fromUserIDがtoUserIDに既にいいね済みかを返す
+func (r *LikeRepository) HasLiked(fromUserID uint64, toUserID uint64) (bool, error) {
+	var like models.Like
+	err := r.db.Where("from_user_id = ? AND to_user_id = ?", fromUserID, toUserID).
+		First(&like).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

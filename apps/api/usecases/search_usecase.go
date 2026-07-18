@@ -25,17 +25,19 @@ const mockOnlineStatus = "online"
 type ISearchUsecase interface {
 	// 登録済みユーザーのプロフィール一覧を取得する(requestingUserID自身は除外)
 	ListProfiles(requestingUserID uint64) ([]dto.ProfileSummary, error)
-	// プロフィール1件の詳細をuser_idで取得する
-	GetProfileDetail(userID uint64) (dto.ProfileDetail, error)
+	// プロフィール1件の詳細をuser_idで取得する(viewerUserIDはいいね済みかの判定に使う)
+	GetProfileDetail(viewerUserID uint64, userID uint64) (dto.ProfileDetail, error)
 }
 
 type SearchUsecase struct {
 	profileRepo repositories.IProfileRepository
+	likeRepo    repositories.ILikeRepository
 }
 
-func NewSearchUsecase(profileRepo repositories.IProfileRepository) ISearchUsecase {
+func NewSearchUsecase(profileRepo repositories.IProfileRepository, likeRepo repositories.ILikeRepository) ISearchUsecase {
 	return &SearchUsecase{
 		profileRepo: profileRepo,
+		likeRepo:    likeRepo,
 	}
 }
 
@@ -65,7 +67,7 @@ func (u *SearchUsecase) ListProfiles(requestingUserID uint64) ([]dto.ProfileSumm
 	return res, nil
 }
 
-func (u *SearchUsecase) GetProfileDetail(userID uint64) (dto.ProfileDetail, error) {
+func (u *SearchUsecase) GetProfileDetail(viewerUserID uint64, userID uint64) (dto.ProfileDetail, error) {
 	profile, err := u.profileRepo.GetProfileByUserID(userID)
 	if err != nil {
 		if errors.Is(err, repositories.ErrProfileNotFound) {
@@ -88,16 +90,22 @@ func (u *SearchUsecase) GetProfileDetail(userID uint64) (dto.ProfileDetail, erro
 		})
 	}
 
+	alreadyLiked, err := u.likeRepo.HasLiked(viewerUserID, userID)
+	if err != nil {
+		return dto.ProfileDetail{}, err
+	}
+
 	return dto.ProfileDetail{
-		UserID:     profile.UserID,
-		Nickname:   profile.Nickname,
-		Age:        profile.User.Age(),
-		Prefecture: profile.Prefecture.Name,
-		Bio:        profile.Bio,
-		IsNew:      isNewProfile(profile.CreatedAt),
-		Online:     mockOnlineStatus,
-		Images:     []string{dummyImagePath},
-		Tags:       tags,
+		UserID:       profile.UserID,
+		Nickname:     profile.Nickname,
+		Age:          profile.User.Age(),
+		Prefecture:   profile.Prefecture.Name,
+		Bio:          profile.Bio,
+		IsNew:        isNewProfile(profile.CreatedAt),
+		Online:       mockOnlineStatus,
+		Images:       []string{dummyImagePath},
+		Tags:         tags,
+		AlreadyLiked: alreadyLiked,
 	}, nil
 }
 

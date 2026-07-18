@@ -38,6 +38,10 @@ func main() {
 	if err := seed.SeedDummyProfiles(db); err != nil {
 		panic("Failed to seed dummy profiles")
 	}
+
+	if err := seed.SeedDummyLikes(db); err != nil {
+		panic("Failed to seed dummy likes")
+	}
 }
 
 // migrations/sql配下のマイグレーションファイル(Atlasで生成)をPostgreSQLに適用する

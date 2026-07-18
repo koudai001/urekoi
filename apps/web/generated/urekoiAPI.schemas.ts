@@ -63,6 +63,15 @@ export interface ProfileSummary {
   online?: string;
 }
 
+export interface LikeProfile {
+  user_id?: number;
+  nickname?: string;
+  age?: number;
+  prefecture?: string;
+  online?: string;
+  photos?: string[];
+}
+
 export interface TagSummary {
   label?: string;
   category?: string;
@@ -79,6 +88,8 @@ export interface ProfileDetail {
   online?: string;
   images?: string[];
   tags?: TagSummary[];
+  /** 閲覧者が既にこの相手にいいね済みか */
+  already_liked?: boolean;
 }
 
 export interface TagOption {

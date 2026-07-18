@@ -11,15 +11,16 @@ type ProfileSummary struct {
 }
 
 type ProfileDetail struct {
-	UserID     uint64       `json:"user_id"`
-	Nickname   string       `json:"nickname"`
-	Age        int16        `json:"age"`
-	Prefecture string       `json:"prefecture"`
-	Bio        string       `json:"bio"`
-	IsNew      bool         `json:"is_new"`
-	Online     string       `json:"online"`
-	Images     []string     `json:"images"`
-	Tags       []TagSummary `json:"tags"`
+	UserID       uint64       `json:"user_id"`
+	Nickname     string       `json:"nickname"`
+	Age          int16        `json:"age"`
+	Prefecture   string       `json:"prefecture"`
+	Bio          string       `json:"bio"`
+	IsNew        bool         `json:"is_new"`
+	Online       string       `json:"online"`
+	Images       []string     `json:"images"`
+	Tags         []TagSummary `json:"tags"`
+	AlreadyLiked bool         `json:"already_liked"`
 }
 
 type TagSummary struct {

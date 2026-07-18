@@ -16,7 +16,7 @@ var (
 
 type ILikeUsecase interface {
 	SendLike(fromUserID uint64, toUserID uint64) error
-	GetReceivedLikes(userID uint64) ([]dto.ProfileSummary, error)
+	GetReceivedLikes(userID uint64) ([]dto.LikeProfile, error)
 }
 
 type LikeUsecase struct {
@@ -56,22 +56,21 @@ func (u *LikeUsecase) SendLike(fromUserID uint64, toUserID uint64) error {
 }
 
 // userIDがもらったいいね(送信元プロフィール)一覧を取得する
-func (u *LikeUsecase) GetReceivedLikes(userID uint64) ([]dto.ProfileSummary, error) {
+func (u *LikeUsecase) GetReceivedLikes(userID uint64) ([]dto.LikeProfile, error) {
 	profiles, err := u.likeRepo.GetLikedProfiles(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	res := make([]dto.ProfileSummary, 0, len(profiles))
+	res := make([]dto.LikeProfile, 0, len(profiles))
 	for _, p := range profiles {
-		res = append(res, dto.ProfileSummary{
+		res = append(res, dto.LikeProfile{
 			UserID:     p.UserID,
 			Nickname:   p.Nickname,
 			Age:        p.User.Age(),
 			Prefecture: p.Prefecture.Name,
-			Image:      dummyImagePath,
-			IsNew:      isNewProfile(p.CreatedAt),
 			Online:     mockOnlineStatus,
+			Photos:     []string{dummyImagePath},
 		})
 	}
 

@@ -16,9 +16,18 @@
 
 - [x] FE: いいねボタンから`POST /likes`を叩く
 
-- [ ] FE: `GET /likes/received`をポーリングして新着いいねを取得
+- [x] FE: `GET /likes/received`をポーリングして新着いいねを取得
 
 # like2でやること
 
 - [x] いいねを押す。のフロント。
-- [ ] 既にいいね済みの相手はボタンをずっとdisableにする(要API対応: `already_liked`をProfileDetail/ProfileSummaryに追加)
+
+# like3でやる
+
+- [x] 既にいいね済みの相手はボタンをずっとdisableにする(要API対応: `already_liked`をProfileDetailに追加)
+
+# like4でやる
+
+- [x] FE: `GET /likes/received`をポーリングして新着いいねを取得
+- swr+proxy
+- 15秒間隔

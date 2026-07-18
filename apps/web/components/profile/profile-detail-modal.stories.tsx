@@ -14,6 +14,7 @@ const baseProfile: ProfileDetail = {
   bio: '落ち着いた時間を一緒に過ごせる方を探しています。',
   is_new: true,
   online: 'online',
+  already_liked: false,
   images: ['/profiles/woman-1.png'],
   tags: [
     {
