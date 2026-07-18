@@ -6,8 +6,8 @@
 
 @theme inline {
   --font-sans:
-    -apple-system, BlinkMacSystemFont, Roboto, 'Hiragino Sans',
-    'Noto Sans JP', sans-serif;
+    -apple-system, BlinkMacSystemFont, Roboto, 'Hiragino Sans', 'Noto Sans JP',
+    sans-serif;
   --font-mono: var(--font-geist-mono), 'Geist Mono Fallback';
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -52,7 +52,9 @@
 
 :root {
   /* Beige base, deep orchid/magenta purple brand */
-  --nuance-white: oklch(0.97 0.008 82); /* #F9F6F0 ニュアンスホワイト。白系はここに統一 */
+  --nuance-white: oklch(
+    0.97 0.008 82
+  ); /* #F9F6F0 ニュアンスホワイト。白系はここに統一 */
   --background: var(--nuance-white);
   --foreground: oklch(0.24 0.06 330);
   --card: var(--nuance-white);
