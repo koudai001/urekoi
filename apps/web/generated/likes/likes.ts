@@ -8,8 +8,8 @@
 import type {
   Error,
   InternalServerErrorResponse,
+  LikeProfile,
   LikeRequest,
-  ProfileSummary,
   UnauthorizedResponse
 } from '../urekoiAPI.schemas';
 
@@ -77,44 +77,44 @@ export const postLikes = async (likeRequest: LikeRequest, options?: RequestInit)
 );}
 
 
-export type getLikesReceivedResponse200 = {
-  data: ProfileSummary[]
+export type getLikesFromPartnerCardResponse200 = {
+  data: LikeProfile[]
   status: 200
 }
 
-export type getLikesReceivedResponse401 = {
+export type getLikesFromPartnerCardResponse401 = {
   data: UnauthorizedResponse
   status: 401
 }
 
-export type getLikesReceivedResponse500 = {
+export type getLikesFromPartnerCardResponse500 = {
   data: InternalServerErrorResponse
   status: 500
 }
 
-export type getLikesReceivedResponseSuccess = (getLikesReceivedResponse200) & {
+export type getLikesFromPartnerCardResponseSuccess = (getLikesFromPartnerCardResponse200) & {
   headers: Headers;
 };
-export type getLikesReceivedResponseError = (getLikesReceivedResponse401 | getLikesReceivedResponse500) & {
+export type getLikesFromPartnerCardResponseError = (getLikesFromPartnerCardResponse401 | getLikesFromPartnerCardResponse500) & {
   headers: Headers;
 };
 
-export type getLikesReceivedResponse = (getLikesReceivedResponseSuccess | getLikesReceivedResponseError)
+export type getLikesFromPartnerCardResponse = (getLikesFromPartnerCardResponseSuccess | getLikesFromPartnerCardResponseError)
 
-export const getGetLikesReceivedUrl = () => {
-
-
+export const getGetLikesFromPartnerCardUrl = () => {
 
 
-  return `/likes/received`
+
+
+  return `/likes/from-partner-card`
 }
 
 /**
  * @summary もらったいいね一覧を取得(ポーリングでの利用を想定)
  */
-export const getLikesReceived = async ( options?: RequestInit): Promise<getLikesReceivedResponse> => {
+export const getLikesFromPartnerCard = async ( options?: RequestInit): Promise<getLikesFromPartnerCardResponse> => {
 
-  return customFetch<getLikesReceivedResponse>(getGetLikesReceivedUrl(),
+  return customFetch<getLikesFromPartnerCardResponse>(getGetLikesFromPartnerCardUrl(),
   {
     ...options,
     method: 'GET'

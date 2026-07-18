@@ -16,7 +16,7 @@
 
 - [x] FE: いいねボタンから`POST /likes`を叩く
 
-- [ ] FE: `GET /likes/received`をポーリングして新着いいねを取得
+- [x] FE: `GET /likes/received`をポーリングして新着いいねを取得
 
 # like2でやること
 
@@ -28,4 +28,6 @@
 
 # like4でやる
 
-- [ ] FE: `GET /likes/received`をポーリングして新着いいねを取得
+- [x] FE: `GET /likes/received`をポーリングして新着いいねを取得
+- swr+proxy
+- 15秒間隔

@@ -58,7 +58,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	likeRouter := authRequired.Group("/likes")
 	likeRouter.POST("", likeController.SendLike)
-	likeRouter.GET("/received", likeController.GetReceivedLikes)
+	likeRouter.GET("/from-partner-card", likeController.GetReceivedLikes)
 
 	return router
 }

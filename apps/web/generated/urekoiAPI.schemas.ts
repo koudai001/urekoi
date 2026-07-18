@@ -63,6 +63,15 @@ export interface ProfileSummary {
   online?: string;
 }
 
+export interface LikeProfile {
+  user_id?: number;
+  nickname?: string;
+  age?: number;
+  prefecture?: string;
+  online?: string;
+  photos?: string[];
+}
+
 export interface TagSummary {
   label?: string;
   category?: string;

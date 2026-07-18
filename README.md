@@ -15,6 +15,7 @@
 - shadcn/ui(UIコンポーネント)
 - lucide-react(アイコン)
 - React Hook Form + Zod(フォーム状態管理・バリデーション)
+- SWR(クライアント側のポーリング・キャッシュ付きデータ取得)
 - orval(OpenAPI仕様からAPIクライアントを自動生成)
 - @redocly/cli(OpenAPI仕様のlint・ローカルプレビュー)
 - ESLint(eslint-config-next)

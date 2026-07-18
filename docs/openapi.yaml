@@ -384,7 +384,7 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  /likes/received:
+  /likes/from-partner-card:
     get:
       tags: [likes]
       summary: もらったいいね一覧を取得(ポーリングでの利用を想定)
@@ -398,7 +398,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ProfileSummary"
+                  $ref: "#/components/schemas/LikeProfile"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "500":
@@ -558,6 +558,30 @@ components:
         online:
           type: string
           example: online
+    LikeProfile:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        nickname:
+          type: string
+          example: たろう
+        age:
+          type: integer
+          example: 42
+        prefecture:
+          type: string
+          example: 東京都
+        online:
+          type: string
+          example: online
+        photos:
+          type: array
+          items:
+            type: string
+          example: [/placeholder.svg]
     ProfileDetail:
       type: object
       properties:
