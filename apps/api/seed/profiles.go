@@ -20,6 +20,7 @@ type dummyProfile struct {
 	PrefectureCode int16
 	Bio            string
 	TagLabels      []string
+	PhotoURLs      []string
 }
 
 // プロフィール一覧・詳細画面の見た目を確認するためのダミーユーザー
@@ -32,6 +33,7 @@ var dummyProfiles = []dummyProfile{
 		PrefectureCode: PrefectureTokyo,
 		Bio:            "落ち着いた時間を一緒に過ごせる方を探しています。",
 		TagLabels:      []string{"ワイン", "旅行"},
+		PhotoURLs:      []string{"/profiles/woman-1.png", "/profiles/woman-3.png", "/profiles/woman-5.png"},
 	},
 	{
 		Email:          "seed-yukari@gmail.com",
@@ -41,6 +43,7 @@ var dummyProfiles = []dummyProfile{
 		PrefectureCode: 14, // 神奈川県
 		Bio:            "年下の方とお話してみたいです。よろしくお願いします。",
 		TagLabels:      []string{"旅行", "焼肉"},
+		PhotoURLs:      []string{"/profiles/woman-2.png", "/profiles/woman-4.png"},
 	},
 	{
 		Email:          "seed-chinatsu@gmail.com",
@@ -50,6 +53,7 @@ var dummyProfiles = []dummyProfile{
 		PrefectureCode: PrefectureTokyo,
 		Bio:            "大人の余裕を大切にしています。素敵なご縁を。",
 		TagLabels:      []string{"読書", "映画鑑賞"},
+		PhotoURLs:      []string{"/profiles/woman-3.png", "/profiles/woman-6.png", "/profiles/woman-8.png"},
 	},
 	{
 		Email:          "seed-aya@gmail.com",
@@ -59,6 +63,7 @@ var dummyProfiles = []dummyProfile{
 		PrefectureCode: 11, // 埼玉県
 		Bio:            "気軽にメッセージいただけると嬉しいです。",
 		TagLabels:      []string{"旅行", "映画鑑賞"},
+		PhotoURLs:      []string{"/profiles/woman-4.png", "/profiles/woman-7.png"},
 	},
 	{
 		Email:          "seed-mai@gmail.com",
@@ -68,6 +73,7 @@ var dummyProfiles = []dummyProfile{
 		PrefectureCode: 12, // 千葉県
 		Bio:            "ゆっくりお話できる関係が理想です。",
 		TagLabels:      []string{"読書", "スポーツ観戦"},
+		PhotoURLs:      []string{"/profiles/woman-5.png", "/profiles/woman-2.png", "/profiles/woman-7.png"},
 	},
 	{
 		Email:          "seed-reina@gmail.com",
@@ -77,6 +83,7 @@ var dummyProfiles = []dummyProfile{
 		PrefectureCode: PrefectureTokyo,
 		Bio:            "感性の合う方とお会いしたいです。",
 		TagLabels:      []string{"ワイン", "スイーツ"},
+		PhotoURLs:      []string{"/profiles/woman-6.png", "/profiles/woman-1.png"},
 	},
 	{
 		Email:          "seed-yoshiko@gmail.com",
@@ -86,6 +93,7 @@ var dummyProfiles = []dummyProfile{
 		PrefectureCode: PrefectureOsaka,
 		Bio:            "一緒に色々な場所へ行ける方を探しています。",
 		TagLabels:      []string{"旅行", "カフェ巡り"},
+		PhotoURLs:      []string{"/profiles/woman-7.png", "/profiles/woman-8.png", "/profiles/woman-4.png"},
 	},
 	{
 		Email:          "seed-saori@gmail.com",
@@ -95,6 +103,7 @@ var dummyProfiles = []dummyProfile{
 		PrefectureCode: PrefectureTokyo,
 		Bio:            "夜のお出かけが好きです。素敵な出会いを。",
 		TagLabels:      []string{"スポーツ観戦", "日本酒"},
+		PhotoURLs:      []string{"/profiles/woman-8.png", "/profiles/woman-5.png"},
 	},
 }
 
@@ -136,6 +145,14 @@ func SeedDummyProfiles(db *gorm.DB) error {
 			profileTag := models.ProfileTag{ProfileID: profile.ID, TagID: tag.ID}
 			if err := db.Where(models.ProfileTag{ProfileID: profile.ID, TagID: tag.ID}).
 				FirstOrCreate(&profileTag).Error; err != nil {
+				return err
+			}
+		}
+
+		for i, url := range dp.PhotoURLs {
+			profileImage := models.ProfileImage{ProfileID: profile.ID, URL: url, SortOrder: int16(i)}
+			if err := db.Where(models.ProfileImage{ProfileID: profile.ID, URL: url}).
+				FirstOrCreate(&profileImage).Error; err != nil {
 				return err
 			}
 		}

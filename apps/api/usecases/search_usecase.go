@@ -16,9 +16,6 @@ var (
 // 登録からこの日数以内なら新着(NEW)扱いにする
 const newProfileThresholdDays = 7
 
-// プロフィール画像アップロード機能が未実装のため、暫定的に空を返す(表示側でダミー画像に差し替える)
-const dummyImagePath = ""
-
 // オンライン状態は未実装のため固定で返す値
 const mockOnlineStatus = "online"
 
@@ -58,7 +55,7 @@ func (u *SearchUsecase) ListProfiles(requestingUserID uint64) ([]dto.ProfileSumm
 			Nickname:   p.Nickname,
 			Age:        p.User.Age(),
 			Prefecture: p.Prefecture.Name,
-			Image:      dummyImagePath,
+			Image:      firstImageURL(p.Images),
 			IsNew:      isNewProfile(p.CreatedAt),
 			Online:     mockOnlineStatus,
 		})
@@ -103,7 +100,7 @@ func (u *SearchUsecase) GetProfileDetail(viewerUserID uint64, userID uint64) (dt
 		Bio:          profile.Bio,
 		IsNew:        isNewProfile(profile.CreatedAt),
 		Online:       mockOnlineStatus,
-		Images:       []string{dummyImagePath},
+		Images:       imageURLs(profile.Images),
 		Tags:         tags,
 		AlreadyLiked: alreadyLiked,
 	}, nil

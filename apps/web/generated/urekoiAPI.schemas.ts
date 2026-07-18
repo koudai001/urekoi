@@ -102,6 +102,19 @@ export interface LikeRequest {
   to_user_id: number;
 }
 
+export interface LikeResponse {
+  /** 相互いいねによりマッチが成立したか */
+  matched?: boolean;
+}
+
+export interface MatchProfile {
+  user_id?: number;
+  nickname?: string;
+  age?: number;
+  prefecture?: string;
+  image?: string;
+}
+
 export interface MyProfileRequest {
   nickname: string;
   age: number;

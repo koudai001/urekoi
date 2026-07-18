@@ -63,8 +63,8 @@ erDiagram
     }
     MATCH {
         bigint id PK
-        bigint user1_id FK "NOT NULL User.ID"
-        bigint user2_id FK "NOT NULL User.ID"
+        bigint user1_id FK "NOT NULL User.ID UNIQUE(user1_id, user2_id) CHECK(user1_id < user2_id) 重複防止のため常に小さい方"
+        bigint user2_id FK "NOT NULL User.ID UNIQUE(user1_id, user2_id)"
         timestamptz matched_at "NOT NULL DEFAULT now()"
     }
     MESSAGE {

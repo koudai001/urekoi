@@ -43,6 +43,7 @@ func (r *LikeRepository) CreateLike(like *models.Like) error {
 func (r *LikeRepository) GetLikedProfiles(userID uint64) ([]models.Profile, error) {
 	var profiles []models.Profile
 	if err := r.db.Preload("Prefecture").Preload("User").
+		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
 		Joins("JOIN likes ON likes.from_user_id = profiles.user_id").
 		Where("likes.to_user_id = ?", userID).
 		Find(&profiles).Error; err != nil {

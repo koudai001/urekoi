@@ -33,8 +33,12 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	myProfileUsecase := usecases.NewMyProfileUsecase(profileRepo)
 	myProfileController := controllers.NewMyProfileController(myProfileUsecase)
 
-	likeUsecase := usecases.NewLikeUsecase(likeRepo, authRepo)
+	matchRepo := repositories.NewMatchRepository(db)
+	likeUsecase := usecases.NewLikeUsecase(likeRepo, authRepo, matchRepo)
 	likeController := controllers.NewLikeController(likeUsecase)
+
+	matchUsecase := usecases.NewMatchUsecase(matchRepo)
+	matchController := controllers.NewMatchController(matchUsecase)
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
@@ -59,6 +63,8 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	likeRouter := authRequired.Group("/likes")
 	likeRouter.POST("", likeController.SendLike)
 	likeRouter.GET("/from-partner-card", likeController.GetReceivedLikes)
+
+	authRequired.GET("/matches", matchController.GetMatches)
 
 	return router
 }

@@ -41,6 +41,7 @@ func (r *ProfileRepository) WithTx(tx *gorm.DB) IProfileRepository {
 func (r *ProfileRepository) GetAllProfiles(excludeUserID uint64) ([]models.Profile, error) {
 	var profiles []models.Profile
 	if err := r.db.Preload("Prefecture").Preload("User").
+		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
 		Where("user_id != ?", excludeUserID).
 		Find(&profiles).Error; err != nil {
 		return nil, err
@@ -62,7 +63,9 @@ func (r *ProfileRepository) GetProfileTags(profileID uint64) ([]models.ProfileTa
 
 func (r *ProfileRepository) GetProfileByUserID(userID uint64) (*models.Profile, error) {
 	var profile models.Profile
-	if err := r.db.Preload("Prefecture").Preload("User").Where("user_id = ?", userID).First(&profile).Error; err != nil {
+	if err := r.db.Preload("Prefecture").Preload("User").
+		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
+		Where("user_id = ?", userID).First(&profile).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrProfileNotFound
 		}

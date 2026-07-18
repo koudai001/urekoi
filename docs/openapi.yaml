@@ -357,6 +357,10 @@ paths:
       responses:
         "201":
           description: いいね成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LikeResponse"
         "400":
           description: バリデーションエラー(自分自身へのいいねなど)
           content:
@@ -408,9 +412,21 @@ paths:
     get:
       tags: [matches]
       summary: マッチングした相手の一覧取得
+      security:
+        - bearerAuth: []
       responses:
         "200":
           description: 取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchProfile"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /matches/{match_id}/messages:
     parameters:
@@ -653,6 +669,32 @@ components:
           type: integer
           format: int64
           example: 1
+    LikeResponse:
+      type: object
+      properties:
+        matched:
+          type: boolean
+          description: 相互いいねによりマッチが成立したか
+          example: false
+    MatchProfile:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        nickname:
+          type: string
+          example: たろう
+        age:
+          type: integer
+          example: 42
+        prefecture:
+          type: string
+          example: 東京都
+        image:
+          type: string
+          example: /placeholder.svg
     MyProfileRequest:
       type: object
       required: [nickname, age, prefecture_code]
