@@ -39,7 +39,7 @@ describe('sendLike', () => {
     // postLikes() が実行されたら、ステータスコード 201 を返すように設定
     vi.mocked(postLikes).mockResolvedValue({
       status: 201,
-      data: undefined,
+      data: { matched: false },
     } as Awaited<ReturnType<typeof postLikes>>)
 
     // sendLike() を実行
