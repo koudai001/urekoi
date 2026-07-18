@@ -5,7 +5,7 @@ import { postLikes } from '@/generated/likes/likes'
 import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
 
 export type SendLikeResult =
-  { success: true } | { success: false; error: string }
+  { success: true; matched: boolean } | { success: false; error: string }
 
 // to_user_idにいいねを送る
 export async function sendLike(toUserId: number): Promise<SendLikeResult> {
@@ -19,7 +19,7 @@ export async function sendLike(toUserId: number): Promise<SendLikeResult> {
   // 全ケース網羅
   switch (res.status) {
     case 201:
-      return { success: true }
+      return { success: true, matched: res.data.matched ?? false }
     case 400:
       return { success: false, error: '自分自身にはいいねできません' }
     case 404:

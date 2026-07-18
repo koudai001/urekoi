@@ -5,7 +5,9 @@ import { Sidebar } from '@/components/sidebar'
 import { LikeSwipeCard } from '@/components/likes/like-swipe-card'
 import { LikeEmptyState } from '@/components/likes/like-empty-state'
 import { useReceivedLikes } from '@/components/likes/use-received-likes'
+import { showMatchToast } from '@/components/likes/match-toast'
 import { PageHeader } from '@/components/ui/page-header'
+import { sendLike } from '@/actions/likes'
 import { ChevronRight } from 'lucide-react'
 
 export default function LikesPage() {
@@ -17,8 +19,13 @@ export default function LikesPage() {
   const current = likes[index]
   const done = !isLoading && index >= likes.length
 
-  const handleSwipe = () => {
-    // apiもここで叩く
+  const handleSwipe = async (dir: 'like' | 'skip') => {
+    if (dir === 'like') {
+      const result = await sendLike(current.user_id ?? 0)
+      if (result.success && result.matched) {
+        showMatchToast(current.nickname ?? '', current.age ?? 0)
+      }
+    }
     setIndex((i) => i + 1)
   }
 
