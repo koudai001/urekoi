@@ -5,6 +5,7 @@ import '../app/globals.css'
 
 sb.mock(import('../actions/likes.ts'))
 sb.mock(import('../components/likes/use-received-likes.ts'))
+sb.mock(import('../components/messages/use-match-profiles.ts'))
 
 const preview: Preview = {
   parameters: {

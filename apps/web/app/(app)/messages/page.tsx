@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Sidebar } from '@/components/sidebar'
-import { MessageList } from '@/components/message-list'
+import { MessageList } from '@/components/messages/message-list'
 import { ChatView, EmptyChat } from '@/components/chat-view'
 import type { Conversation } from '@/lib/conversations'
 
