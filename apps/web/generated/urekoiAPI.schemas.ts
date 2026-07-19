@@ -107,6 +107,15 @@ export interface LikeResponse {
   matched?: boolean;
 }
 
+export interface PendingLikesResponse {
+  total?: number;
+  profiles?: LikeProfile[];
+}
+
+export interface SkipRequest {
+  to_user_id: number;
+}
+
 export interface MatchProfile {
   user_id?: number;
   nickname?: string;

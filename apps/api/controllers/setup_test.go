@@ -45,6 +45,7 @@ func setupWithDB(t *testing.T) (*gin.Engine, *gorm.DB) {
 		&models.Tag{},
 		&models.ProfileTag{},
 		&models.Like{},
+		&models.Skip{},
 		&models.Match{},
 		&models.Message{},
 		&models.RefreshToken{},

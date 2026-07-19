@@ -16,3 +16,8 @@ type LikeProfile struct {
 	Online     string   `json:"online"`
 	Photos     []string `json:"photos"`
 }
+
+type PendingLikesResponse struct {
+	Total    int           `json:"total"`
+	Profiles []LikeProfile `json:"profiles"`
+}

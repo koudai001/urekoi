@@ -16,6 +16,8 @@ tags:
     x-displayName: 相手の検索
   - name: likes
     x-displayName: いいね
+  - name: skips
+    x-displayName: スキップ
   - name: matches
     x-displayName: マッチング
   - name: messages
@@ -388,10 +390,28 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  /likes/from-partner-card:
+  /likes/pending:
     get:
       tags: [likes]
-      summary: もらったいいね一覧を取得(ポーリングでの利用を想定)
+      summary: マッチ済み・スキップ済みを除いた、もらったいいね一覧を取得(ポーリングでの利用を想定)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PendingLikesResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /likes/sent:
+    get:
+      tags: [likes]
+      summary: 自分が送ったいいね一覧を取得
       security:
         - bearerAuth: []
       responses:
@@ -405,6 +425,48 @@ paths:
                   $ref: "#/components/schemas/LikeProfile"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /skips:
+    post:
+      tags: [skips]
+      summary: 相手をスキップする
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SkipRequest"
+      responses:
+        "201":
+          description: スキップ成功
+        "400":
+          description: バリデーションエラー(自分自身へのスキップなど)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: 相手が見つからない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: user not found
+        "409":
+          description: 既にスキップ済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: already skipped
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -676,6 +738,24 @@ components:
           type: boolean
           description: 相互いいねによりマッチが成立したか
           example: false
+    PendingLikesResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 1
+        profiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/LikeProfile"
+    SkipRequest:
+      type: object
+      required: [to_user_id]
+      properties:
+        to_user_id:
+          type: integer
+          format: int64
+          example: 1
     MatchProfile:
       type: object
       properties:

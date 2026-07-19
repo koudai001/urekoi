@@ -11,6 +11,7 @@ import type {
   LikeProfile,
   LikeRequest,
   LikeResponse,
+  PendingLikesResponse,
   UnauthorizedResponse
 } from '../urekoiAPI.schemas';
 
@@ -78,44 +79,91 @@ export const postLikes = async (likeRequest: LikeRequest, options?: RequestInit)
 );}
 
 
-export type getLikesFromPartnerCardResponse200 = {
-  data: LikeProfile[]
+export type getLikesPendingResponse200 = {
+  data: PendingLikesResponse
   status: 200
 }
 
-export type getLikesFromPartnerCardResponse401 = {
+export type getLikesPendingResponse401 = {
   data: UnauthorizedResponse
   status: 401
 }
 
-export type getLikesFromPartnerCardResponse500 = {
+export type getLikesPendingResponse500 = {
   data: InternalServerErrorResponse
   status: 500
 }
 
-export type getLikesFromPartnerCardResponseSuccess = (getLikesFromPartnerCardResponse200) & {
+export type getLikesPendingResponseSuccess = (getLikesPendingResponse200) & {
   headers: Headers;
 };
-export type getLikesFromPartnerCardResponseError = (getLikesFromPartnerCardResponse401 | getLikesFromPartnerCardResponse500) & {
+export type getLikesPendingResponseError = (getLikesPendingResponse401 | getLikesPendingResponse500) & {
   headers: Headers;
 };
 
-export type getLikesFromPartnerCardResponse = (getLikesFromPartnerCardResponseSuccess | getLikesFromPartnerCardResponseError)
+export type getLikesPendingResponse = (getLikesPendingResponseSuccess | getLikesPendingResponseError)
 
-export const getGetLikesFromPartnerCardUrl = () => {
-
-
+export const getGetLikesPendingUrl = () => {
 
 
-  return `/likes/from-partner-card`
+
+
+  return `/likes/pending`
 }
 
 /**
- * @summary もらったいいね一覧を取得(ポーリングでの利用を想定)
+ * @summary マッチ済み・スキップ済みを除いた、もらったいいね一覧を取得(ポーリングでの利用を想定)
  */
-export const getLikesFromPartnerCard = async ( options?: RequestInit): Promise<getLikesFromPartnerCardResponse> => {
+export const getLikesPending = async ( options?: RequestInit): Promise<getLikesPendingResponse> => {
 
-  return customFetch<getLikesFromPartnerCardResponse>(getGetLikesFromPartnerCardUrl(),
+  return customFetch<getLikesPendingResponse>(getGetLikesPendingUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+export type getLikesSentResponse200 = {
+  data: LikeProfile[]
+  status: 200
+}
+
+export type getLikesSentResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getLikesSentResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type getLikesSentResponseSuccess = (getLikesSentResponse200) & {
+  headers: Headers;
+};
+export type getLikesSentResponseError = (getLikesSentResponse401 | getLikesSentResponse500) & {
+  headers: Headers;
+};
+
+export type getLikesSentResponse = (getLikesSentResponseSuccess | getLikesSentResponseError)
+
+export const getGetLikesSentUrl = () => {
+
+
+
+
+  return `/likes/sent`
+}
+
+/**
+ * @summary 自分が送ったいいね一覧を取得
+ */
+export const getLikesSent = async ( options?: RequestInit): Promise<getLikesSentResponse> => {
+
+  return customFetch<getLikesSentResponse>(getGetLikesSentUrl(),
   {
     ...options,
     method: 'GET'
