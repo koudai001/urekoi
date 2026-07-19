@@ -25,6 +25,9 @@ const dummyMatches: MatchProfile[] = [
 const meta = {
   title: 'messages/MatchingCarousel',
   component: MatchingCarousel,
+  args: {
+    onSelect: () => {},
+  },
   // 各storyでの上書きが無い場合は「マッチング無し」を既定にしておく
   beforeEach: () => {
     mocked(useMatchProfilesModule.useMatchProfiles).mockReturnValue({

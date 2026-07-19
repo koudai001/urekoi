@@ -44,6 +44,10 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	matchUsecase := usecases.NewMatchUsecase(matchRepo)
 	matchController := controllers.NewMatchController(matchUsecase)
 
+	messageRepo := repositories.NewMessageRepository(db)
+	messageUsecase := usecases.NewMessageUsecase(messageRepo, matchRepo)
+	messageController := controllers.NewMessageController(messageUsecase)
+
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
@@ -71,6 +75,10 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	authRequired.POST("/skips", skipController.SendSkip)
 
 	authRequired.GET("/matches", matchController.GetMatches)
+
+	messageRouter := authRequired.Group("/matches/:matchId/messages")
+	messageRouter.POST("", messageController.SendMessage)
+	messageRouter.GET("", messageController.GetMessages)
 
 	return router
 }

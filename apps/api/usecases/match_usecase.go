@@ -29,6 +29,7 @@ func (u *MatchUsecase) GetMatches(userID uint64) ([]dto.MatchProfile, error) {
 	res := make([]dto.MatchProfile, 0, len(profiles))
 	for _, p := range profiles {
 		res = append(res, dto.MatchProfile{
+			MatchID:    p.MatchID,
 			UserID:     p.UserID,
 			Nickname:   p.Nickname,
 			Age:        p.User.Age(),
