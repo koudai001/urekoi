@@ -6,13 +6,15 @@ import { LikeSwipeCard } from '@/components/likes/like-swipe-card'
 import { LikeEmptyState } from '@/components/likes/like-empty-state'
 import { useReceivedLikes } from '@/components/likes/use-received-likes'
 import { showMatchToast } from '@/components/likes/match-toast'
+import { showSkipToast } from '@/components/likes/skip-toast'
 import { PageHeader } from '@/components/ui/page-header'
 import { sendLike } from '@/actions/likes'
+import { sendSkip } from '@/actions/skips'
 import { ChevronRight } from 'lucide-react'
 
 export default function LikesPage() {
   const { data, isLoading } = useReceivedLikes()
-  const likes = data ?? []
+  const likes = data?.profiles ?? []
 
   // 現在表示中のカードのindex
   const [index, setIndex] = useState(0)
@@ -25,6 +27,9 @@ export default function LikesPage() {
       if (result.success && result.matched) {
         showMatchToast(current.nickname ?? '', current.age ?? 0)
       }
+    } else {
+      await sendSkip(current.user_id ?? 0)
+      showSkipToast(current.nickname ?? '')
     }
     setIndex((i) => i + 1)
   }

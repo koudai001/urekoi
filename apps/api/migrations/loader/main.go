@@ -20,6 +20,7 @@ func main() {
 		&models.Tag{},
 		&models.ProfileTag{},
 		&models.Like{},
+		&models.Skip{},
 		&models.Match{},
 		&models.Message{},
 		&models.RefreshToken{},

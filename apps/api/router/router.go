@@ -37,6 +37,10 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	likeUsecase := usecases.NewLikeUsecase(likeRepo, authRepo, matchRepo)
 	likeController := controllers.NewLikeController(likeUsecase)
 
+	skipRepo := repositories.NewSkipRepository(db)
+	skipUsecase := usecases.NewSkipUsecase(skipRepo, authRepo)
+	skipController := controllers.NewSkipController(skipUsecase)
+
 	matchUsecase := usecases.NewMatchUsecase(matchRepo)
 	matchController := controllers.NewMatchController(matchUsecase)
 
@@ -62,7 +66,9 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	likeRouter := authRequired.Group("/likes")
 	likeRouter.POST("", likeController.SendLike)
-	likeRouter.GET("/from-partner-card", likeController.GetReceivedLikes)
+	likeRouter.GET("/pending", likeController.GetPendingLikes)
+
+	authRequired.POST("/skips", skipController.SendSkip)
 
 	authRequired.GET("/matches", matchController.GetMatches)
 

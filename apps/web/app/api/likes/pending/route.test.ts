@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { cookies } from 'next/headers'
-import { getLikesFromPartnerCard } from '@/generated/likes/likes'
+import { getLikesPending } from '@/generated/likes/likes'
 import { GET } from './route'
 
 // クッキーをモック化
@@ -10,10 +10,10 @@ vi.mock('next/headers', () => ({
 
 // Orval で自動生成された API クライアントをモック化
 vi.mock('@/generated/likes/likes', () => ({
-  getLikesFromPartnerCard: vi.fn(),
+  getLikesPending: vi.fn(),
 }))
 
-describe('GET /api/likes/from-partner-card', () => {
+describe('GET /api/likes/pending', () => {
   // 偽物の「クッキーストア」を用意
   let mockCookieStore: {
     get: ReturnType<typeof vi.fn>
@@ -33,31 +33,31 @@ describe('GET /api/likes/from-partner-card', () => {
 
   it('【200 成功】access_tokenをAuthorizationヘッダーに付けてBEを呼び、レスポンスをそのまま中継すること', async () => {
     mockCookieStore.get.mockReturnValue({ value: 'mock_access' })
-    const likes = [{ user_id: 1, nickname: '美咲' }]
-    vi.mocked(getLikesFromPartnerCard).mockResolvedValue({
+    const body = { total: 1, profiles: [{ user_id: 1, nickname: '美咲' }] }
+    vi.mocked(getLikesPending).mockResolvedValue({
       status: 200,
-      data: likes,
-    } as Awaited<ReturnType<typeof getLikesFromPartnerCard>>)
+      data: body,
+    } as Awaited<ReturnType<typeof getLikesPending>>)
 
     const res = await GET()
 
-    expect(getLikesFromPartnerCard).toHaveBeenCalledWith({
+    expect(getLikesPending).toHaveBeenCalledWith({
       headers: { Authorization: 'Bearer mock_access' },
     })
     expect(res.status).toBe(200)
-    expect(await res.json()).toEqual(likes)
+    expect(await res.json()).toEqual(body)
   })
 
   it('【401 未認証】access_tokenが無い場合も空のAuthorizationヘッダーでBEに中継し、ステータスをそのまま返すこと', async () => {
     mockCookieStore.get.mockReturnValue(undefined)
-    vi.mocked(getLikesFromPartnerCard).mockResolvedValue({
+    vi.mocked(getLikesPending).mockResolvedValue({
       status: 401,
       data: undefined,
-    } as Awaited<ReturnType<typeof getLikesFromPartnerCard>>)
+    } as Awaited<ReturnType<typeof getLikesPending>>)
 
     const res = await GET()
 
-    expect(getLikesFromPartnerCard).toHaveBeenCalledWith({
+    expect(getLikesPending).toHaveBeenCalledWith({
       headers: { Authorization: 'Bearer ' },
     })
     expect(res.status).toBe(401)
@@ -65,10 +65,10 @@ describe('GET /api/likes/from-partner-card', () => {
 
   it('【500 サーバーエラー】BEのエラーもそのまま中継すること', async () => {
     mockCookieStore.get.mockReturnValue({ value: 'mock_access' })
-    vi.mocked(getLikesFromPartnerCard).mockResolvedValue({
+    vi.mocked(getLikesPending).mockResolvedValue({
       status: 500,
       data: { error: 'internal server error' },
-    } as Awaited<ReturnType<typeof getLikesFromPartnerCard>>)
+    } as Awaited<ReturnType<typeof getLikesPending>>)
 
     const res = await GET()
 

@@ -11,6 +11,7 @@
     "docs:lint": "redocly lint docs/openapi.yaml",
     "docs:build": "redocly build-docs docs/openapi.yaml -o docs/index.html",
     "docs:preview": "npx serve docs -l 4321",
+    "db:reset": "apps/api/scripts/reset-db.sh",
     "prepare": "husky"
   },
   "dependencies": {

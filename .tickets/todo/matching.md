@@ -22,9 +22,19 @@
 
 # スコープ3（次のスコープ）
 
-- skipsテーブルを新設(likesと同じ形: from_user_id, to_user_id, created_at)
-- GetLikedProfiles(受け取ったいいね一覧)のクエリで、matches/skipsに入っている相手を除外
-- サイドバーのイイネ件数バッジもこの除外済みの一覧件数を使うようにする
+- skipsテーブルを新設(likesと同じ形: from_user_id, to_user_id, created_at)　DONE
+
+- GetLikedProfiles(受け取ったいいね一覧)のクエリで、matches/skipsに入っている相手を除外　DONE
+
+- サイドバーのイイネ件数バッジもこの除外済みの一覧件数を使うようにする　DONE
+
+- スキップ送信API(POST /skips)を追加、FEのスワイプからも呼ぶように　DONE
+
+# スコープ4（次のスコープ）
+
+- マッチング一覧をメッセージの上の横スクロール部分に出す（コンポーネント化）
+
+- メッセージ機能は後で。
 
 # 設計
 

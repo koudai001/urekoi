@@ -3,13 +3,16 @@ import { expect, mocked } from 'storybook/test'
 import * as useReceivedLikesModule from './use-received-likes'
 
 import { LikeNavItem } from './like-nav-item'
-import type { LikeProfile } from '@/generated/urekoiAPI.schemas'
+import type { PendingLikesResponse } from '@/generated/urekoiAPI.schemas'
 
-const dummyLikes: LikeProfile[] = [
-  { user_id: 1, nickname: '美咲' },
-  { user_id: 2, nickname: '由香里' },
-  { user_id: 3, nickname: '千夏' },
-]
+const dummyLikes: PendingLikesResponse = {
+  total: 3,
+  profiles: [
+    { user_id: 1, nickname: '美咲' },
+    { user_id: 2, nickname: '由香里' },
+    { user_id: 3, nickname: '千夏' },
+  ],
+}
 
 const meta = {
   title: 'likes/LikeNavItem',
@@ -17,7 +20,7 @@ const meta = {
   // 各storyでの上書きが無い場合は「いいね無し」を既定にしておく
   beforeEach: () => {
     mocked(useReceivedLikesModule.useReceivedLikes).mockReturnValue({
-      data: [],
+      data: { total: 0, profiles: [] },
     } as unknown as ReturnType<typeof useReceivedLikesModule.useReceivedLikes>)
   },
 } satisfies Meta<typeof LikeNavItem>

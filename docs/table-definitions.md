@@ -61,6 +61,12 @@ erDiagram
         bigint to_user_id FK "NOT NULL User.ID UNIQUE(from_user_id, to_user_id) 重複いいね防止"
         timestamptz created_at "NOT NULL DEFAULT now()"
     }
+    SKIP {
+        bigint id PK
+        bigint from_user_id FK "NOT NULL User.ID UNIQUE(from_user_id, to_user_id) スキップした側 CHECK(from_user_id <> to_user_id)"
+        bigint to_user_id FK "NOT NULL User.ID UNIQUE(from_user_id, to_user_id) スキップされた側"
+        timestamptz created_at "NOT NULL DEFAULT now()"
+    }
     MATCH {
         bigint id PK
         bigint user1_id FK "NOT NULL User.ID UNIQUE(user1_id, user2_id) CHECK(user1_id < user2_id) 重複防止のため常に小さい方"
@@ -89,6 +95,8 @@ erDiagram
     TAG ||--o{ PROFILE_TAG : "tagged in"
     USER ||--o{ LIKE : sends
     USER ||--o{ LIKE : receives
+    USER ||--o{ SKIP : sends
+    USER ||--o{ SKIP : receives
     USER ||--o{ MATCH : "as user1"
     USER ||--o{ MATCH : "as user2"
     MATCH ||--o{ MESSAGE : has

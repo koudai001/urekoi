@@ -105,8 +105,8 @@ func TestSendLike_Unauthorized(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }
 
-// もらったいいねの送信元プロフィール一覧を取得できることを検証
-func TestGetReceivedLikes_Success(t *testing.T) {
+// もらったいいねの送信元プロフィール一覧をtotal付きで取得できることを検証
+func TestGetPendingLikes_Success(t *testing.T) {
 	router := setup(t)
 
 	// 送信元と送信先のユーザーを作成
@@ -117,41 +117,67 @@ func TestGetReceivedLikes_Success(t *testing.T) {
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: to.ID}, from.AccessToken).Code)
 
 	// 送信先にログインして、もらったいいねの送信元プロフィール一覧を取得
-	w := getJSONWithAuth(t, router, "/likes/from-partner-card", to.AccessToken)
+	w := getJSONWithAuth(t, router, "/likes/pending", to.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
 	// レスポンスの内容を検証
-	var res []dto.LikeProfile
+	var res dto.PendingLikesResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	assert.Equal(t, 1, res.Total)
 	// サインアップ時のデフォルトプロフィール情報が返ることを検証
 	assert.ElementsMatch(t, []dto.LikeProfile{
 		{UserID: from.ID, Nickname: "テストユーザー", Age: defaultTestAge, Prefecture: "東京都", Online: "online", Photos: []string{""}},
-	}, res)
+	}, res.Profiles)
 }
 
-// いいねをもらっていない場合は空配列を返すことを検証
-func TestGetReceivedLikes_Empty(t *testing.T) {
+// スキップ済みの相手はもらったいいね一覧から除外されることを検証
+func TestGetPendingLikes_ExcludesSkipped(t *testing.T) {
+	router := setup(t)
+
+	from := signUpOnlyEmail(t, router, "like-skipped-from@example.com")
+	to := signUpOnlyEmail(t, router, "like-skipped-to@example.com")
+
+	// 送信元から送信先にいいねを送る
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: to.ID}, from.AccessToken).Code)
+
+	// 送信先が送信元をスキップする
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/skips", dto.SkipRequest{ToUserID: from.ID}, to.AccessToken).Code)
+
+	// スキップ済みなので、もらったいいね一覧には含まれない
+	w := getJSONWithAuth(t, router, "/likes/pending", to.AccessToken)
+
+	require.Equal(t, http.StatusOK, w.Code)
+
+	var res dto.PendingLikesResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	assert.Equal(t, 0, res.Total)
+	assert.Empty(t, res.Profiles)
+}
+
+// 保留中のいいねがない場合はtotal=0・空配列を返すことを検証
+func TestGetPendingLikes_Empty(t *testing.T) {
 	router := setup(t)
 
 	// いいねをもらっていないユーザーを作成
 	me := signUpOnlyEmail(t, router, "like-received-empty@example.com")
 
-	// いいねをもらっていないので、空配列が返ることを検証
-	w := getJSONWithAuth(t, router, "/likes/from-partner-card", me.AccessToken)
+	// いいねをもらっていないので、total=0・空配列が返ることを検証
+	w := getJSONWithAuth(t, router, "/likes/pending", me.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.LikeProfile
+	var res dto.PendingLikesResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	assert.Empty(t, res)
+	assert.Equal(t, 0, res.Total)
+	assert.Empty(t, res.Profiles)
 }
 
 // access_tokenがない場合は401を返すことを検証
-func TestGetReceivedLikes_Unauthorized(t *testing.T) {
+func TestGetPendingLikes_Unauthorized(t *testing.T) {
 	router := setup(t)
 
-	w := getJSON(t, router, "/likes/from-partner-card")
+	w := getJSON(t, router, "/likes/pending")
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }

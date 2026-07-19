@@ -18,7 +18,7 @@ var (
 type ILikeUsecase interface {
 	// いいねを送る。戻り値は相互いいねによりマッチが成立したかどうか
 	SendLike(fromUserID uint64, toUserID uint64) (matched bool, err error)
-	GetReceivedLikes(userID uint64) ([]dto.LikeProfile, error)
+	GetPendingLikes(userID uint64) (dto.PendingLikesResponse, error)
 }
 
 type LikeUsecase struct {
@@ -82,11 +82,11 @@ func (u *LikeUsecase) SendLike(fromUserID uint64, toUserID uint64) (bool, error)
 	return true, nil
 }
 
-// userIDがもらったいいね(送信元プロフィール)一覧を取得する
-func (u *LikeUsecase) GetReceivedLikes(userID uint64) ([]dto.LikeProfile, error) {
-	profiles, err := u.likeRepo.GetLikedProfiles(userID)
+// userIDがもらったいいねのうち、マッチ済み・スキップ済みの相手を除いた一覧を取得する
+func (u *LikeUsecase) GetPendingLikes(userID uint64) (dto.PendingLikesResponse, error) {
+	profiles, err := u.likeRepo.GetPendingLikes(userID)
 	if err != nil {
-		return nil, err
+		return dto.PendingLikesResponse{}, err
 	}
 
 	res := make([]dto.LikeProfile, 0, len(profiles))
@@ -101,5 +101,5 @@ func (u *LikeUsecase) GetReceivedLikes(userID uint64) ([]dto.LikeProfile, error)
 		})
 	}
 
-	return res, nil
+	return dto.PendingLikesResponse{Total: len(res), Profiles: res}, nil
 }

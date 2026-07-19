@@ -55,14 +55,14 @@ func (ctrl *LikeController) SendLike(c *gin.Context) {
 	c.JSON(http.StatusCreated, dto.LikeResponse{Matched: matched})
 }
 
-func (ctrl *LikeController) GetReceivedLikes(c *gin.Context) {
+func (ctrl *LikeController) GetPendingLikes(c *gin.Context) {
 	user := c.MustGet(middlewares.ContextUserKey).(*models.User)
 
-	profiles, err := ctrl.likeUsecase.GetReceivedLikes(user.ID)
+	res, err := ctrl.likeUsecase.GetPendingLikes(user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, profiles)
+	c.JSON(http.StatusOK, res)
 }
