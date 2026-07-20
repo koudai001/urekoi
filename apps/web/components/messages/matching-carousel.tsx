@@ -2,9 +2,14 @@
 
 import { useMatchProfiles } from './use-match-profiles'
 import { MatchingAvatar } from './matching-carousel-avatar'
+import type { MatchProfile } from '@/generated/urekoiAPI.schemas'
 
 // マッチング済みでまだメッセージのやり取りがない相手を横スクロールで表示する
-export function MatchingCarousel() {
+export function MatchingCarousel({
+  onSelect,
+}: {
+  onSelect: (match: MatchProfile) => void
+}) {
   const { data } = useMatchProfiles()
   const matches = data ?? []
 
@@ -14,7 +19,7 @@ export function MatchingCarousel() {
       <div className="relative">
         <div className="flex cursor-pointer gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {matches.map((m) => (
-            <MatchingAvatar key={m.user_id} match={m} />
+            <MatchingAvatar key={m.user_id} match={m} onSelect={onSelect} />
           ))}
         </div>
       </div>

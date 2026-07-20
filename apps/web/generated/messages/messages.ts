@@ -5,34 +5,79 @@
  * 熟女専門マッチングアプリ urekoi のAPI仕様
  * OpenAPI spec version: 0.1.0
  */
+import type {
+  Error,
+  GetMatchesMatchIdMessagesParams,
+  InternalServerErrorResponse,
+  MessageRequest,
+  MessageResponse,
+  UnauthorizedResponse
+} from '../urekoiAPI.schemas';
+
 import { customFetch } from '../../lib/api/custom-fetch';
 
 export type getMatchesMatchIdMessagesResponse200 = {
-  data: void
+  data: MessageResponse[]
   status: 200
+}
+
+export type getMatchesMatchIdMessagesResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type getMatchesMatchIdMessagesResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getMatchesMatchIdMessagesResponse403 = {
+  data: Error
+  status: 403
+}
+
+export type getMatchesMatchIdMessagesResponse404 = {
+  data: Error
+  status: 404
+}
+
+export type getMatchesMatchIdMessagesResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
 }
 
 export type getMatchesMatchIdMessagesResponseSuccess = (getMatchesMatchIdMessagesResponse200) & {
   headers: Headers;
 };
-;
+export type getMatchesMatchIdMessagesResponseError = (getMatchesMatchIdMessagesResponse400 | getMatchesMatchIdMessagesResponse401 | getMatchesMatchIdMessagesResponse403 | getMatchesMatchIdMessagesResponse404 | getMatchesMatchIdMessagesResponse500) & {
+  headers: Headers;
+};
 
-export type getMatchesMatchIdMessagesResponse = (getMatchesMatchIdMessagesResponseSuccess)
+export type getMatchesMatchIdMessagesResponse = (getMatchesMatchIdMessagesResponseSuccess | getMatchesMatchIdMessagesResponseError)
 
-export const getGetMatchesMatchIdMessagesUrl = (matchId: number,) => {
+export const getGetMatchesMatchIdMessagesUrl = (matchId: number,
+    params?: GetMatchesMatchIdMessagesParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/matches/${matchId}/messages`
+  return stringifiedParams.length > 0 ? `/matches/${matchId}/messages?${stringifiedParams}` : `/matches/${matchId}/messages`
 }
 
 /**
- * @summary 特定ユーザーとのメッセージ履歴を取得
+ * @summary マッチ相手とのメッセージ履歴を取得(新しい順、before_idカーソルでページネーション)
  */
-export const getMatchesMatchIdMessages = async (matchId: number, options?: RequestInit): Promise<getMatchesMatchIdMessagesResponse> => {
+export const getMatchesMatchIdMessages = async (matchId: number,
+    params?: GetMatchesMatchIdMessagesParams, options?: RequestInit): Promise<getMatchesMatchIdMessagesResponse> => {
 
-  return customFetch<getMatchesMatchIdMessagesResponse>(getGetMatchesMatchIdMessagesUrl(matchId),
+  return customFetch<getMatchesMatchIdMessagesResponse>(getGetMatchesMatchIdMessagesUrl(matchId,params),
   {
     ...options,
     method: 'GET'
@@ -43,16 +88,43 @@ export const getMatchesMatchIdMessages = async (matchId: number, options?: Reque
 
 
 export type postMatchesMatchIdMessagesResponse201 = {
-  data: void
+  data: MessageResponse
   status: 201
+}
+
+export type postMatchesMatchIdMessagesResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type postMatchesMatchIdMessagesResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type postMatchesMatchIdMessagesResponse403 = {
+  data: Error
+  status: 403
+}
+
+export type postMatchesMatchIdMessagesResponse404 = {
+  data: Error
+  status: 404
+}
+
+export type postMatchesMatchIdMessagesResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
 }
 
 export type postMatchesMatchIdMessagesResponseSuccess = (postMatchesMatchIdMessagesResponse201) & {
   headers: Headers;
 };
-;
+export type postMatchesMatchIdMessagesResponseError = (postMatchesMatchIdMessagesResponse400 | postMatchesMatchIdMessagesResponse401 | postMatchesMatchIdMessagesResponse403 | postMatchesMatchIdMessagesResponse404 | postMatchesMatchIdMessagesResponse500) & {
+  headers: Headers;
+};
 
-export type postMatchesMatchIdMessagesResponse = (postMatchesMatchIdMessagesResponseSuccess)
+export type postMatchesMatchIdMessagesResponse = (postMatchesMatchIdMessagesResponseSuccess | postMatchesMatchIdMessagesResponseError)
 
 export const getPostMatchesMatchIdMessagesUrl = (matchId: number,) => {
 
@@ -63,16 +135,17 @@ export const getPostMatchesMatchIdMessagesUrl = (matchId: number,) => {
 }
 
 /**
- * @summary 特定ユーザーにメッセージを送る
+ * @summary マッチ相手にメッセージを送る
  */
-export const postMatchesMatchIdMessages = async (matchId: number, options?: RequestInit): Promise<postMatchesMatchIdMessagesResponse> => {
+export const postMatchesMatchIdMessages = async (matchId: number,
+    messageRequest: MessageRequest, options?: RequestInit): Promise<postMatchesMatchIdMessagesResponse> => {
 
   return customFetch<postMatchesMatchIdMessagesResponse>(getPostMatchesMatchIdMessagesUrl(matchId),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(messageRequest)
   }
 );}
 

@@ -4,8 +4,10 @@ import { sb } from 'storybook/test'
 import '../app/globals.css'
 
 sb.mock(import('../actions/likes.ts'))
+sb.mock(import('../actions/messages.ts'))
 sb.mock(import('../components/likes/use-received-likes.ts'))
 sb.mock(import('../components/messages/use-match-profiles.ts'))
+sb.mock(import('../components/messages/use-messages.ts'))
 
 const preview: Preview = {
   parameters: {

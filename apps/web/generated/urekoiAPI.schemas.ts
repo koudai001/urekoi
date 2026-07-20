@@ -117,11 +117,24 @@ export interface SkipRequest {
 }
 
 export interface MatchProfile {
+  match_id?: number;
   user_id?: number;
   nickname?: string;
   age?: number;
   prefecture?: string;
   image?: string;
+}
+
+export interface MessageRequest {
+  /** @maxLength 200 */
+  body: string;
+}
+
+export interface MessageResponse {
+  id?: number;
+  sender_user_id?: number;
+  body?: string;
+  created_at?: string;
 }
 
 export interface MyProfileRequest {
@@ -175,4 +188,15 @@ export type UnauthorizedResponse = void;
  * サーバー内部エラー
  */
 export type InternalServerErrorResponse = Error;
+
+export type GetMatchesMatchIdMessagesParams = {
+/**
+ * このID未満(より古い)のメッセージを取得する
+ */
+before_id?: number;
+/**
+ * 取得件数(未指定時は50)
+ */
+limit?: number;
+};
 

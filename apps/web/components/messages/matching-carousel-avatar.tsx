@@ -2,9 +2,18 @@ import Image from 'next/image'
 import type { MatchProfile } from '@/generated/urekoiAPI.schemas'
 
 // マッチングカルーセルの1人分(アバター + 年齢/エリア)
-export function MatchingAvatar({ match }: { match: MatchProfile }) {
+export function MatchingAvatar({
+  match,
+  onSelect,
+}: {
+  match: MatchProfile
+  onSelect: (match: MatchProfile) => void
+}) {
   return (
-    <button className="flex w-16 shrink-0 cursor-pointer flex-col items-center gap-1">
+    <button
+      onClick={() => onSelect(match)}
+      className="flex w-16 shrink-0 cursor-pointer flex-col items-center gap-1"
+    >
       <span className="relative">
         <span className="block h-16 w-16 overflow-hidden rounded-full ring-2 ring-border">
           <Image

@@ -8,11 +8,21 @@ import (
 	"gorm.io/gorm"
 )
 
-var ErrMatchAlreadyExists = errors.New("already matched")
+var (
+	ErrMatchAlreadyExists = errors.New("already matched")
+	ErrMatchNotFound      = errors.New("match not found")
+)
+
+// マッチ相手のプロフィールと、そのマッチ自体のIDを合わせて表す
+type MatchedProfile struct {
+	models.Profile
+	MatchID uint64
+}
 
 type IMatchRepository interface {
 	CreateMatch(match *models.Match) error
-	GetMatchedProfiles(userID uint64) ([]models.Profile, error)
+	GetMatchedProfiles(userID uint64) ([]MatchedProfile, error)
+	GetMatchByID(matchID uint64) (*models.Match, error)
 }
 
 type MatchRepository struct {
@@ -38,10 +48,25 @@ func (r *MatchRepository) CreateMatch(match *models.Match) error {
 	return nil
 }
 
-// userIDとマッチしている相手のプロフィール一覧を取得する
-func (r *MatchRepository) GetMatchedProfiles(userID uint64) ([]models.Profile, error) {
-	var profiles []models.Profile
-	if err := r.db.Preload("Prefecture").Preload("User").
+// matchIDでマッチを1件取得する
+func (r *MatchRepository) GetMatchByID(matchID uint64) (*models.Match, error) {
+	var match models.Match
+	if err := r.db.First(&match, matchID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrMatchNotFound
+		}
+		return nil, err
+	}
+
+	return &match, nil
+}
+
+// userIDとマッチしている相手のプロフィール一覧を、マッチ自体のIDと合わせて取得する
+func (r *MatchRepository) GetMatchedProfiles(userID uint64) ([]MatchedProfile, error) {
+	var profiles []MatchedProfile
+	if err := r.db.Model(&models.Profile{}).
+		Select("profiles.*, matches.id AS match_id").
+		Preload("Prefecture").Preload("User").
 		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
 		Joins(`JOIN matches ON
 			(matches.user1_id = profiles.user_id AND matches.user2_id = ?) OR

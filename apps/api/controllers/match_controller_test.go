@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"api/dto"
+	"api/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -13,7 +14,7 @@ import (
 
 // 相互いいねでマッチした相手が一覧に含まれることを検証
 func TestGetMatches_Success(t *testing.T) {
-	router := setup(t)
+	router, db := setupWithDB(t)
 
 	a := signUpOnlyEmail(t, router, "match-a@example.com")
 	b := signUpOnlyEmail(t, router, "match-b@example.com")
@@ -27,6 +28,10 @@ func TestGetMatches_Success(t *testing.T) {
 	require.NoError(t, json.Unmarshal(matchRes.Body.Bytes(), &likeRes))
 	require.True(t, likeRes.Matched)
 
+	// 成立したマッチのIDを直接引いておく
+	var match models.Match
+	require.NoError(t, db.Where("user1_id = ? OR user2_id = ?", a.ID, a.ID).First(&match).Error)
+
 	// aから見たマッチ一覧にbが含まれることを検証
 	w := getJSONWithAuth(t, router, "/matches", a.AccessToken)
 
@@ -35,7 +40,7 @@ func TestGetMatches_Success(t *testing.T) {
 	var res []dto.MatchProfile
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.Equal(t, []dto.MatchProfile{
-		{UserID: b.ID, Nickname: "テストユーザー", Age: defaultTestAge, Prefecture: "東京都", Image: ""},
+		{MatchID: match.ID, UserID: b.ID, Nickname: "テストユーザー", Age: defaultTestAge, Prefecture: "東京都", Image: ""},
 	}, res)
 }
 
