@@ -1,0 +1,78 @@
+asyncapi: 3.1.0
+info:
+  title: urekoi WebSocket API
+  version: 0.1.0
+  description: |
+    WS接続確立後に、サーバーからクライアントへプッシュされるイベントの定義。
+    接続のハンドシェイク(チケット認証・プロトコルアップグレード)はdocs/openapi.yamlの `POST /ws/ticket` と `GET /ws` を参照。
+    送信(メッセージの投稿)はWSではなくREST(`POST /matches/{match_id}/messages`)で行う。
+
+servers:
+  local:
+    host: localhost:8080
+    protocol: ws
+    description: ローカル開発環境
+
+# メッセージが往来する「通り道（パス・URL）」を定義
+channels:
+  wsConnection:
+    address: /ws
+    description: |
+      ユーザーごとに1本のWS接続。開いているマッチにかかわらず、
+      自分が参加している全マッチ分のイベントをこの1チャンネルで受け取る。
+    messages:
+      newMessage:
+        $ref: "#/components/messages/NewMessage"
+
+# そのチャンネルを使って、アプリが「何をするか（送信するか、受信するか）」を定義
+operations:
+  receiveNewMessage:
+    action: receive
+    channel:
+      $ref: "#/channels/wsConnection"
+    summary: マッチ相手から新着メッセージが届いた際にプッシュされる
+    messages:
+      - $ref: "#/channels/wsConnection/messages/newMessage"
+
+components:
+  messages:
+    NewMessage:
+      name: newMessage
+      title: 新着メッセージ
+      summary: 開いているチャットならその場に追加し、そうでなければトーク一覧の未読バッジ更新に使う
+      payload:
+        $ref: "#/components/schemas/NewMessagePayload"
+
+  schemas:
+    NewMessagePayload:
+      type: object
+      properties:
+        recipient_user_id:
+          type: integer
+          format: int64
+          description: この接続のユーザー自身のID(内部の配信先特定にも使うRedis Pub/Subのペイロードをそのままプッシュしているため含まれる)
+          example: 2
+        match_id:
+          type: integer
+          format: int64
+          example: 1
+        message:
+          $ref: "#/components/schemas/Message"
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        sender_user_id:
+          type: integer
+          format: int64
+          example: 1
+        body:
+          type: string
+          example: よろしくお願いします!
+        created_at:
+          type: string
+          format: date-time

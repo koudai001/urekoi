@@ -7,12 +7,14 @@ import (
 	"api/middlewares"
 	"api/repositories"
 	"api/usecases"
+	"api/ws"
 
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
-func SetupRouter(db *gorm.DB) *gin.Engine {
+func SetupRouter(db *gorm.DB, redisClient *redis.Client) *gin.Engine {
 	router := gin.Default()
 
 	profileRepo := repositories.NewProfileRepository(db)
@@ -44,9 +46,19 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	matchUsecase := usecases.NewMatchUsecase(matchRepo)
 	matchController := controllers.NewMatchController(matchUsecase)
 
+	wsPublisher := repositories.NewWsPublisher(redisClient)
+
 	messageRepo := repositories.NewMessageRepository(db)
-	messageUsecase := usecases.NewMessageUsecase(messageRepo, matchRepo)
+	messageUsecase := usecases.NewMessageUsecase(messageRepo, matchRepo, wsPublisher)
 	messageController := controllers.NewMessageController(messageUsecase)
+
+	ticketRepo := repositories.NewTicketRepository(redisClient)
+	wsUsecase := usecases.NewWsUsecase(ticketRepo)
+	hub := ws.NewHub()
+	wsController := controllers.NewWsController(wsUsecase, hub)
+
+	// Redisの新着メッセージイベントをsubscribeし、自分のサーバーが持つ接続へ配信し続ける
+	go ws.StartSubscriber(redisClient, hub, repositories.WsMessagesChannel)
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
@@ -57,7 +69,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	router.POST("/refresh", authController.Refresh)
 	router.POST("/logout", authController.Logout)
 
-	// 認証が必要なルートをグループ化
+	// 認証が必要なルート
 	authRequired := router.Group("")
 	authRequired.Use(middlewares.AuthRequired(authUsecase))
 
@@ -79,6 +91,11 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	messageRouter := authRequired.Group("/matches/:matchId/messages")
 	messageRouter.POST("", messageController.SendMessage)
 	messageRouter.GET("", messageController.GetMessages)
+
+	authRequired.POST("/ws/ticket", wsController.IssueTicket)
+
+	// WSハンドシェイク
+	router.GET("/ws", wsController.Connect)
 
 	return router
 }

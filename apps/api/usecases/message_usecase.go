@@ -1,7 +1,9 @@
 package usecases
 
 import (
+	"encoding/json"
 	"errors"
+	"log"
 
 	"api/dto"
 	"api/models"
@@ -20,18 +22,26 @@ type IMessageUsecase interface {
 type MessageUsecase struct {
 	messageRepo repositories.IMessageRepository
 	matchRepo   repositories.IMatchRepository
+	wsPublisher repositories.IWsPublisher
 }
 
-func NewMessageUsecase(messageRepo repositories.IMessageRepository, matchRepo repositories.IMatchRepository) IMessageUsecase {
+func NewMessageUsecase(messageRepo repositories.IMessageRepository, matchRepo repositories.IMatchRepository, wsPublisher repositories.IWsPublisher) IMessageUsecase {
 	return &MessageUsecase{
 		messageRepo: messageRepo,
 		matchRepo:   matchRepo,
+		wsPublisher: wsPublisher,
 	}
 }
 
 // matchIDにsenderUserIDからメッセージを送信する
 func (u *MessageUsecase) SendMessage(matchID uint64, senderUserID uint64, body string) (dto.MessageResponse, error) {
-	if err := u.verifyParticipant(matchID, senderUserID); err != nil {
+	match, err := u.matchRepo.GetMatchByID(matchID)
+	if err != nil {
+		return dto.MessageResponse{}, err
+	}
+
+	recipientUserID, err := otherParticipant(match, senderUserID)
+	if err != nil {
 		return dto.MessageResponse{}, err
 	}
 
@@ -40,7 +50,41 @@ func (u *MessageUsecase) SendMessage(matchID uint64, senderUserID uint64, body s
 		return dto.MessageResponse{}, err
 	}
 
-	return toMessageResponse(message), nil
+	res := toMessageResponse(message)
+	u.publishNewMessage(recipientUserID, matchID, res)
+
+	return res, nil
+}
+
+// matchの当事者からuserIDを除いた、もう一方のuserIDを返す
+func otherParticipant(match *models.Match, userID uint64) (uint64, error) {
+	switch userID {
+	case match.User1ID:
+		return match.User2ID, nil
+	case match.User2ID:
+		return match.User1ID, nil
+	default:
+		return 0, ErrNotMatchParticipant
+	}
+}
+
+// WS経由でのリアルタイム配信。新着メッセージのイベントをRedisにpublishする。
+// 配信の失敗はメッセージ送信自体の失敗として扱わない(既にDB保存は成功しているため)
+func (u *MessageUsecase) publishNewMessage(recipientUserID uint64, matchID uint64, message dto.MessageResponse) {
+	// JSONに変換してRedisにpublishする
+	payload, err := json.Marshal(dto.NewMessagePayload{
+		RecipientUserID: recipientUserID,
+		MatchID:         matchID,
+		Message:         message,
+	})
+	if err != nil {
+		log.Printf("failed to marshal ws message payload: %v", err)
+		return
+	}
+
+	if err := u.wsPublisher.Publish(repositories.WsMessagesChannel, payload); err != nil {
+		log.Printf("failed to publish ws message: %v", err)
+	}
 }
 
 // userIDがmatchIDの当事者であることを確認した上で、メッセージ一覧を取得する
