@@ -6,9 +6,11 @@ import { MessageListHeader } from '@/components/messages/message-list-header'
 import { MatchingCarousel } from '@/components/messages/matching-carousel'
 import { ChatList } from '@/components/messages/chat-list'
 import { ChatView, EmptyChat } from '@/components/messages/chat-view'
+import { useWsConnection } from '@/components/messages/use-ws-connection'
 import type { MatchProfile } from '@/generated/urekoiAPI.schemas'
 
 export default function MessagesPage() {
+  useWsConnection()
   const [selectedMatch, setSelectedMatch] = useState<MatchProfile | null>(null)
 
   return (

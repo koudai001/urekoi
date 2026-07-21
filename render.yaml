@@ -34,6 +34,16 @@ projects:
                 sync: false
               - key: PORT
                 sync: false
+              - key: REDIS_HOST
+                fromService:
+                  name: redis
+                  type: keyvalue
+                  property: host
+              - key: REDIS_PORT
+                fromService:
+                  name: redis
+                  type: keyvalue
+                  property: port
             region: singapore
             buildCommand: go build -tags netgo -ldflags '-s -w' -o app && go run ./migrations/migration.go
             startCommand: ./app
@@ -42,6 +52,11 @@ projects:
             rootDir: apps/api
             previews:
               generation: automatic
+          - type: keyvalue
+            name: redis
+            plan: free
+            region: singapore
+            ipAllowList: []
         databases:
           - name: db
             databaseName: db_amjd

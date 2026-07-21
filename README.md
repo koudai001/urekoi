@@ -62,6 +62,7 @@
 - フロントエンド: https://v0-ui-chi-six.vercel.app (Vercel)
 - APIサーバー: Render (URLは非公開)
 - DB: Render PostgreSQL
+- Redis: Render Key Value
 
 本番環境はAWS想定。
 

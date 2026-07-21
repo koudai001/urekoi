@@ -1,9 +1,11 @@
 'use client'
 
+import { Fragment } from 'react'
 import { sendMessage } from '@/actions/messages'
 import { useMessages } from './use-messages'
 import { ChatViewHeader } from './chat-view-header'
 import { ChatMessageBubble } from './chat-message-bubble'
+import { ChatDateDivider, isDifferentDay } from './chat-date-divider'
 import { ChatInput } from './chat-input'
 import type { MatchProfile } from '@/generated/urekoiAPI.schemas'
 
@@ -34,12 +36,16 @@ export function ChatView({
 
       {/* メッセージ部分 */}
       <div className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
-        {messages.map((msg) => (
-          <ChatMessageBubble
-            key={msg.id}
-            message={msg}
-            from={msg.sender_user_id === match.user_id ? 'them' : 'me'}
-          />
+        {messages.map((msg, i) => (
+          <Fragment key={msg.id}>
+            {isDifferentDay(msg.created_at, messages[i - 1]?.created_at) && (
+              <ChatDateDivider createdAt={msg.created_at} />
+            )}
+            <ChatMessageBubble
+              message={msg}
+              from={msg.sender_user_id === match.user_id ? 'them' : 'me'}
+            />
+          </Fragment>
         ))}
       </div>
 
