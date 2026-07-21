@@ -32,15 +32,15 @@ func main() {
 	}
 
 	if err := seed.SeedDefault(db); err != nil {
-		panic("Failed to seed database")
+		panic("Failed to seed database: " + err.Error())
 	}
 
 	if err := seed.SeedDummyProfiles(db); err != nil {
-		panic("Failed to seed dummy profiles")
+		panic("Failed to seed dummy profiles: " + err.Error())
 	}
 
 	if err := seed.SeedDummyLikes(db); err != nil {
-		panic("Failed to seed dummy likes")
+		panic("Failed to seed dummy likes: " + err.Error())
 	}
 }
 
