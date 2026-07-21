@@ -7,6 +7,7 @@
 ## 技術スタック
 
 ### フロントエンド
+
 - TypeScript 5.7
 - Next.js 16(App Router)
 - React 19
@@ -28,6 +29,7 @@
 - Chromatic(StorybookのビジュアルテストSaaS。PR時にレビュー用リンクを生成)
 
 ### バックエンド
+
 - Go 1.26
 - Gin v1.12(Webフレームワーク)
 - GORM v1.31(ORM, PostgreSQLドライバ使用)
@@ -45,14 +47,18 @@
 - alicebob/miniredis(テスト用のin-memory Redis)
 
 ### CI/CD
+
 - Husky + lint-staged(コミット時にFE: prettier/eslint、BE: gofmtを自動実行。pre-pushでCI相当のチェックも実行。[.husky/pre-push](.husky/pre-push))
 - GitHub Actions(PR時にFE/BEのlint・テスト・ビルド、api-client同期チェック、actionlintを実行。[.github/workflows/ci.yml](.github/workflows/ci.yml))
 - Render(GoのAPIサーバー。mainへのpush + CI通過で自動デプロイ)
 - Vercel(Next.jsフロントエンド。mainへのpush + CI通過で自動デプロイ)
+- GitHub Pages(REST APIドキュメント。mainへのdocs/openapi.yaml変更時にGitHub Actionsがビルドして自動デプロイ。[.github/workflows/deploy-openapi-docs.yml](.github/workflows/deploy-openapi-docs.yml))
+- Netlify(WebSocket(AsyncAPI)ドキュメント。mainへのマージで自動デプロイ)
 
 ## インフラ
 
 ### 検証環境
+
 - フロントエンド: https://v0-ui-chi-six.vercel.app (Vercel)
 - APIサーバー: Render (URLは非公開)
 - DB: Render PostgreSQL
@@ -60,11 +66,13 @@
 本番環境はAWS想定。
 
 ## ドキュメント
-- API仕様: https://koudai001.github.io/urekoi/ (ReDoc, [docs/openapi.yaml](docs/openapi.yaml)から生成)
-- WebSocket仕様: [docs/asyncapi.yaml](docs/asyncapi.yaml)(AsyncAPI。接続後にサーバーからプッシュされるイベントを記述。ハンドシェイク自体はopenapi.yamlの`POST /ws/ticket`・`GET /ws`を参照)
+
+- REST API仕様: https://koudai001.github.io/urekoi/ (ReDoc, [docs/openapi.yaml](docs/openapi.yaml)から生成)
+- WebSocket仕様: https://urekoi-async-api.netlify.app/ (AsyncAPI, [docs/asyncapi.yaml](docs/asyncapi.yaml)から生成。ハンドシェイク自体はopenapi.yamlの`POST /ws/ticket`・`GET /ws`を参照)
 - DBテーブル定義: [apps/api/models/](apps/api/models/)(AtlasがGORMモデルからマイグレーションを生成するため、モデルが正)
 
 ## ローカル環境
+
 - DB・Redisをコンテナ化(`docker-compose up -d`)
 - DBクライアント: pgAdmin
 - フロントエンド: `cd apps/web && pnpm dev` → [http://localhost:3000](http://localhost:3000)
