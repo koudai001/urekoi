@@ -50,8 +50,6 @@ projects:
             healthCheckPath: /health
             autoDeployTrigger: checksPass
             rootDir: apps/api
-            previews:
-              generation: automatic
           - type: keyvalue
             name: redis
             plan: free
