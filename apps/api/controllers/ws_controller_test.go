@@ -75,7 +75,7 @@ func TestConnect_SendsPing(t *testing.T) {
 	// TCP接続 → WebSocketへのアップグレードのハンドシェイク
 	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
 	require.NoError(t, err)
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	// go-routineのパイプライン
 	pingReceived := make(chan struct{}, 1)

@@ -1,0 +1,16 @@
+{
+  "name": "urekoi-docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "openapi:lint": "redocly lint openapi.yaml",
+    "openapi:build": "redocly build-docs openapi.yaml -o openapi/index.html",
+    "asyncapi:validate": "asyncapi validate asyncapi.yaml",
+    "asyncapi:build": "asyncapi generate fromTemplate asyncapi.yaml @asyncapi/html-template --param singleFile=true --output ./asyncapi --force-write --no-interactive"
+  },
+  "devDependencies": {
+    "@asyncapi/cli": "6.0.2",
+    "@asyncapi/html-template": "3.5.6",
+    "@redocly/cli": "2.35.1"
+  }
+}

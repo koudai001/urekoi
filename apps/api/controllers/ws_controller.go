@@ -76,7 +76,7 @@ func (ctrl *WsController) Connect(c *gin.Context) {
 		// Upgrade失敗時点でgorilla/websocketがレスポンスを書き込み済み
 		return
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 	log.Printf("WS connected: userID=%d", userID)
 
 	// hubに接続を登録し、切断時に削除する

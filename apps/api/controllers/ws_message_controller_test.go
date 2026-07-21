@@ -29,7 +29,7 @@ func TestSendMessage_PublishesToRedis(t *testing.T) {
 	// 送信前にsubscribeしておく
 	ctx := context.Background()
 	sub := redisClient.Subscribe(ctx, repositories.WsMessagesChannel)
-	defer sub.Close()
+	defer func() { _ = sub.Close() }()
 
 	// aがbにメッセージを送信する
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, fmt.Sprintf("/matches/%d/messages", matchID), dto.MessageRequest{Body: "よろしく"}, a.AccessToken).Code)
@@ -70,7 +70,7 @@ func TestSendMessage_PushesToConnectedRecipient(t *testing.T) {
 	wsURL := "ws" + strings.TrimPrefix(server.URL, "http") + "/ws?ticket=" + ticket.Ticket
 	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
 	require.NoError(t, err)
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	// aがbにメッセージを送信する
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, fmt.Sprintf("/matches/%d/messages", matchID), dto.MessageRequest{Body: "よろしく"}, a.AccessToken).Code)
