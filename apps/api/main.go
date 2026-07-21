@@ -11,7 +11,8 @@ import (
 func main() {
 	infra.Initialize()
 	db := infra.SetupDB()
-	router := router.SetupRouter(db)
+	redisClient := infra.SetupRedis()
+	router := router.SetupRouter(db, redisClient)
 
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
@@ -35,8 +36,25 @@ func setup(t *testing.T) *gin.Engine {
 // DBへ直接データを仕込む
 func setupWithDB(t *testing.T) (*gin.Engine, *gorm.DB) {
 	db := infra.SetupDB()
+	migrateAndSeed(t, db)
+	redisClient := infra.SetupRedis()
 
-	// マイグレーション
+	return router.SetupRouter(db, redisClient), db
+}
+
+// RedisClient自体を検証したいテスト用
+func setupWithRedis(t *testing.T) (*gin.Engine, *gorm.DB, *redis.Client) {
+	db := infra.SetupDB()
+	migrateAndSeed(t, db)
+	redisClient := infra.SetupRedis()
+
+	return router.SetupRouter(db, redisClient), db, redisClient
+}
+
+// マイグレーションとマスタデータのシード投入を行う
+func migrateAndSeed(t *testing.T, db *gorm.DB) {
+	t.Helper()
+
 	require.NoError(t, db.AutoMigrate(
 		&models.User{},
 		&models.Profile{},
@@ -53,6 +71,4 @@ func setupWithDB(t *testing.T) (*gin.Engine, *gorm.DB) {
 
 	// シード投入(マスタデータのみ。ダミープロフィールはテストの件数前提が壊れるので入れない)
 	require.NoError(t, seed.SeedDefault(db))
-
-	return router.SetupRouter(db), db
 }

@@ -40,6 +40,9 @@
 - クリーンアーキテクチャ(controllers / usecases / repositories / models)
 - Atlas(GORMモデルからマイグレーションSQLを自動生成)
 - golang-migrate v4(マイグレーションの適用)
+- Redis + go-redis v9(WS認証チケットの保管、複数インスタンス間のPub/Subによるリアルタイム配信)
+- gorilla/websocket(WebSocketサーバー)
+- alicebob/miniredis(テスト用のin-memory Redis)
 
 ### CI/CD
 - Husky + lint-staged(コミット時にFE: prettier/eslint、BE: gofmtを自動実行。pre-pushでCI相当のチェックも実行。[.husky/pre-push](.husky/pre-push))
@@ -58,9 +61,10 @@
 
 ## ドキュメント
 - API仕様: https://koudai001.github.io/urekoi/ (ReDoc, [docs/openapi.yaml](docs/openapi.yaml)から生成)
+- WebSocket仕様: [docs/asyncapi.yaml](docs/asyncapi.yaml)(AsyncAPI。接続後にサーバーからプッシュされるイベントを記述。ハンドシェイク自体はopenapi.yamlの`POST /ws/ticket`・`GET /ws`を参照)
 - DBテーブル定義: [apps/api/models/](apps/api/models/)(AtlasがGORMモデルからマイグレーションを生成するため、モデルが正)
 
 ## ローカル環境
-- 現状DBのみコンテナ化(`docker-compose up -d`)
+- DB・Redisをコンテナ化(`docker-compose up -d`)
 - DBクライアント: pgAdmin
 - フロントエンド: `cd apps/web && pnpm dev` → [http://localhost:3000](http://localhost:3000)

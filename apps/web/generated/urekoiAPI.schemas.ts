@@ -137,6 +137,10 @@ export interface MessageResponse {
   created_at?: string;
 }
 
+export interface WsTicketResponse {
+  ticket?: string;
+}
+
 export interface MyProfileRequest {
   nickname: string;
   age: number;

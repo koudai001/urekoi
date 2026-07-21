@@ -22,11 +22,14 @@ tags:
     x-displayName: マッチング
   - name: messages
     x-displayName: メッセージ
+  - name: websocket
+    x-displayName: リアルタイム通信
 
 paths:
   /signup:
     post:
       tags: [auth]
+      operationId: postSignup
       summary: 新規登録
       requestBody:
         required: true
@@ -61,6 +64,7 @@ paths:
   /login:
     post:
       tags: [auth]
+      operationId: postLogin
       summary: ログイン
       requestBody:
         required: true
@@ -95,6 +99,7 @@ paths:
   /refresh:
     post:
       tags: [auth]
+      operationId: postRefresh
       summary: アクセストークンの再発行
       requestBody:
         required: true
@@ -129,6 +134,7 @@ paths:
   /logout:
     post:
       tags: [auth]
+      operationId: postLogout
       summary: ログアウト(refresh_tokenを失効させる)
       requestBody:
         required: true
@@ -159,6 +165,7 @@ paths:
   /users/me:
     delete:
       tags: [auth]
+      operationId: deleteUsersMe
       summary: 退会
       responses:
         "200":
@@ -167,6 +174,7 @@ paths:
   /myprofile:
     get:
       tags: [profile]
+      operationId: getMyprofile
       summary: 自分のプロフィール取得
       security:
         - bearerAuth: []
@@ -191,6 +199,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     post:
       tags: [profile]
+      operationId: postMyprofile
       summary: プロフィール作成
       security:
         - bearerAuth: []
@@ -227,6 +236,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     put:
       tags: [profile]
+      operationId: putMyprofile
       summary: プロフィール更新
       security:
         - bearerAuth: []
@@ -265,6 +275,7 @@ paths:
   /tags:
     get:
       tags: [profile]
+      operationId: getTags
       summary: 選択可能なタグ一覧取得
       security:
         - bearerAuth: []
@@ -285,6 +296,7 @@ paths:
   /search/all:
     get:
       tags: [search]
+      operationId: getSearchAll
       summary: 相手一覧取得
       description: 認証済みユーザー自身のプロフィールは結果から除外される
       security:
@@ -314,6 +326,7 @@ paths:
   /search/all/partner/{userId}:
     get:
       tags: [search]
+      operationId: getSearchAllPartnerUserId
       summary: 相手詳細取得
       security:
         - bearerAuth: []
@@ -347,6 +360,7 @@ paths:
   /likes:
     post:
       tags: [likes]
+      operationId: postLikes
       summary: いいねを送る
       security:
         - bearerAuth: []
@@ -393,6 +407,7 @@ paths:
   /likes/pending:
     get:
       tags: [likes]
+      operationId: getLikesPending
       summary: マッチ済み・スキップ済みを除いた、もらったいいね一覧を取得(ポーリングでの利用を想定)
       security:
         - bearerAuth: []
@@ -411,6 +426,7 @@ paths:
   /likes/sent:
     get:
       tags: [likes]
+      operationId: getLikesSent
       summary: 自分が送ったいいね一覧を取得
       security:
         - bearerAuth: []
@@ -431,6 +447,7 @@ paths:
   /skips:
     post:
       tags: [skips]
+      operationId: postSkips
       summary: 相手をスキップする
       security:
         - bearerAuth: []
@@ -473,6 +490,7 @@ paths:
   /matches:
     get:
       tags: [matches]
+      operationId: getMatches
       summary: マッチングした相手の一覧取得
       security:
         - bearerAuth: []
@@ -500,6 +518,7 @@ paths:
           format: int64
     get:
       tags: [messages]
+      operationId: getMatchesMatchIdMessages
       summary: マッチ相手とのメッセージ履歴を取得(新しい順、before_idカーソルでページネーション)
       security:
         - bearerAuth: []
@@ -555,6 +574,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     post:
       tags: [messages]
+      operationId: postMatchesMatchIdMessages
       summary: マッチ相手にメッセージを送る
       security:
         - bearerAuth: []
@@ -598,12 +618,58 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
+  /ws/ticket:
+    post:
+      tags: [websocket]
+      operationId: postWsTicket
+      summary: WebSocket接続用の使い捨てチケットを発行する(TTL30秒、1回だけ使用可能)
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: 発行成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WsTicketResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /ws:
+    get:
+      tags: [websocket]
+      operationId: getWs
+      summary: |
+        WebSocket接続のハンドシェイク(アップグレード)エンドポイント。
+        接続成立後のメッセージのやり取りはAsyncAPI(docs/asyncapi.yaml)を参照。
+        POST /ws/ticketで発行したticketをクエリパラメータで渡す(例: wss://.../ws?ticket=xxxx)。
+      security:
+        - wsTicket: []
+      responses:
+        "101":
+          description: WebSocketへアップグレード成功
+        "400":
+          description: ticket未指定、または既に失効・使用済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    wsTicket:
+      type: apiKey
+      in: query
+      name: ticket
+      description: POST /ws/ticketで発行した使い捨てチケット
   responses:
     Unauthorized:
       description: 未認証
@@ -892,6 +958,12 @@ components:
         created_at:
           type: string
           format: date-time
+    WsTicketResponse:
+      type: object
+      properties:
+        ticket:
+          type: string
+          example: 3f1e2b7c9a8d4e6f1a2b3c4d5e6f7a8b
     MyProfileRequest:
       type: object
       required: [nickname, age, prefecture_code]

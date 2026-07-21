@@ -6,7 +6,8 @@
 - [x] MatchProfileにmatch_idを追加(FE側でチャットを開くのに必要)
 - [x] FE: MatchingCarousel/ChatListから実マッチのChatViewを開けるようにする
 - [x] FE: メッセージ送信・履歴表示(送信後はmutateで再取得)
-- [ ] WS(チケット認証・Redis Pub/Sub配信)
+- [x] WS BE(チケット発行/検証・接続・hub・ping/pong・Redis Pub/Sub配信・E2Eテスト)
+- [ ] WS FE(接続hook、再接続ロジック)
 
 # 設計
 
@@ -14,7 +15,9 @@
 
 - WS認証: チケット方式。access_tokenはhttpOnly cookieで別オリジンのBEに直接渡せないため、Next.jsのRoute Handler経由でBEに短命・使い捨てticketを発行してもらい`wss://.../ws?ticket=...`で接続
 
-- コネクション管理: 実際のWS接続自体は各インスタンスがuser_idごとにin-memoryで持つ(`map[userID][]*Conn`、複数タブ許容)が、配信はRedis Pub/Sub経由にする。送信時はRedisにpublishし、各インスタンスがsubscribeして自分が持つ接続にだけ配信する(複数台構成でも最初から対応できる)
+- コネクション管理: 実際のWS接続自体は各インスタンスがuser_idごとにin-memoryで持つ(`map[userID][]*Conn`、複数タブ許容)が、
+
+配信はRedis Pub/Sub経由にする。送信時はRedisにpublishし、各インスタンスがsubscribeして自分が持つ接続にだけ配信する(複数台構成でも最初から対応できる)
 
 - ping/pongで死活監視・切断検知(gorilla/websocket標準機能)
 
@@ -31,3 +34,12 @@
 ## 進め方
 
 REST→WS
+
+# TODO
+
+- [x] Redisクライアント setup(BE)
+- [x] チケット発行エンドポイント(POST /ws/ticket)
+- [x] WSハンドラ(gorilla/websocket、ticket検証、hub登録、ping/pong)
+- [x] メッセージ送信時にRedisへpublish→他インスタンスがsubscribeして配信
+- [ ] Next.js側の中継Route Handler(ticket取得)
+- [ ] フロントのWS接続hook(再接続ロジック込み)
