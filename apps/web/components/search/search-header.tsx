@@ -1,5 +1,4 @@
 import { ThumbsUp, Search } from 'lucide-react'
-import { logout } from '@/actions/auth'
 import { PageHeader } from '@/components/ui/page-header'
 
 export function SearchHeader() {
@@ -8,14 +7,6 @@ export function SearchHeader() {
       <h1 className="text-2xl font-bold text-foreground sm:text-3xl">検索</h1>
 
       <div className="flex items-center gap-3">
-        <form action={logout}>
-          <button
-            type="submit"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            ログアウト
-          </button>
-        </form>
         <div className="relative hidden items-center sm:flex">
           <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
           <input
