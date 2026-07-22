@@ -1,4 +1,3 @@
-import { Sidebar } from '@/components/sidebar'
 import { SearchHeader } from '@/components/search/search-header'
 import { SearchFloatingBar } from '@/components/search/search-floating-bar'
 
@@ -10,9 +9,7 @@ export default function Layout({
   modal: React.ReactNode
 }) {
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
-
+    <>
       <main className="relative flex-1">
         <SearchHeader />
 
@@ -22,6 +19,6 @@ export default function Layout({
       </main>
 
       {modal}
-    </div>
+    </>
   )
 }

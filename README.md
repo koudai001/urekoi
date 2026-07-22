@@ -17,8 +17,8 @@
 - lucide-react(アイコン)
 - React Hook Form + Zod(フォーム状態管理・バリデーション)
 - SWR(クライアント側のポーリング・キャッシュ付きデータ取得)
+- react-use-websocket(WebSocket接続・再接続ロジック)
 - orval(OpenAPI仕様からAPIクライアントを自動生成)
-- @redocly/cli(OpenAPI仕様のlint・ローカルプレビュー)
 - ESLint(eslint-config-next)
 - Prettier
 - Vitest(`vitest.config.ts`で2つのprojectに分割)
@@ -45,11 +45,13 @@
 - Redis + go-redis v9(WS認証チケットの保管、複数インスタンス間のPub/Subによるリアルタイム配信)
 - gorilla/websocket(WebSocketサーバー)
 - alicebob/miniredis(テスト用のin-memory Redis)
+- @redocly/cli(OpenAPI仕様のlint・ドキュメント生成)
+- @asyncapi/cli(AsyncAPI仕様のvalidate・ドキュメント生成)
 
 ### CI/CD
 
 - Husky + lint-staged(コミット時にFE: prettier/eslint、BE: gofmtを自動実行。pre-pushでCI相当のチェックも実行。[.husky/pre-push](.husky/pre-push))
-- GitHub Actions(PR時にFE/BEのlint・テスト・ビルド、api-client同期チェック、actionlintを実行。[.github/workflows/ci.yml](.github/workflows/ci.yml))
+- GitHub Actions(PR作成時にFE/BEのlint・テスト・ビルド、api-client同期チェック、actionlintを実行。[.github/workflows/ci.yml](.github/workflows/ci.yml))
 - Render(GoのAPIサーバー。mainへのpush + CI通過で自動デプロイ)
 - Vercel(Next.jsフロントエンド。mainへのpush + CI通過で自動デプロイ)
 - GitHub Pages(REST APIドキュメント。mainへのdocs/openapi.yaml変更時にGitHub Actionsがビルドして自動デプロイ。[.github/workflows/deploy-openapi-docs.yml](.github/workflows/deploy-openapi-docs.yml))
