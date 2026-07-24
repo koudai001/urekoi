@@ -48,6 +48,24 @@
 - @redocly/cli(OpenAPI仕様のlint・ドキュメント生成)
 - @asyncapi/cli(AsyncAPI仕様のvalidate・ドキュメント生成)
 
+### インフラ(本番/AWS)
+
+- Terraform([infra/](infra/)、`terraform apply`/`terraform destroy`で構築・削除)
+- ECS Fargate(APIサーバー、タスク1つ)
+- RDS PostgreSQL(Single-AZ)
+- ElastiCache Redis
+- ALB + ACM(HTTPS)
+- ECR(Dockerイメージ)
+- S3 + CloudFront(プロフィール写真)
+- Secrets Manager(DBパスワード・SECRET管理)
+
+### インフラ（検証環境）
+
+- フロントエンド: https://v0-ui-chi-six.vercel.app (Vercel)
+- APIサーバー: Render (URLは非公開)
+- DB: Render PostgreSQL
+- Redis: Render Key Value
+
 ### CI/CD
 
 - Husky + lint-staged(コミット時にFE: prettier/eslint、BE: gofmtを自動実行。pre-pushでCI相当のチェックも実行。[.husky/pre-push](.husky/pre-push))
@@ -56,26 +74,23 @@
 - Vercel(Next.jsフロントエンド。mainへのpush + CI通過で自動デプロイ)
 - GitHub Pages(REST APIドキュメント。mainへのdocs/openapi.yaml変更時にGitHub Actionsがビルドして自動デプロイ。[.github/workflows/deploy-openapi-docs.yml](.github/workflows/deploy-openapi-docs.yml))
 - Netlify(WebSocket(AsyncAPI)ドキュメント。mainへのマージで自動デプロイ)
+- GitHub Actions(本番/AWS: Terraform apply→イメージビルド→ECR push→ECSサービス更新を自動化する予定。未実装)
 
-## インフラ
+## ブランチ戦略
 
-### 検証環境
-
-- フロントエンド: https://v0-ui-chi-six.vercel.app (Vercel)
-- APIサーバー: Render (URLは非公開)
-- DB: Render PostgreSQL
-- Redis: Render Key Value
-
-本番環境はAWS想定。
+- `main`: 本番(AWS)
+- `dev`: 検証環境(Render + Vercel)
 
 ## ドキュメント
 
 - REST API仕様: https://koudai001.github.io/urekoi/ (ReDoc, [docs/openapi.yaml](docs/openapi.yaml)から生成)
 - WebSocket仕様: https://urekoi-async-api.netlify.app/ (AsyncAPI, [docs/asyncapi.yaml](docs/asyncapi.yaml)から生成。ハンドシェイク自体はopenapi.yamlの`POST /ws/ticket`・`GET /ws`を参照)
 - DBテーブル定義: [apps/api/models/](apps/api/models/)(AtlasがGORMモデルからマイグレーションを生成するため、モデルが正)
+- AWS本番環境の構成図: [docs/aws-infra.md](docs/aws-infra.md) / [docs/aws-infra.mmd](docs/aws-infra.mmd)
 
 ## ローカル環境
 
 - DB・Redisをコンテナ化(`docker-compose up -d`)
 - DBクライアント: pgAdmin
+- APIサーバー: `cd apps/api && go run .`(`docker-compose.yml`の`api`サービスは、本番用Dockerfileの動作確認用。普段の開発では使わない)
 - フロントエンド: `cd apps/web && pnpm dev` → [http://localhost:3000](http://localhost:3000)

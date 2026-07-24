@@ -1,0 +1,50 @@
+flowchart TB
+    User[ユーザー] -->|ページ読み込み| Vercel[Vercel<br/>Next.js frontend]
+    User -->|WebSocket wss:// 直接接続| R53[Route53]
+    User -->|プロフィール写真の閲覧| CF[CloudFront]
+    Vercel -->|REST API呼び出し HTTPS<br/>サーバー間| ALB1
+
+    R53 --> ALB1
+
+    subgraph AWS["AWS ap-northeast-1 (Tokyo)"]
+        subgraph VPC["VPC"]
+            subgraph AZ1["AZ: 1a"]
+                subgraph PubA["Public Subnet"]
+                    NAT[NAT Gateway]
+                    ALB1[ALB]
+                end
+                subgraph PrivA["Private Subnet"]
+                    ECS1["ECS Fargate task<br/>apiタスク1つ"]
+                    RDS[(RDS PostgreSQL<br/>Single-AZ)]
+                    Redis[(ElastiCache Redis)]
+                end
+            end
+
+            subgraph AZ2["AZ: 1c"]
+                subgraph PubC["Public Subnet"]
+                    ALB2[ALB]
+                end
+                subgraph PrivC["Private Subnet"]
+                end
+            end
+        end
+
+        S3[(S3<br/>プロフィール写真)]
+        CF --> S3
+        ECS1 -.->|署名付きURL発行のみ<br/>本体アップロードは直接S3へ| S3
+
+        ECR[ECR<br/>apiイメージ]
+        CWL["CloudWatch Logs<br/>(apiのログ)"]
+        SM["Secrets Manager<br/>(RDSパスワード・SECRET)"]
+        ECS1 -.->|ログ送信| CWL
+        ECS1 -.->|起動時に読み込み| SM
+    end
+
+    ALB1 --> ECS1
+    ECS1 --> RDS
+    ECS1 --> Redis
+    ECR -.->|pull| NAT
+    NAT -.->|pull| ECS1
+
+    GHA[GitHub Actions] -->|build & push| ECR
+    GHA -->|update service| ECS1

@@ -26,3 +26,10 @@ apps/api/migrations/loader/loader
 *storybook.log
 storybook-static
 apps/web/stories-example/
+
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+infra/*.tfvars
+infra/.terraform.tfstate.lock.info
