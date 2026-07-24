@@ -4,9 +4,14 @@
 
 ![検索画面](apps/web/public/readme.png)
 
-## 技術スタック
+## ドキュメント
 
-### フロントエンド
+- REST API仕様: https://koudai001.github.io/urekoi/ (ReDoc, [docs/openapi.yaml](docs/openapi.yaml)から生成)
+- WebSocket仕様: https://urekoi-async-api.netlify.app/ (AsyncAPI, [docs/asyncapi.yaml](docs/asyncapi.yaml)から生成。ハンドシェイク自体はopenapi.yamlの`POST /ws/ticket`・`GET /ws`を参照)
+- DBテーブル定義: [docs/table-definitions.md](docs/table-definitions.md)(ER図)
+- AWS本番環境の構成図: [docs/aws-infra.md](docs/aws-infra.md)
+
+## フロントエンド
 
 - TypeScript 5.7
 - Next.js 16(App Router)
@@ -28,7 +33,7 @@
   - @storybook/addon-mcp(StorybookをMCPサーバー化し、AIコーディングエージェントが起動中のコンポーネント状態を直接参照できる)
 - Chromatic(StorybookのビジュアルテストSaaS。PR時にレビュー用リンクを生成)
 
-### バックエンド
+## バックエンド
 
 - Go 1.26
 - Gin v1.12(Webフレームワーク)
@@ -48,16 +53,18 @@
 - @redocly/cli(OpenAPI仕様のlint・ドキュメント生成)
 - @asyncapi/cli(AsyncAPI仕様のvalidate・ドキュメント生成)
 
-### CI/CD
-
-- Husky + lint-staged(コミット時にFE: prettier/eslint、BE: gofmtを自動実行。pre-pushでCI相当のチェックも実行。[.husky/pre-push](.husky/pre-push))
-- GitHub Actions(PR作成時にFE/BEのlint・テスト・ビルド、api-client同期チェック、actionlintを実行。[.github/workflows/ci.yml](.github/workflows/ci.yml))
-- Render(GoのAPIサーバー。mainへのpush + CI通過で自動デプロイ)
-- Vercel(Next.jsフロントエンド。mainへのpush + CI通過で自動デプロイ)
-- GitHub Pages(REST APIドキュメント。mainへのdocs/openapi.yaml変更時にGitHub Actionsがビルドして自動デプロイ。[.github/workflows/deploy-openapi-docs.yml](.github/workflows/deploy-openapi-docs.yml))
-- Netlify(WebSocket(AsyncAPI)ドキュメント。mainへのマージで自動デプロイ)
-
 ## インフラ
+
+### 本番/AWS
+
+- Terraform([infra/](infra/)、`terraform apply`/`terraform destroy`で構築・削除)
+- ECS Fargate(APIサーバー、タスク1つ)
+- RDS PostgreSQL(Single-AZ)
+- ElastiCache Redis
+- ALB + ACM(HTTPS)
+- ECR(Dockerイメージ)
+- S3 + CloudFront(プロフィール写真)
+- Secrets Manager(DBパスワード・SECRET管理)
 
 ### 検証環境
 
@@ -66,16 +73,25 @@
 - DB: Render PostgreSQL
 - Redis: Render Key Value
 
-本番環境はAWS想定。
-
-## ドキュメント
-
-- REST API仕様: https://koudai001.github.io/urekoi/ (ReDoc, [docs/openapi.yaml](docs/openapi.yaml)から生成)
-- WebSocket仕様: https://urekoi-async-api.netlify.app/ (AsyncAPI, [docs/asyncapi.yaml](docs/asyncapi.yaml)から生成。ハンドシェイク自体はopenapi.yamlの`POST /ws/ticket`・`GET /ws`を参照)
-- DBテーブル定義: [apps/api/models/](apps/api/models/)(AtlasがGORMモデルからマイグレーションを生成するため、モデルが正)
-
-## ローカル環境
+### ローカル環境
 
 - DB・Redisをコンテナ化(`docker-compose up -d`)
 - DBクライアント: pgAdmin
+- APIサーバー: `cd apps/api && go run .`(`docker-compose.yml`の`api`サービスは、本番用Dockerfileの動作確認用。普段の開発では使わない)
 - フロントエンド: `cd apps/web && pnpm dev` → [http://localhost:3000](http://localhost:3000)
+
+## CI/CD
+
+- Husky + lint-staged(コミット時にFE: prettier/eslint、BE: gofmtを自動実行。pre-pushでCI相当のチェックも実行。[.husky/pre-push](.husky/pre-push))
+- GitHub Actions(PR作成時にFE/BEのlint・テスト・ビルド、api-client同期チェック、actionlintを実行。[.github/workflows/ci.yml](.github/workflows/ci.yml))
+- Render(GoのAPIサーバー。mainへのpush + CI通過で自動デプロイ)
+- Vercel(Next.jsフロントエンド。mainへのpush + CI通過で自動デプロイ)
+- GitHub Pages(REST APIドキュメント。mainへのdocs/openapi.yaml変更時にGitHub Actionsがビルドして自動デプロイ。[.github/workflows/deploy-openapi-docs.yml](.github/workflows/deploy-openapi-docs.yml))
+- Netlify(WebSocket(AsyncAPI)ドキュメント。mainへのマージで自動デプロイ)
+- GitHub Actions(本番/AWS: Terraform apply→イメージビルド→ECR push→ECSサービス更新を自動化する予定。未実装)
+
+## ブランチ戦略
+
+- `main`: 本番(AWS)
+- `dev`: 検証環境(Render + Vercel)
+  にする予定...今はmainが検証環境

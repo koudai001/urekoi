@@ -19,16 +19,20 @@ services:
     volumes:
       - redis_data:/data
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
+  api:
+    build:
+      context: ./apps/api
     restart: unless-stopped
+    env_file:
+      - apps/api/.env.local
     environment:
-      PGADMIN_DEFAULT_EMAIL: urekoi@example.com
-      PGADMIN_DEFAULT_PASSWORD: urekoi
+      POSTGRES_HOST: db
+      REDIS_HOST: redis
     ports:
-      - "5050:80"
+      - "8080:8080"
     depends_on:
       - db
+      - redis
 
 volumes:
   db_data:
