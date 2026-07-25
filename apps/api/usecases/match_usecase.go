@@ -59,7 +59,7 @@ func (u *MatchUsecase) GetMatch(userID uint64, matchID uint64) (dto.MatchProfile
 	}
 
 	// 当事者以外には存在を知られたくないので、一律「見つからない」として扱う
-	partnerUserID := match.User1ID
+	var partnerUserID uint64
 	switch userID {
 	case match.User1ID:
 		partnerUserID = match.User2ID
