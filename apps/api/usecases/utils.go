@@ -1,6 +1,15 @@
 package usecases
 
-import "api/models"
+import (
+	"errors"
+
+	"api/models"
+)
+
+var ErrProfileNotFound = errors.New("profile not found")
+
+// オンライン状態は未実装のため固定で返す値
+const mockOnlineStatus = "online"
 
 // プロフィール画像アップロード機能が未実装のため、暫定的に空を返す(表示側でダミー画像に差し替える)
 const dummyImagePath = ""

@@ -10,9 +10,16 @@ const fetcher = (url: string) =>
     return res.json() as Promise<MatchProfile[]>
   })
 
-// マッチング済みの相手一覧をポーリングで取得する
-export function useMatchProfiles() {
-  return useSWR<MatchProfile[]>('/api/matches', fetcher, {
+// マッチング済みの相手一覧をポーリングで取得する。hasMessagesでメッセージの有無を絞り込める
+export function useMatchProfiles({
+  hasMessages,
+}: { hasMessages?: boolean } = {}) {
+  const key =
+    hasMessages === undefined
+      ? '/api/matches'
+      : `/api/matches?has_messages=${hasMessages}`
+
+  return useSWR<MatchProfile[]>(key, fetcher, {
     refreshInterval: POLLING_INTERVAL_MS,
   })
 }

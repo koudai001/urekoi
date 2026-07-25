@@ -1,0 +1,20 @@
+package dto
+
+type PartnerResponse struct {
+	UserID       uint64           `json:"user_id"`
+	Nickname     string           `json:"nickname"`
+	Age          int16            `json:"age"`
+	Prefecture   string           `json:"prefecture"`
+	Bio          string           `json:"bio"`
+	IsNew        bool             `json:"is_new"`
+	Online       string           `json:"online"`
+	Images       []string         `json:"images"`
+	Tags         []RecsTagSummary `json:"tags"`
+	AlreadyLiked bool             `json:"already_liked"`
+}
+
+type RecsTagSummary struct {
+	Label    string `json:"label"`
+	Category string `json:"category"`
+	ImageURL string `json:"image_url"`
+}

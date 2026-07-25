@@ -10,10 +10,10 @@ servers:
 tags:
   - name: auth
     x-displayName: 認証
-  - name: profile
-    x-displayName: プロフィール
-  - name: search
-    x-displayName: 相手の検索
+  - name: myprofile
+    x-displayName: 自分のプロフィール
+  - name: partner
+    x-displayName: 相手プロフィール（スワイプ候補）
   - name: likes
     x-displayName: いいね
   - name: skips
@@ -173,7 +173,7 @@ paths:
 
   /myprofile:
     get:
-      tags: [profile]
+      tags: [myprofile]
       operationId: getMyprofile
       summary: 自分のプロフィール取得
       security:
@@ -293,40 +293,32 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  /search/all:
+  /partner/recs:
     get:
-      tags: [search]
-      operationId: getSearchAll
-      summary: 相手一覧取得
-      description: 認証済みユーザー自身のプロフィールは結果から除外される
+      tags: [partner]
+      operationId: getPartnerRecs
+      summary: スワイプ候補一覧取得
+      description: 認証済みユーザー自身・いいね済み・スキップ済み・マッチ済みの相手は結果から除外される
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: 取得成功
+          description: 取得成功(候補が1件もない場合は空配列)
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ProfileSummary"
+                  $ref: "#/components/schemas/ProfileDetail"
         "401":
           $ref: "#/components/responses/Unauthorized"
-        "404":
-          description: 登録済みプロフィールが1件もない
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                error: no profiles found
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  /search/all/partner/{userId}:
+  /partner/{userId}:
     get:
-      tags: [search]
-      operationId: getSearchAllPartnerUserId
+      tags: [partner]
+      operationId: getPartnerByUserId
       summary: 相手詳細取得
       security:
         - bearerAuth: []
@@ -494,6 +486,13 @@ paths:
       summary: マッチングした相手の一覧取得
       security:
         - bearerAuth: []
+      parameters:
+        - name: has_messages
+          in: query
+          description: 指定するとメッセージが1通でもある/無いかで絞り込む(未指定なら絞り込まない)
+          required: false
+          schema:
+            type: boolean
       responses:
         "200":
           description: 取得成功
@@ -505,6 +504,40 @@ paths:
                   $ref: "#/components/schemas/MatchProfile"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /matches/{match_id}:
+    get:
+      tags: [matches]
+      operationId: getMatch
+      summary: マッチ1件の詳細取得(相手のプロフィール詳細を含む)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: match_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MatchProfileDetail"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: マッチが見つからない、または自分が当事者でない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: match not found
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -765,31 +798,6 @@ components:
         refresh_token:
           type: string
           example: <refresh token>
-    ProfileSummary:
-      type: object
-      properties:
-        user_id:
-          type: integer
-          format: int64
-          example: 1
-        nickname:
-          type: string
-          example: たろう
-        age:
-          type: integer
-          example: 42
-        prefecture:
-          type: string
-          example: 東京都
-        image:
-          type: string
-          example: /placeholder.svg
-        is_new:
-          type: boolean
-          example: true
-        online:
-          type: string
-          example: online
     LikeProfile:
       type: object
       properties:
@@ -933,6 +941,19 @@ components:
         image:
           type: string
           example: /placeholder.svg
+    MatchProfileDetail:
+      allOf:
+        - type: object
+          properties:
+            match_id:
+              type: integer
+              format: int64
+              example: 1
+            matched_at:
+              type: string
+              format: date-time
+              example: "2026-04-06T12:00:00+09:00"
+        - $ref: "#/components/schemas/ProfileDetail"
     MessageRequest:
       type: object
       required: [body]

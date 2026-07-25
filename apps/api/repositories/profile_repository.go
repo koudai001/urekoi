@@ -13,6 +13,8 @@ var ErrProfileNotFound = errors.New("profile not found")
 type IProfileRepository interface {
 	// excludeUserIDのプロフィールは結果から除外する(自分自身を一覧に出さないため)
 	GetAllProfiles(excludeUserID uint64) ([]models.Profile, error)
+	// requestingUserID自身・いいね済み・スキップ済みの相手を除いたプロフィール一覧を取得する
+	GetRecsProfiles(requestingUserID uint64) ([]models.Profile, error)
 	GetProfileTags(profileID uint64) ([]models.ProfileTag, error)
 	GetProfileByUserID(userID uint64) (*models.Profile, error)
 	CreateProfile(profile *models.Profile) error
@@ -43,6 +45,31 @@ func (r *ProfileRepository) GetAllProfiles(excludeUserID uint64) ([]models.Profi
 	if err := r.db.Preload("Prefecture").Preload("User").
 		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
 		Where("user_id != ?", excludeUserID).
+		Find(&profiles).Error; err != nil {
+		return nil, err
+	}
+
+	return profiles, nil
+}
+
+func (r *ProfileRepository) GetRecsProfiles(requestingUserID uint64) ([]models.Profile, error) {
+	var profiles []models.Profile
+	if err := r.db.Preload("Prefecture").Preload("User").
+		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
+		Where("user_id != ?", requestingUserID).
+		Where(`NOT EXISTS (
+			SELECT 1 FROM likes
+			WHERE likes.from_user_id = ? AND likes.to_user_id = profiles.user_id
+		)`, requestingUserID).
+		Where(`NOT EXISTS (
+			SELECT 1 FROM skips
+			WHERE skips.from_user_id = ? AND skips.to_user_id = profiles.user_id
+		)`, requestingUserID).
+		Where(`NOT EXISTS (
+			SELECT 1 FROM matches
+			WHERE (matches.user1_id = ? AND matches.user2_id = profiles.user_id)
+			   OR (matches.user2_id = ? AND matches.user1_id = profiles.user_id)
+		)`, requestingUserID, requestingUserID).
 		Find(&profiles).Error; err != nil {
 		return nil, err
 	}

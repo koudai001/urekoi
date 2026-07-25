@@ -39,7 +39,6 @@ const meta = {
   component: ChatView,
   args: {
     match: dummyMatch,
-    onBack: () => {},
   },
   // 各storyでの上書きが無い場合は、ダミーのメッセージ履歴を返す
   beforeEach: () => {

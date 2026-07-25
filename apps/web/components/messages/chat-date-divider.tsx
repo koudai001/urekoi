@@ -17,7 +17,7 @@ function formatDate(createdAt?: string) {
 export function ChatDateDivider({ createdAt }: { createdAt?: string }) {
   return (
     <div className="flex justify-center py-2">
-      <span className="text-xs text-muted-foreground">
+      <span className="text-xs text-swipe-muted-foreground">
         {formatDate(createdAt)}
       </span>
     </div>

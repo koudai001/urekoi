@@ -2,8 +2,6 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --font-sans:
     -apple-system, BlinkMacSystemFont, Roboto, 'Hiragino Sans', 'Noto Sans JP',
@@ -41,6 +39,18 @@
   --color-foreground: var(--foreground);
   --color-background: var(--background);
   --color-line: var(--line);
+  /* /swipeページ専用のダークサーフェス(他画面とは別枠のトークン) */
+  --color-swipe-background: var(--swipe-background);
+  --color-swipe-sidebar: var(--swipe-sidebar);
+  --color-swipe-surface: var(--swipe-surface);
+  --color-swipe-border: var(--swipe-border);
+  --color-swipe-foreground: var(--swipe-foreground);
+  --color-swipe-muted-foreground: var(--swipe-muted-foreground);
+  --color-swipe-accent: var(--swipe-accent);
+  --color-swipe-online: var(--swipe-online);
+  --color-swipe-bubble-mine: var(--swipe-bubble-mine);
+  --color-swipe-bubble-mine-foreground: var(--swipe-bubble-mine-foreground);
+  --color-swipe-bubble-theirs: var(--swipe-bubble-theirs);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -89,40 +99,18 @@
   --sidebar-ring: oklch(0.47 0.19 338);
   /* LINEブランドカラー(テーマに関わらず固定) */
   --line: #06c755;
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.145 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* /swipeページ専用のダークサーフェス(このページだけ常に黒背景で使う。他画面の--background等とは別枠) */
+  --swipe-background: oklch(0.1 0.01 330);
+  --swipe-sidebar: oklch(0.16 0.02 330);
+  --swipe-surface: oklch(0.24 0.02 330);
+  --swipe-border: oklch(0.28 0.03 330);
+  --swipe-foreground: oklch(0.98 0.01 80);
+  --swipe-muted-foreground: oklch(0.55 0.02 330);
+  --swipe-accent: oklch(0.6 0.2 338);
+  --swipe-online: oklch(0.72 0.19 145);
+  --swipe-bubble-mine: oklch(0.97 0.008 82);
+  --swipe-bubble-mine-foreground: oklch(0.24 0.06 330);
+  --swipe-bubble-theirs: oklch(0.22 0.02 330);
 }
 
 @layer base {

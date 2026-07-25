@@ -7,15 +7,16 @@ import { ChatViewHeader } from './chat-view-header'
 import { ChatMessageBubble } from './chat-message-bubble'
 import { ChatDateDivider, isDifferentDay } from './chat-date-divider'
 import { ChatInput } from './chat-input'
-import type { MatchProfile } from '@/generated/urekoiAPI.schemas'
 
-export function ChatView({
-  match,
-  onBack,
-}: {
-  match: MatchProfile
-  onBack: () => void
-}) {
+type ChatMatch = {
+  match_id?: number
+  user_id?: number
+  nickname?: string
+  image?: string
+  matched_at?: string
+}
+
+export function ChatView({ match }: { match: ChatMatch }) {
   const matchId = match.match_id ?? 0
   const { data, mutate } = useMessages(matchId)
   // BEは新しい順で返すので、表示用に古い順へ並べ替える
@@ -28,10 +29,10 @@ export function ChatView({
   }
 
   return (
-    <div className="flex h-screen flex-1 flex-col bg-card">
+    <div className="flex h-screen flex-1 flex-col bg-swipe-background">
       <ChatViewHeader
         conversation={{ name: match.nickname ?? '', image: match.image ?? '' }}
-        onBack={onBack}
+        matchedAt={match.matched_at}
       />
 
       {/* メッセージ部分 */}
@@ -56,11 +57,11 @@ export function ChatView({
 
 export function EmptyChat() {
   return (
-    <div className="hidden h-screen flex-1 flex-col items-center justify-center bg-card md:flex">
-      <p className="text-xl font-bold text-foreground">
+    <div className="hidden h-screen flex-1 flex-col items-center justify-center bg-swipe-background md:flex">
+      <p className="text-xl font-bold text-swipe-foreground">
         選択中のやりとりはありません
       </p>
-      <p className="mt-2 text-sm text-muted-foreground">
+      <p className="mt-2 text-sm text-swipe-muted-foreground">
         選択したやりとりが表示されます
       </p>
     </div>

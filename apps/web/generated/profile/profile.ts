@@ -16,58 +16,6 @@ import type {
 
 import { customFetch } from '../../lib/api/custom-fetch';
 
-export type getMyprofileResponse200 = {
-  data: MyProfileResponse
-  status: 200
-}
-
-export type getMyprofileResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
-}
-
-export type getMyprofileResponse404 = {
-  data: Error
-  status: 404
-}
-
-export type getMyprofileResponse500 = {
-  data: InternalServerErrorResponse
-  status: 500
-}
-
-export type getMyprofileResponseSuccess = (getMyprofileResponse200) & {
-  headers: Headers;
-};
-export type getMyprofileResponseError = (getMyprofileResponse401 | getMyprofileResponse404 | getMyprofileResponse500) & {
-  headers: Headers;
-};
-
-export type getMyprofileResponse = (getMyprofileResponseSuccess | getMyprofileResponseError)
-
-export const getGetMyprofileUrl = () => {
-
-
-
-
-  return `/myprofile`
-}
-
-/**
- * @summary 自分のプロフィール取得
- */
-export const getMyprofile = async ( options?: RequestInit): Promise<getMyprofileResponse> => {
-
-  return customFetch<getMyprofileResponse>(getGetMyprofileUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
 export type postMyprofileResponse201 = {
   data: MyProfileResponse
   status: 201
