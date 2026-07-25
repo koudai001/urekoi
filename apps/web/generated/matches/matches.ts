@@ -6,8 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
+  Error,
+  GetMatchesParams,
   InternalServerErrorResponse,
   MatchProfile,
+  MatchProfileDetail,
   UnauthorizedResponse
 } from '../urekoiAPI.schemas';
 
@@ -37,20 +40,79 @@ export type getMatchesResponseError = (getMatchesResponse401 | getMatchesRespons
 
 export type getMatchesResponse = (getMatchesResponseSuccess | getMatchesResponseError)
 
-export const getGetMatchesUrl = () => {
+export const getGetMatchesUrl = (params?: GetMatchesParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/matches`
+  return stringifiedParams.length > 0 ? `/matches?${stringifiedParams}` : `/matches`
 }
 
 /**
  * @summary マッチングした相手の一覧取得
  */
-export const getMatches = async ( options?: RequestInit): Promise<getMatchesResponse> => {
+export const getMatches = async (params?: GetMatchesParams, options?: RequestInit): Promise<getMatchesResponse> => {
 
-  return customFetch<getMatchesResponse>(getGetMatchesUrl(),
+  return customFetch<getMatchesResponse>(getGetMatchesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+export type getMatchResponse200 = {
+  data: MatchProfileDetail
+  status: 200
+}
+
+export type getMatchResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getMatchResponse404 = {
+  data: Error
+  status: 404
+}
+
+export type getMatchResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type getMatchResponseSuccess = (getMatchResponse200) & {
+  headers: Headers;
+};
+export type getMatchResponseError = (getMatchResponse401 | getMatchResponse404 | getMatchResponse500) & {
+  headers: Headers;
+};
+
+export type getMatchResponse = (getMatchResponseSuccess | getMatchResponseError)
+
+export const getGetMatchUrl = (matchId: number,) => {
+
+
+
+
+  return `/matches/${matchId}`
+}
+
+/**
+ * @summary マッチ1件の詳細取得(相手のプロフィール詳細を含む)
+ */
+export const getMatch = async (matchId: number, options?: RequestInit): Promise<getMatchResponse> => {
+
+  return customFetch<getMatchResponse>(getGetMatchUrl(matchId),
   {
     ...options,
     method: 'GET'

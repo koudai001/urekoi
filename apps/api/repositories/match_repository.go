@@ -21,7 +21,8 @@ type MatchedProfile struct {
 
 type IMatchRepository interface {
 	CreateMatch(match *models.Match) error
-	GetMatchedProfiles(userID uint64) ([]MatchedProfile, error)
+	// hasMessageがnilなら絞り込まない。true/falseならメッセージが1通でもあるか無いかで絞り込む
+	GetMatchedProfiles(userID uint64, hasMessage *bool) ([]MatchedProfile, error)
 	GetMatchByID(matchID uint64) (*models.Match, error)
 }
 
@@ -62,16 +63,26 @@ func (r *MatchRepository) GetMatchByID(matchID uint64) (*models.Match, error) {
 }
 
 // userIDとマッチしている相手のプロフィール一覧を、マッチ自体のIDと合わせて取得する
-func (r *MatchRepository) GetMatchedProfiles(userID uint64) ([]MatchedProfile, error) {
-	var profiles []MatchedProfile
-	if err := r.db.Model(&models.Profile{}).
+func (r *MatchRepository) GetMatchedProfiles(userID uint64, hasMessage *bool) ([]MatchedProfile, error) {
+	query := r.db.Model(&models.Profile{}).
 		Select("profiles.*, matches.id AS match_id").
 		Preload("Prefecture").Preload("User").
 		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
 		Joins(`JOIN matches ON
 			(matches.user1_id = profiles.user_id AND matches.user2_id = ?) OR
-			(matches.user2_id = profiles.user_id AND matches.user1_id = ?)`, userID, userID).
-		Find(&profiles).Error; err != nil {
+			(matches.user2_id = profiles.user_id AND matches.user1_id = ?)`, userID, userID)
+
+	if hasMessage != nil {
+		existsMessage := "EXISTS (SELECT 1 FROM messages WHERE messages.match_id = matches.id)"
+		if *hasMessage {
+			query = query.Where(existsMessage)
+		} else {
+			query = query.Where("NOT " + existsMessage)
+		}
+	}
+
+	var profiles []MatchedProfile
+	if err := query.Find(&profiles).Error; err != nil {
 		return nil, err
 	}
 

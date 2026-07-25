@@ -23,10 +23,10 @@ export function ChatInput({
   }
 
   return (
-    <div className="border-t border-border px-4 py-3">
+    <div className="border-t border-swipe-border px-4 py-3">
       <div className="flex items-center gap-3">
-        <ImageIcon className="h-6 w-6 shrink-0 text-muted-foreground" />
-        <Smile className="h-6 w-6 shrink-0 text-muted-foreground" />
+        <ImageIcon className="h-6 w-6 shrink-0 text-swipe-muted-foreground" />
+        <Smile className="h-6 w-6 shrink-0 text-swipe-muted-foreground" />
         <input
           type="text"
           value={input}
@@ -36,12 +36,12 @@ export function ChatInput({
             if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSubmit()
           }}
           placeholder="メッセージを入力"
-          className="flex-1 bg-transparent py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+          className="flex-1 bg-transparent py-2 text-sm text-swipe-foreground outline-none placeholder:text-swipe-muted-foreground"
         />
         <button
           onClick={handleSubmit}
           disabled={sending}
-          className="shrink-0 rounded-full bg-primary px-7 py-2.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="shrink-0 rounded-full bg-gradient-to-br from-swipe-accent to-primary px-7 py-2.5 text-sm font-bold text-swipe-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           送信
         </button>

@@ -25,10 +25,10 @@ export function ChatMessageBubble({
 function MyMessageBubble({ message }: { message: MessageResponse }) {
   return (
     <div className="flex items-end justify-end gap-2">
-      <span className="mb-1 shrink-0 text-[11px] text-muted-foreground">
+      <span className="mb-1 shrink-0 text-[11px] text-swipe-muted-foreground">
         {formatTime(message.created_at)}
       </span>
-      <p className="max-w-[70%] rounded-2xl bg-primary px-4 py-3 text-sm leading-relaxed text-primary-foreground">
+      <p className="max-w-[70%] rounded-2xl bg-swipe-bubble-mine px-4 py-3 text-sm leading-relaxed text-swipe-bubble-mine-foreground">
         {message.body}
       </p>
     </div>
@@ -39,10 +39,10 @@ function MyMessageBubble({ message }: { message: MessageResponse }) {
 function TheirMessageBubble({ message }: { message: MessageResponse }) {
   return (
     <div className="flex items-end justify-start gap-2">
-      <p className="max-w-[70%] rounded-2xl bg-accent px-4 py-3 text-sm leading-relaxed text-accent-foreground">
+      <p className="max-w-[70%] rounded-2xl bg-swipe-bubble-theirs px-4 py-3 text-sm leading-relaxed text-swipe-foreground">
         {message.body}
       </p>
-      <span className="mb-1 shrink-0 text-[11px] text-muted-foreground">
+      <span className="mb-1 shrink-0 text-[11px] text-swipe-muted-foreground">
         {formatTime(message.created_at)}
       </span>
     </div>

@@ -16,6 +16,15 @@ export default {
     return [`gofmt -l -w ${files.join(' ')}`]
   },
   'docs/openapi.yaml': () => {
-    return ['pnpm docs:build', 'git add docs/index.html']
+    return [
+      'pnpm --dir docs openapi:build',
+      'git add docs/openapi/index.html',
+    ]
+  },
+  'docs/asyncapi.yaml': () => {
+    return [
+      'pnpm --dir docs asyncapi:build',
+      'git add docs/asyncapi/index.html',
+    ]
   },
 }

@@ -11,9 +11,9 @@ import {
   REFRESH_TOKEN_COOKIE_OPTIONS,
 } from '@/lib/cookie'
 
-export type SignupResult = { success: false; error: string } // 成功時はredirect('/search/all')するので返却されない
+export type SignupResult = { success: false; error: string } // 成功時はredirect('/recs')するので返却されない
 
-export type LoginResult = { success: false; error: string } // 成功時はredirect('/search/all')するので返却されない
+export type LoginResult = { success: false; error: string } // 成功時はredirect('/recs')するので返却されない
 
 export async function signup(
   _prevState: SignupResult | null,
@@ -54,7 +54,7 @@ export async function signup(
         res.data.access_token ?? '',
         res.data.refresh_token ?? '',
       )
-      redirect('/search/all')
+      redirect('/recs')
     }
     case 409:
       return {
@@ -94,7 +94,7 @@ export async function login(
         res.data.access_token ?? '',
         res.data.refresh_token ?? '',
       )
-      redirect('/search/all')
+      redirect('/recs')
     }
     case 401:
       return {

@@ -25,8 +25,8 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client) *gin.Engine {
 
 	likeRepo := repositories.NewLikeRepository(db)
 
-	searchUsecase := usecases.NewSearchUsecase(profileRepo, likeRepo)
-	searchController := controllers.NewSearchController(searchUsecase)
+	partnerUsecase := usecases.NewPartnerUsecase(profileRepo, likeRepo)
+	partnerController := controllers.NewPartnerController(partnerUsecase)
 
 	tagRepo := repositories.NewTagRepository(db)
 	tagUsecase := usecases.NewTagUsecase(tagRepo)
@@ -43,7 +43,7 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client) *gin.Engine {
 	skipUsecase := usecases.NewSkipUsecase(skipRepo, authRepo)
 	skipController := controllers.NewSkipController(skipUsecase)
 
-	matchUsecase := usecases.NewMatchUsecase(matchRepo)
+	matchUsecase := usecases.NewMatchUsecase(matchRepo, profileRepo)
 	matchController := controllers.NewMatchController(matchUsecase)
 
 	wsPublisher := repositories.NewWsPublisher(redisClient)
@@ -73,9 +73,9 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client) *gin.Engine {
 	authRequired := router.Group("")
 	authRequired.Use(middlewares.AuthRequired(authUsecase))
 
-	searchRouter := authRequired.Group("/search")
-	searchRouter.GET("/all", searchController.ListProfiles)
-	searchRouter.GET("/all/partner/:userId", searchController.GetProfileDetail)
+	partnerRouter := authRequired.Group("/partner")
+	partnerRouter.GET("/recs", partnerController.GetRecs)
+	partnerRouter.GET("/:userId", partnerController.GetByUserId)
 
 	authRequired.GET("/tags", tagController.ListTags)
 	authRequired.GET("/myprofile", myProfileController.GetMyProfile)
@@ -86,7 +86,9 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client) *gin.Engine {
 
 	authRequired.POST("/skips", skipController.SendSkip)
 
-	authRequired.GET("/matches", matchController.GetMatches)
+	matchRouter := authRequired.Group("/matches")
+	matchRouter.GET("", matchController.GetMatches)
+	matchRouter.GET("/:matchId", matchController.GetMatch)
 
 	messageRouter := authRequired.Group("/matches/:matchId/messages")
 	messageRouter.POST("", messageController.SendMessage)
