@@ -115,6 +115,15 @@ export interface MatchProfile {
   image?: string;
 }
 
+/**
+ * GET /matches/messagedのレスポンス(最新メッセージ情報を含む)
+ */
+export type MatchProfileWithLastMessage = MatchProfile & {
+  last_message: string;
+  last_message_at: string;
+  last_message_sender_user_id: number;
+};
+
 export type MatchProfileDetail = ProfileDetail & {
   match_id?: number;
   matched_at?: string;
@@ -187,13 +196,6 @@ export type UnauthorizedResponse = void;
  * サーバー内部エラー
  */
 export type InternalServerErrorResponse = Error;
-
-export type GetMatchesParams = {
-/**
- * 指定するとメッセージが1通でもある/無いかで絞り込む(未指定なら絞り込まない)
- */
-has_messages?: boolean;
-};
 
 export type GetMatchesMatchIdMessagesParams = {
 /**

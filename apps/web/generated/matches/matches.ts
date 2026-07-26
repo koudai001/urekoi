@@ -7,60 +7,100 @@
  */
 import type {
   Error,
-  GetMatchesParams,
   InternalServerErrorResponse,
   MatchProfile,
   MatchProfileDetail,
+  MatchProfileWithLastMessage,
   UnauthorizedResponse
 } from '../urekoiAPI.schemas';
 
 import { customFetch } from '../../lib/api/custom-fetch';
 
-export type getMatchesResponse200 = {
+export type getUnmessagedMatchesResponse200 = {
   data: MatchProfile[]
   status: 200
 }
 
-export type getMatchesResponse401 = {
+export type getUnmessagedMatchesResponse401 = {
   data: UnauthorizedResponse
   status: 401
 }
 
-export type getMatchesResponse500 = {
+export type getUnmessagedMatchesResponse500 = {
   data: InternalServerErrorResponse
   status: 500
 }
 
-export type getMatchesResponseSuccess = (getMatchesResponse200) & {
+export type getUnmessagedMatchesResponseSuccess = (getUnmessagedMatchesResponse200) & {
   headers: Headers;
 };
-export type getMatchesResponseError = (getMatchesResponse401 | getMatchesResponse500) & {
+export type getUnmessagedMatchesResponseError = (getUnmessagedMatchesResponse401 | getUnmessagedMatchesResponse500) & {
   headers: Headers;
 };
 
-export type getMatchesResponse = (getMatchesResponseSuccess | getMatchesResponseError)
+export type getUnmessagedMatchesResponse = (getUnmessagedMatchesResponseSuccess | getUnmessagedMatchesResponseError)
 
-export const getGetMatchesUrl = (params?: GetMatchesParams,) => {
-  const normalizedParams = new URLSearchParams();
+export const getGetUnmessagedMatchesUrl = () => {
 
-  Object.entries(params || {}).forEach(([key, value]) => {
 
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
 
-  const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/matches?${stringifiedParams}` : `/matches`
+  return `/matches/unmessaged`
 }
 
 /**
- * @summary マッチングした相手の一覧取得
+ * @summary メッセージ未送信のマッチ一覧取得
  */
-export const getMatches = async (params?: GetMatchesParams, options?: RequestInit): Promise<getMatchesResponse> => {
+export const getUnmessagedMatches = async ( options?: RequestInit): Promise<getUnmessagedMatchesResponse> => {
 
-  return customFetch<getMatchesResponse>(getGetMatchesUrl(params),
+  return customFetch<getUnmessagedMatchesResponse>(getGetUnmessagedMatchesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+export type getMessagedMatchesResponse200 = {
+  data: MatchProfileWithLastMessage[]
+  status: 200
+}
+
+export type getMessagedMatchesResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type getMessagedMatchesResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type getMessagedMatchesResponseSuccess = (getMessagedMatchesResponse200) & {
+  headers: Headers;
+};
+export type getMessagedMatchesResponseError = (getMessagedMatchesResponse401 | getMessagedMatchesResponse500) & {
+  headers: Headers;
+};
+
+export type getMessagedMatchesResponse = (getMessagedMatchesResponseSuccess | getMessagedMatchesResponseError)
+
+export const getGetMessagedMatchesUrl = () => {
+
+
+
+
+  return `/matches/messaged`
+}
+
+/**
+ * @summary メッセージ送信済みのマッチ一覧取得(最新メッセージ付き)
+ */
+export const getMessagedMatches = async ( options?: RequestInit): Promise<getMessagedMatchesResponse> => {
+
+  return customFetch<getMessagedMatchesResponse>(getGetMessagedMatchesUrl(),
   {
     ...options,
     method: 'GET'

@@ -13,45 +13,45 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// 相互いいねでマッチした相手が一覧に含まれることを検証
-func TestGetMatches_Success(t *testing.T) {
+// メッセージが1通も無いマッチだけが一覧に含まれることを検証(メッセージ済みのマッチは除外)
+func TestGetUnmessagedMatches_Success(t *testing.T) {
 	router, db := setupWithDB(t)
 
 	a := signUpOnlyEmail(t, router, "match-a@example.com")
-	b := signUpOnlyEmail(t, router, "match-b@example.com")
+	messaged := signUpOnlyEmail(t, router, "match-messaged@example.com")
+	notMessaged := signUpOnlyEmail(t, router, "match-not-messaged@example.com")
 
-	// お互いにいいねを送ってマッチさせる
-	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: b.ID}, a.AccessToken).Code)
-	matchRes := postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: a.ID}, b.AccessToken)
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: messaged.ID}, a.AccessToken).Code)
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: a.ID}, messaged.AccessToken).Code)
+	matchRes := postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: notMessaged.ID}, a.AccessToken)
 	require.Equal(t, http.StatusCreated, matchRes.Code)
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: a.ID}, notMessaged.AccessToken).Code)
 
-	var likeRes dto.LikeResponse
-	require.NoError(t, json.Unmarshal(matchRes.Body.Bytes(), &likeRes))
-	require.True(t, likeRes.Matched)
+	var messagedMatch models.Match
+	require.NoError(t, db.Where("user1_id = ? OR user2_id = ?", messaged.ID, messaged.ID).First(&messagedMatch).Error)
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, fmt.Sprintf("/matches/%d/messages", messagedMatch.ID), dto.MessageRequest{Body: "よろしくお願いします"}, a.AccessToken).Code)
 
-	// 成立したマッチのIDを直接引いておく
-	var match models.Match
-	require.NoError(t, db.Where("user1_id = ? OR user2_id = ?", a.ID, a.ID).First(&match).Error)
+	var notMessagedMatch models.Match
+	require.NoError(t, db.Where("user1_id = ? OR user2_id = ?", notMessaged.ID, notMessaged.ID).First(&notMessagedMatch).Error)
 
-	// aから見たマッチ一覧にbが含まれることを検証
-	w := getJSONWithAuth(t, router, "/matches", a.AccessToken)
+	w := getJSONWithAuth(t, router, "/matches/unmessaged", a.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
 	var res []dto.MatchProfile
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.Equal(t, []dto.MatchProfile{
-		{MatchID: match.ID, UserID: b.ID, Nickname: "テストユーザー", Age: defaultTestAge, Prefecture: "東京都", Image: ""},
+		{MatchID: notMessagedMatch.ID, UserID: notMessaged.ID, Nickname: "テストユーザー", Age: defaultTestAge, Prefecture: "東京都", Image: ""},
 	}, res)
 }
 
 // マッチが1件も無い場合は空配列を返すことを検証
-func TestGetMatches_Empty(t *testing.T) {
+func TestGetUnmessagedMatches_Empty(t *testing.T) {
 	router := setup(t)
 
 	me := signUpOnlyEmail(t, router, "match-empty@example.com")
 
-	w := getJSONWithAuth(t, router, "/matches", me.AccessToken)
+	w := getJSONWithAuth(t, router, "/matches/unmessaged", me.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
@@ -61,77 +61,75 @@ func TestGetMatches_Empty(t *testing.T) {
 }
 
 // access_tokenがない場合は401を返すことを検証
-func TestGetMatches_Unauthorized(t *testing.T) {
+func TestGetUnmessagedMatches_Unauthorized(t *testing.T) {
 	router := setup(t)
 
-	w := getJSON(t, router, "/matches")
+	w := getJSON(t, router, "/matches/unmessaged")
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }
 
-// has_messages=trueでメッセージが1通でもあるマッチだけに絞り込めることを検証
-func TestGetMatches_FilterByHasMessageTrue(t *testing.T) {
+// メッセージが1通以上あるマッチだけが、最新メッセージの新しい順・最新メッセージ付きで一覧に含まれることを検証
+func TestGetMessagedMatches_Success(t *testing.T) {
 	router, db := setupWithDB(t)
 
 	a := signUpOnlyEmail(t, router, "match-hm-a@example.com")
 	messaged := signUpOnlyEmail(t, router, "match-hm-messaged@example.com")
+	messagedLatest := signUpOnlyEmail(t, router, "match-hm-messaged-latest@example.com")
 	notMessaged := signUpOnlyEmail(t, router, "match-hm-not-messaged@example.com")
 
+	// aをmessaged/messagedLatest/notMessagedそれぞれと相互いいねでマッチさせる
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: messaged.ID}, a.AccessToken).Code)
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: a.ID}, messaged.AccessToken).Code)
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: messagedLatest.ID}, a.AccessToken).Code)
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: a.ID}, messagedLatest.AccessToken).Code)
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: notMessaged.ID}, a.AccessToken).Code)
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: a.ID}, notMessaged.AccessToken).Code)
 
-	var messagedMatch models.Match
+	// 成立したマッチのIDを直接引いておく(notMessagedとのマッチにはメッセージを送らない)
+	var messagedMatch, messagedLatestMatch models.Match
 	require.NoError(t, db.Where("user1_id = ? OR user2_id = ?", messaged.ID, messaged.ID).First(&messagedMatch).Error)
-	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, fmt.Sprintf("/matches/%d/messages", messagedMatch.ID), dto.MessageRequest{Body: "よろしくお願いします"}, a.AccessToken).Code)
+	require.NoError(t, db.Where("user1_id = ? OR user2_id = ?", messagedLatest.ID, messagedLatest.ID).First(&messagedLatestMatch).Error)
 
-	w := getJSONWithAuth(t, router, "/matches?has_messages=true", a.AccessToken)
+	// aから両方のマッチにメッセージを送る。後から送った方(messagedLatest)が一覧の先頭に来るはず
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, fmt.Sprintf("/matches/%d/messages", messagedMatch.ID), dto.MessageRequest{Body: "よろしくお願いします"}, a.AccessToken).Code)
+	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, fmt.Sprintf("/matches/%d/messages", messagedLatestMatch.ID), dto.MessageRequest{Body: "よろしく!"}, a.AccessToken).Code)
+
+	// aから見たメッセージ済み一覧を取得する
+	w := getJSONWithAuth(t, router, "/matches/messaged", a.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.MatchProfile
+	var res []dto.MatchProfileWithLastMessage
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	require.Len(t, res, 1)
-	assert.Equal(t, messaged.ID, res[0].UserID)
+	// notMessagedを含まず2件だけ、かつ最新メッセージの新しい順(messagedLatestが先頭)であることを検証
+	require.Len(t, res, 2)
+	assert.Equal(t, messagedLatest.ID, res[0].UserID)
+	assert.Equal(t, messaged.ID, res[1].UserID)
 }
 
-// has_messages=falseでメッセージが1通も無いマッチだけに絞り込めることを検証
-func TestGetMatches_FilterByHasMessageFalse(t *testing.T) {
-	router, db := setupWithDB(t)
-
-	a := signUpOnlyEmail(t, router, "match-hmf-a@example.com")
-	messaged := signUpOnlyEmail(t, router, "match-hmf-messaged@example.com")
-	notMessaged := signUpOnlyEmail(t, router, "match-hmf-not-messaged@example.com")
-
-	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: messaged.ID}, a.AccessToken).Code)
-	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: a.ID}, messaged.AccessToken).Code)
-	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: notMessaged.ID}, a.AccessToken).Code)
-	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: a.ID}, notMessaged.AccessToken).Code)
-
-	var messagedMatch models.Match
-	require.NoError(t, db.Where("user1_id = ? OR user2_id = ?", messaged.ID, messaged.ID).First(&messagedMatch).Error)
-	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, fmt.Sprintf("/matches/%d/messages", messagedMatch.ID), dto.MessageRequest{Body: "よろしくお願いします"}, a.AccessToken).Code)
-
-	w := getJSONWithAuth(t, router, "/matches?has_messages=false", a.AccessToken)
-
-	require.Equal(t, http.StatusOK, w.Code)
-
-	var res []dto.MatchProfile
-	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	require.Len(t, res, 1)
-	assert.Equal(t, notMessaged.ID, res[0].UserID)
-}
-
-// has_messagesの値が不正な場合400を返すことを検証
-func TestGetMatches_InvalidHasMessage(t *testing.T) {
+// メッセージが1通も無い場合は空配列を返すことを検証
+func TestGetMessagedMatches_Empty(t *testing.T) {
 	router := setup(t)
 
-	me := signUpOnlyEmail(t, router, "match-hm-invalid@example.com")
+	me := signUpOnlyEmail(t, router, "match-hm-empty@example.com")
 
-	w := getJSONWithAuth(t, router, "/matches?has_messages=maybe", me.AccessToken)
+	w := getJSONWithAuth(t, router, "/matches/messaged", me.AccessToken)
 
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	require.Equal(t, http.StatusOK, w.Code)
+
+	var res []dto.MatchProfileWithLastMessage
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	assert.Empty(t, res)
+}
+
+// access_tokenがない場合は401を返すことを検証
+func TestGetMessagedMatches_Unauthorized(t *testing.T) {
+	router := setup(t)
+
+	w := getJSON(t, router, "/matches/messaged")
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }
 
 // マッチ1件の詳細を、相手のプロフィール詳細込みで1回のリクエストで取得できることを検証

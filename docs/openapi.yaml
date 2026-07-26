@@ -479,20 +479,13 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  /matches:
+  /matches/unmessaged:
     get:
       tags: [matches]
-      operationId: getMatches
-      summary: マッチングした相手の一覧取得
+      operationId: getUnmessagedMatches
+      summary: メッセージ未送信のマッチ一覧取得
       security:
         - bearerAuth: []
-      parameters:
-        - name: has_messages
-          in: query
-          description: 指定するとメッセージが1通でもある/無いかで絞り込む(未指定なら絞り込まない)
-          required: false
-          schema:
-            type: boolean
       responses:
         "200":
           description: 取得成功
@@ -502,6 +495,27 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/MatchProfile"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /matches/messaged:
+    get:
+      tags: [matches]
+      operationId: getMessagedMatches
+      summary: メッセージ送信済みのマッチ一覧を取得（最新メッセージの新しい順・最新メッセージ付き）
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchProfileWithLastMessage"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "500":
@@ -941,6 +955,23 @@ components:
         image:
           type: string
           example: /placeholder.svg
+    MatchProfileWithLastMessage:
+      description: GET /matches/messagedのレスポンス(最新メッセージ情報を含む)
+      allOf:
+        - $ref: "#/components/schemas/MatchProfile"
+        - type: object
+          required: [last_message, last_message_at, last_message_sender_user_id]
+          properties:
+            last_message:
+              type: string
+              example: よろしくお願いします
+            last_message_at:
+              type: string
+              format: date-time
+            last_message_sender_user_id:
+              type: integer
+              format: int64
+              example: 1
     MatchProfileDetail:
       allOf:
         - type: object
