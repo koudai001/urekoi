@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"errors"
+	"sort"
+	"time"
 
 	"api/models"
 
@@ -19,10 +21,20 @@ type MatchedProfile struct {
 	MatchID uint64
 }
 
+// マッチ相手のプロフィールに、そのマッチの最新メッセージを合わせて表す
+type MessagedProfile struct {
+	MatchedProfile
+	LastMessage             string
+	LastMessageAt           time.Time
+	LastMessageSenderUserID uint64
+}
+
 type IMatchRepository interface {
 	CreateMatch(match *models.Match) error
-	// hasMessageがnilなら絞り込まない。true/falseならメッセージが1通でもあるか無いかで絞り込む
-	GetMatchedProfiles(userID uint64, hasMessage *bool) ([]MatchedProfile, error)
+	// メッセージが1通も無いマッチの相手プロフィール一覧を取得する
+	GetUnmessagedProfiles(userID uint64) ([]MatchedProfile, error)
+	// メッセージが1通以上あるマッチの相手プロフィール一覧を、最新メッセージ付きで取得する
+	GetMessagedProfiles(userID uint64) ([]MessagedProfile, error)
 	GetMatchByID(matchID uint64) (*models.Match, error)
 }
 
@@ -62,29 +74,108 @@ func (r *MatchRepository) GetMatchByID(matchID uint64) (*models.Match, error) {
 	return &match, nil
 }
 
-// userIDとマッチしている相手のプロフィール一覧を、マッチ自体のIDと合わせて取得する
-func (r *MatchRepository) GetMatchedProfiles(userID uint64, hasMessage *bool) ([]MatchedProfile, error) {
-	query := r.db.Model(&models.Profile{}).
-		Select("profiles.*, matches.id AS match_id").
-		Preload("Prefecture").Preload("User").
-		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
-		Joins(`JOIN matches ON
-			(matches.user1_id = profiles.user_id AND matches.user2_id = ?) OR
-			(matches.user2_id = profiles.user_id AND matches.user1_id = ?)`, userID, userID)
-
-	if hasMessage != nil {
-		existsMessage := "EXISTS (SELECT 1 FROM messages WHERE messages.match_id = matches.id)"
-		if *hasMessage {
-			query = query.Where(existsMessage)
-		} else {
-			query = query.Where("NOT " + existsMessage)
-		}
-	}
-
-	var profiles []MatchedProfile
-	if err := query.Find(&profiles).Error; err != nil {
+func (r *MatchRepository) GetUnmessagedProfiles(userID uint64) ([]MatchedProfile, error) {
+	var matches []models.Match
+	if err := r.matchesQuery(userID).
+		Where(`NOT EXISTS (SELECT 1 FROM messages WHERE messages.match_id = matches.id)`).
+		Find(&matches).Error; err != nil {
 		return nil, err
 	}
 
+	if len(matches) == 0 {
+		return []MatchedProfile{}, nil
+	}
+
+	profileByUserID, err := r.profilesByUserIDs(r.partnerUserIDs(matches, userID))
+	if err != nil {
+		return nil, err
+	}
+
+	profiles := make([]MatchedProfile, 0, len(matches))
+	for _, match := range matches {
+		profiles = append(profiles, MatchedProfile{
+			Profile: profileByUserID[match.PartnerUserID(userID)],
+			MatchID: match.ID,
+		})
+	}
+
 	return profiles, nil
+}
+
+func (r *MatchRepository) GetMessagedProfiles(userID uint64) ([]MessagedProfile, error) {
+	// 各マッチの最新メッセージ1件(id最大値=最新)だけに絞り込んで取得する。
+	var matches []models.Match
+	if err := r.matchesQuery(userID).
+		Preload("Messages", func(db *gorm.DB) *gorm.DB {
+			return db.Where(`messages.id IN (SELECT MAX(m.id) FROM messages m GROUP BY m.match_id)`)
+		}).
+		Where(`EXISTS (SELECT 1 FROM messages WHERE messages.match_id = matches.id)`).
+		Find(&matches).Error; err != nil {
+		return nil, err
+	}
+
+	if len(matches) == 0 {
+		return []MessagedProfile{}, nil
+	}
+
+	// 最新メッセージがある相手を上に表示するため、最新メッセージの日時が新しい順に並べる
+	sort.Slice(matches, func(i, j int) bool {
+		return matches[i].Messages[0].CreatedAt.After(matches[j].Messages[0].CreatedAt)
+	})
+
+	// マッチの相手ユーザーIDからプロフィールを取得する
+	profileByUserID, err := r.profilesByUserIDs(r.partnerUserIDs(matches, userID))
+	if err != nil {
+		return nil, err
+	}
+
+	// マッチの相手プロフィールと最新メッセージを組み合わせて返す
+	profiles := make([]MessagedProfile, 0, len(matches))
+	for _, match := range matches {
+		lastMessage := match.Messages[0]
+		profiles = append(profiles, MessagedProfile{
+			MatchedProfile: MatchedProfile{
+				Profile: profileByUserID[match.PartnerUserID(userID)],
+				MatchID: match.ID,
+			},
+			LastMessage:             lastMessage.Body,
+			LastMessageAt:           lastMessage.CreatedAt,
+			LastMessageSenderUserID: lastMessage.SenderUserID,
+		})
+	}
+
+	return profiles, nil
+}
+
+// userIDが当事者のマッチ一覧を取得するクエリ
+func (r *MatchRepository) matchesQuery(userID uint64) *gorm.DB {
+	return r.db.Where("user1_id = ? OR user2_id = ?", userID, userID)
+}
+
+// マッチから相手のユーザーIDを取得する
+func (r *MatchRepository) partnerUserIDs(matches []models.Match, userID uint64) []uint64 {
+	ids := make([]uint64, 0, len(matches))
+	for _, match := range matches {
+		ids = append(ids, match.PartnerUserID(userID))
+	}
+
+	return ids
+}
+
+// 相手のユーザーIDからプロフィールを取得し、user_idをキーにしたmapで返す
+func (r *MatchRepository) profilesByUserIDs(userIDs []uint64) (map[uint64]models.Profile, error) {
+	var profiles []models.Profile
+	if err := r.db.Preload("Prefecture").Preload("User").
+		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
+		Where("user_id IN ?", userIDs).
+		Find(&profiles).Error; err != nil {
+		return nil, err
+	}
+
+	profileByUserID := make(map[uint64]models.Profile, len(profiles))
+	for _, p := range profiles {
+		profileByUserID[p.UserID] = p
+	}
+
+	return profileByUserID, nil
 }

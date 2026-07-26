@@ -1,8 +1,10 @@
 'use client'
 
 import { Fragment } from 'react'
+import { useSWRConfig } from 'swr'
 import { sendMessage } from '@/actions/messages'
 import { useMessages } from './use-messages'
+import { applyNewMessageToMatchesCache } from './use-match-profiles'
 import { ChatViewHeader } from './chat-view-header'
 import { ChatMessageBubble } from './chat-message-bubble'
 import { ChatDateDivider, isDifferentDay } from './chat-date-divider'
@@ -19,12 +21,23 @@ type ChatMatch = {
 export function ChatView({ match }: { match: ChatMatch }) {
   const matchId = match.match_id ?? 0
   const { data, mutate } = useMessages(matchId)
+  const { mutate: globalMutate, cache } = useSWRConfig()
   // BEは新しい順で返すので、表示用に古い順へ並べ替える
   const messages = [...(data ?? [])].reverse()
 
   const handleSend = async (body: string) => {
     const result = await sendMessage(matchId, body)
-    if (result.success) await mutate()
+    if (result.success) {
+      // メッセージ画面のキャッシュに反映する
+      await mutate()
+      // 新着メッセージをマッチ一覧のキャッシュにも反映する
+      applyNewMessageToMatchesCache(globalMutate, cache, {
+        matchId,
+        body: result.message.body ?? '',
+        createdAt: result.message.created_at ?? '',
+        senderUserId: result.message.sender_user_id ?? 0,
+      })
+    }
     return result.success
   }
 

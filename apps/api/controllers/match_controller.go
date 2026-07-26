@@ -22,20 +22,22 @@ func NewMatchController(matchUsecase usecases.IMatchUsecase) *MatchController {
 	}
 }
 
-func (ctrl *MatchController) GetMatches(c *gin.Context) {
-	var hasMessage *bool
-	if raw := c.Query("has_messages"); raw != "" {
-		parsed, err := strconv.ParseBool(raw)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid has_messages"})
-			return
-		}
-		hasMessage = &parsed
-	}
-
+func (ctrl *MatchController) GetUnmessagedMatches(c *gin.Context) {
 	user := c.MustGet(middlewares.ContextUserKey).(*models.User)
 
-	profiles, err := ctrl.matchUsecase.GetMatches(user.ID, hasMessage)
+	profiles, err := ctrl.matchUsecase.GetUnmessagedMatches(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, profiles)
+}
+
+func (ctrl *MatchController) GetMessagedMatches(c *gin.Context) {
+	user := c.MustGet(middlewares.ContextUserKey).(*models.User)
+
+	profiles, err := ctrl.matchUsecase.GetMessagedMatches(user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

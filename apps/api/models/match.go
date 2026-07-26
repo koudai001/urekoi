@@ -10,4 +10,13 @@ type Match struct {
 	User2ID   uint64    `gorm:"not null;uniqueIndex:idx_matches_pair"`
 	User2     User      `gorm:"foreignKey:User2ID"`
 	MatchedAt time.Time `gorm:"not null"`
+	Messages  []Message `gorm:"foreignKey:MatchID"`
+}
+
+// userIDから見た相手のuser_idを返す。userIDがこのマッチの当事者であることが前提
+func (m Match) PartnerUserID(userID uint64) uint64 {
+	if m.User1ID == userID {
+		return m.User2ID
+	}
+	return m.User1ID
 }

@@ -2,8 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { Heart } from 'lucide-react'
-import { useMatchProfiles } from '@/components/messages/use-match-profiles'
+import {
+  useUnmessagedMatches,
+  useMessagedMatches,
+} from '@/components/messages/use-match-profiles'
 import { useReceivedLikes } from '@/components/likes/use-received-likes'
 import { cn } from '@/lib/utils'
 
@@ -78,7 +82,7 @@ function TabButton({
 
 // マッチングした相手一覧（メッセージはまだしてない相手のみ表示する）
 function MatchingGrid() {
-  const { data: matchProfiles } = useMatchProfiles({ hasMessages: false })
+  const { data: matchProfiles } = useUnmessagedMatches()
   const matches = matchProfiles ?? []
 
   const { data: receivedLikes } = useReceivedLikes()
@@ -127,10 +131,12 @@ function MatchingGrid() {
   )
 }
 
-// トーク中の相手一覧(最新メッセージプレビューは未実装。メッセージを1通でも送っているマッチのみ表示する)
+// トーク中の相手一覧(メッセージを1通でも送っているマッチのみ、最新メッセージのプレビュー付きで表示する)
 function MsgList() {
-  const { data: matchProfiles } = useMatchProfiles({ hasMessages: true })
+  const { data: matchProfiles } = useMessagedMatches()
   const matches = matchProfiles ?? []
+  const { matchId } = useParams<{ matchId?: string }>()
+  const activeMatchId = Number(matchId)
 
   if (matches.length === 0) {
     return (
@@ -148,7 +154,10 @@ function MsgList() {
         <Link
           key={m.user_id}
           href={`/messages/${m.match_id}`}
-          className="flex items-center gap-3.5 px-5 py-5 transition-colors hover:bg-swipe-surface"
+          className={cn(
+            'flex items-center gap-3.5 px-5 py-5 transition-colors hover:bg-swipe-surface',
+            m.match_id === activeMatchId && 'bg-swipe-accent/15',
+          )}
         >
           <span className="h-16 w-16 shrink-0 overflow-hidden rounded-full bg-swipe-surface">
             {m.image && (
@@ -160,8 +169,14 @@ function MsgList() {
               />
             )}
           </span>
-          <span className="min-w-0 flex-1 truncate text-base font-bold text-swipe-foreground">
-            {m.nickname} {m.age}歳 {m.prefecture}
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-base font-bold text-swipe-foreground">
+              {m.nickname} {m.age}歳 {m.prefecture}
+            </span>
+            <span className="block truncate text-sm text-swipe-muted-foreground">
+              {m.last_message_sender_user_id !== m.user_id && '↩ '}
+              {m.last_message}
+            </span>
           </span>
         </Link>
       ))}

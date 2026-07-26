@@ -87,7 +87,8 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client) *gin.Engine {
 	authRequired.POST("/skips", skipController.SendSkip)
 
 	matchRouter := authRequired.Group("/matches")
-	matchRouter.GET("", matchController.GetMatches)
+	matchRouter.GET("/unmessaged", matchController.GetUnmessagedMatches)
+	matchRouter.GET("/messaged", matchController.GetMessagedMatches)
 	matchRouter.GET("/:matchId", matchController.GetMatch)
 
 	messageRouter := authRequired.Group("/matches/:matchId/messages")

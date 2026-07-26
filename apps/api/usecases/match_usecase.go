@@ -10,8 +10,10 @@ import (
 var ErrMatchNotFound = errors.New("match not found")
 
 type IMatchUsecase interface {
-	// userIDとマッチしている相手のプロフィール一覧を取得する。hasMessageで絞り込み可能
-	GetMatches(userID uint64, hasMessage *bool) ([]dto.MatchProfile, error)
+	// メッセージが1通も無いマッチの相手プロフィール一覧を取得する
+	GetUnmessagedMatches(userID uint64) ([]dto.MatchProfile, error)
+	// メッセージが1通以上あるマッチの相手プロフィール一覧を、最新メッセージ付きで取得する
+	GetMessagedMatches(userID uint64) ([]dto.MatchProfileWithLastMessage, error)
 	// matchIDのマッチ詳細(相手のプロフィール詳細を含む)を取得する。userIDがそのマッチの当事者でなければ見つからない扱いにする
 	GetMatch(userID uint64, matchID uint64) (dto.MatchProfileDetail, error)
 }
@@ -28,21 +30,33 @@ func NewMatchUsecase(matchRepo repositories.IMatchRepository, profileRepo reposi
 	}
 }
 
-func (u *MatchUsecase) GetMatches(userID uint64, hasMessage *bool) ([]dto.MatchProfile, error) {
-	profiles, err := u.matchRepo.GetMatchedProfiles(userID, hasMessage)
+func (u *MatchUsecase) GetUnmessagedMatches(userID uint64) ([]dto.MatchProfile, error) {
+	profiles, err := u.matchRepo.GetUnmessagedProfiles(userID)
 	if err != nil {
 		return nil, err
 	}
 
 	res := make([]dto.MatchProfile, 0, len(profiles))
 	for _, p := range profiles {
-		res = append(res, dto.MatchProfile{
-			MatchID:    p.MatchID,
-			UserID:     p.UserID,
-			Nickname:   p.Nickname,
-			Age:        p.User.Age(),
-			Prefecture: p.Prefecture.Name,
-			Image:      firstImageURL(p.Images),
+		res = append(res, toMatchProfile(p))
+	}
+
+	return res, nil
+}
+
+func (u *MatchUsecase) GetMessagedMatches(userID uint64) ([]dto.MatchProfileWithLastMessage, error) {
+	profiles, err := u.matchRepo.GetMessagedProfiles(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]dto.MatchProfileWithLastMessage, 0, len(profiles))
+	for _, p := range profiles {
+		res = append(res, dto.MatchProfileWithLastMessage{
+			MatchProfile:            toMatchProfile(p.MatchedProfile),
+			LastMessage:             p.LastMessage,
+			LastMessageAt:           p.LastMessageAt,
+			LastMessageSenderUserID: p.LastMessageSenderUserID,
 		})
 	}
 
@@ -59,15 +73,10 @@ func (u *MatchUsecase) GetMatch(userID uint64, matchID uint64) (dto.MatchProfile
 	}
 
 	// 当事者以外には存在を知られたくないので、一律「見つからない」として扱う
-	var partnerUserID uint64
-	switch userID {
-	case match.User1ID:
-		partnerUserID = match.User2ID
-	case match.User2ID:
-		partnerUserID = match.User1ID
-	default:
+	if userID != match.User1ID && userID != match.User2ID {
 		return dto.MatchProfileDetail{}, ErrMatchNotFound
 	}
+	partnerUserID := match.PartnerUserID(userID)
 
 	profile, err := u.profileRepo.GetProfileByUserID(partnerUserID)
 	if err != nil {
@@ -84,4 +93,15 @@ func (u *MatchUsecase) GetMatch(userID uint64, matchID uint64) (dto.MatchProfile
 		MatchedAt:       match.MatchedAt,
 		PartnerResponse: toPartnerResponse(*profile, profileTags, true),
 	}, nil
+}
+
+func toMatchProfile(p repositories.MatchedProfile) dto.MatchProfile {
+	return dto.MatchProfile{
+		MatchID:    p.MatchID,
+		UserID:     p.UserID,
+		Nickname:   p.Nickname,
+		Age:        p.User.Age(),
+		Prefecture: p.Prefecture.Name,
+		Image:      firstImageURL(p.Images),
+	}
 }
