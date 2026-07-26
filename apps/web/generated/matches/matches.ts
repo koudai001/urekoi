@@ -96,7 +96,7 @@ export const getGetMessagedMatchesUrl = () => {
 }
 
 /**
- * @summary メッセージ送信済みのマッチ一覧取得(最新メッセージ付き)
+ * @summary メッセージ送信済みのマッチ一覧を取得（最新メッセージの新しい順・最新メッセージ付き）
  */
 export const getMessagedMatches = async ( options?: RequestInit): Promise<getMessagedMatchesResponse> => {
 
