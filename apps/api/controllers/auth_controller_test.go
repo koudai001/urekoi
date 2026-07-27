@@ -15,7 +15,7 @@ import (
 
 // 正常な入力でサインアップが成功し201・ユーザー情報・自動ログイン用のトークンを返すことを検証
 func TestSignUp_Success(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := postJSON(t, router, "/signup", validSignupRequest("test@example.com"))
 
@@ -31,7 +31,7 @@ func TestSignUp_Success(t *testing.T) {
 
 // 不正な入力(形式エラー・必須未入力・年齢制限違反)で400を返すことを検証 table-driven-test
 func TestSignUp_ValidationErrors(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	cases := []struct {
 		name   string
@@ -76,7 +76,7 @@ func TestSignUp_ValidationErrors(t *testing.T) {
 
 // 性別×年齢の境界値(女性ちょうど30歳・男性ちょうど35歳)は許可されることを検証　table-driven-test
 func TestSignUp_AgeGenderBoundary_Success(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	cases := []struct {
 		name   string
@@ -102,7 +102,7 @@ func TestSignUp_AgeGenderBoundary_Success(t *testing.T) {
 
 // 同じemailで再度サインアップすると409を返すことを検証
 func TestSignUp_DuplicateEmail(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	body := validSignupRequest("dup@example.com")
 
@@ -115,7 +115,7 @@ func TestSignUp_DuplicateEmail(t *testing.T) {
 
 // 正しい認証情報でログインしアクセストークン・リフレッシュトークンを取得できることを検証
 func TestLogin_Success(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	signupReq := validSignupRequest("login@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
@@ -135,7 +135,7 @@ func TestLogin_Success(t *testing.T) {
 
 // 誤ったパスワードでログインすると401を返すことを検証
 func TestLogin_WrongPassword(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	signupReq := validSignupRequest("login2@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
@@ -150,7 +150,7 @@ func TestLogin_WrongPassword(t *testing.T) {
 
 // 未登録のemailでログインすると401を返すことを検証
 func TestLogin_UnknownEmail(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := postJSON(t, router, "/login", dto.LoginRequest{
 		Email:    "notfound@example.com",
@@ -162,7 +162,7 @@ func TestLogin_UnknownEmail(t *testing.T) {
 
 // refresh_tokenで新しいトークンに更新でき、トークンがローテーションされることを検証
 func TestRefresh_Success(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	signupReq := validSignupRequest("refresh@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
@@ -184,7 +184,7 @@ func TestRefresh_Success(t *testing.T) {
 
 // ローテーション済みの古いrefresh_tokenを再利用すると401を返すことを検証
 func TestRefresh_RotatedTokenCannotBeReused(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	signupReq := validSignupRequest("refresh2@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
@@ -200,7 +200,7 @@ func TestRefresh_RotatedTokenCannotBeReused(t *testing.T) {
 
 // 無効なrefresh_tokenでのリフレッシュは401を返すことを検証
 func TestRefresh_InvalidToken(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := postJSON(t, router, "/refresh", dto.RefreshRequest{
 		RefreshToken: "invalid-token",
@@ -211,7 +211,7 @@ func TestRefresh_InvalidToken(t *testing.T) {
 
 // refresh_tokenでログアウトすると204を返すことを検証
 func TestLogout_Success(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	signupReq := validSignupRequest("logout@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
@@ -227,7 +227,7 @@ func TestLogout_Success(t *testing.T) {
 
 // 失効済みのrefresh_tokenで再度ログアウトすると401を返すことを検証
 func TestLogout_RevokedTokenCannotBeReused(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	signupReq := validSignupRequest("logout2@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
@@ -243,7 +243,7 @@ func TestLogout_RevokedTokenCannotBeReused(t *testing.T) {
 
 // 無効なrefresh_tokenでのログアウトは401を返すことを検証
 func TestLogout_InvalidToken(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := postJSON(t, router, "/logout", dto.LogoutRequest{
 		RefreshToken: "invalid-token",

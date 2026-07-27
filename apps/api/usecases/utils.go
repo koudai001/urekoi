@@ -20,7 +20,7 @@ func firstImageURL(images []models.ProfileImage) string {
 		return dummyImagePath
 	}
 
-	return images[0].URL
+	return images[0].ImageKey
 }
 
 // 画像URL一覧を返す。写真が無ければダミー画像1枚
@@ -31,7 +31,7 @@ func imageURLs(images []models.ProfileImage) []string {
 
 	urls := make([]string, 0, len(images))
 	for _, image := range images {
-		urls = append(urls, image.URL)
+		urls = append(urls, image.ImageKey)
 	}
 
 	return urls

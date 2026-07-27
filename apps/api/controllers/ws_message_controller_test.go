@@ -20,7 +20,7 @@ import (
 
 // メッセージ送信に成功すると、Redisの ws:messages チャンネルにイベントがpublishされることを検証
 func TestSendMessage_PublishesToRedis(t *testing.T) {
-	router, db, redisClient := setupWithRedis(t)
+	router, db, redisClient := setup(t)
 
 	a := signUpOnlyEmail(t, router, "message-publish-a@example.com")
 	b := signUpOnlyEmail(t, router, "message-publish-b@example.com")
@@ -50,7 +50,7 @@ func TestSendMessage_PublishesToRedis(t *testing.T) {
 
 // aがメッセージを送信すると、WS接続中のbにリアルタイムでプッシュされることを検証(送信→Redis publish→subscriber→WSまでの一連の流れ)
 func TestSendMessage_PushesToConnectedRecipient(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	// WS接続するためのサーバを立てる
 	server := httptest.NewServer(router)

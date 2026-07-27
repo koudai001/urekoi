@@ -16,7 +16,7 @@ import (
 
 // 自分のプロフィール(属性・タグ含む)を取得できることを検証
 func TestGetMyProfile_Success(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	req := validSignupRequest("myprofile-viewer@example.com")
 	req.Nickname = "テスト太郎"
@@ -48,7 +48,7 @@ func TestGetMyProfile_Success(t *testing.T) {
 
 // プロフィールが存在しない場合は404を返すことを検証
 func TestGetMyProfile_NotFound(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	signupRes := signUpOnlyEmail(t, router, "myprofilenonexistent@example.com")
 
@@ -62,7 +62,7 @@ func TestGetMyProfile_NotFound(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestGetMyProfile_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := getJSON(t, router, "/myprofile")
 

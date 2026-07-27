@@ -52,6 +52,7 @@
 - alicebob/miniredis(テスト用のin-memory Redis)
 - @redocly/cli(OpenAPI仕様のlint・ドキュメント生成)
 - @asyncapi/cli(AsyncAPI仕様のvalidate・ドキュメント生成)
+- aws-sdk-go-v2(S3互換ストレージへのプロフィール画像アップロード。環境ごとにAWS S3/Cloudflare R2/MinIOを切り替え)
 
 ## インフラ
 
@@ -72,10 +73,11 @@
 - APIサーバー: Render (URLは非公開)
 - DB: Render PostgreSQL
 - Redis: Render Key Value
+- Cloudflare R2(プロフィール画像。AWS S3は課金が発生するため検証環境では使わない)
 
 ### ローカル環境
 
-- DB・Redisをコンテナ化(`docker-compose up -d`)
+- DB・Redis・MinIO(S3互換、プロフィール画像アップロード用)をコンテナ化(`docker-compose up -d`)
 - DBクライアント: pgAdmin
 - APIサーバー: `cd apps/api && go run .`(`docker-compose.yml`の`api`サービスは、本番用Dockerfileの動作確認用。普段の開発では使わない)
 - フロントエンド: `cd apps/web && pnpm dev` → [http://localhost:3000](http://localhost:3000)

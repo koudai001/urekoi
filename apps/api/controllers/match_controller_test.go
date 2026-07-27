@@ -15,7 +15,7 @@ import (
 
 // メッセージが1通も無いマッチだけが一覧に含まれることを検証(メッセージ済みのマッチは除外)
 func TestGetUnmessagedMatches_Success(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	a := signUpOnlyEmail(t, router, "match-a@example.com")
 	messaged := signUpOnlyEmail(t, router, "match-messaged@example.com")
@@ -47,7 +47,7 @@ func TestGetUnmessagedMatches_Success(t *testing.T) {
 
 // マッチが1件も無い場合は空配列を返すことを検証
 func TestGetUnmessagedMatches_Empty(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	me := signUpOnlyEmail(t, router, "match-empty@example.com")
 
@@ -62,7 +62,7 @@ func TestGetUnmessagedMatches_Empty(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestGetUnmessagedMatches_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := getJSON(t, router, "/matches/unmessaged")
 
@@ -71,7 +71,7 @@ func TestGetUnmessagedMatches_Unauthorized(t *testing.T) {
 
 // メッセージが1通以上あるマッチだけが、最新メッセージの新しい順・最新メッセージ付きで一覧に含まれることを検証
 func TestGetMessagedMatches_Success(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	a := signUpOnlyEmail(t, router, "match-hm-a@example.com")
 	messaged := signUpOnlyEmail(t, router, "match-hm-messaged@example.com")
@@ -110,7 +110,7 @@ func TestGetMessagedMatches_Success(t *testing.T) {
 
 // メッセージが1通も無い場合は空配列を返すことを検証
 func TestGetMessagedMatches_Empty(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	me := signUpOnlyEmail(t, router, "match-hm-empty@example.com")
 
@@ -125,7 +125,7 @@ func TestGetMessagedMatches_Empty(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestGetMessagedMatches_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := getJSON(t, router, "/matches/messaged")
 
@@ -134,7 +134,7 @@ func TestGetMessagedMatches_Unauthorized(t *testing.T) {
 
 // マッチ1件の詳細を、相手のプロフィール詳細込みで1回のリクエストで取得できることを検証
 func TestGetMatch_Success(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	a := signUpOnlyEmail(t, router, "match-detail-a@example.com")
 	b := signUpOnlyEmail(t, router, "match-detail-b@example.com")
@@ -175,7 +175,7 @@ func TestGetMatch_Success(t *testing.T) {
 
 // 存在しないmatchIdの場合404を返すことを検証
 func TestGetMatch_NotFound(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	me := signUpOnlyEmail(t, router, "match-detail-notfound@example.com")
 
@@ -186,7 +186,7 @@ func TestGetMatch_NotFound(t *testing.T) {
 
 // マッチの当事者でないユーザーがアクセスした場合、存在を知られないよう404を返すことを検証
 func TestGetMatch_NotParticipant_ReturnsNotFound(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	c := signUpOnlyEmail(t, router, "match-detail-c@example.com")
 	d := signUpOnlyEmail(t, router, "match-detail-d@example.com")
@@ -205,7 +205,7 @@ func TestGetMatch_NotParticipant_ReturnsNotFound(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestGetMatch_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := getJSON(t, router, "/matches/1")
 

@@ -13,7 +13,7 @@ import (
 
 // いいねを送ると201を返すことを検証(相手からはまだいいねをもらっていないのでマッチはしない)
 func TestSendLike_Success(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	// 送信元と送信先のユーザーを作成
 	from := signUpOnlyEmail(t, router, "like-from@example.com")
@@ -31,7 +31,7 @@ func TestSendLike_Success(t *testing.T) {
 
 // 既に相手からいいねをもらっている相手にいいねを送ると、マッチが成立してmatched: trueが返ることを検証
 func TestSendLike_ResultsInMatch(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	from := signUpOnlyEmail(t, router, "like-match-from@example.com")
 	to := signUpOnlyEmail(t, router, "like-match-to@example.com")
@@ -51,7 +51,7 @@ func TestSendLike_ResultsInMatch(t *testing.T) {
 
 // 自分自身にいいねすると400を返すことを検証
 func TestSendLike_Self(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	me := signUpOnlyEmail(t, router, "like-self@example.com")
 
@@ -62,7 +62,7 @@ func TestSendLike_Self(t *testing.T) {
 
 // 同じ相手に重複していいねすると409を返すことを検証
 func TestSendLike_Duplicate(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	from := signUpOnlyEmail(t, router, "like-dup-from@example.com")
 	to := signUpOnlyEmail(t, router, "like-dup-to@example.com")
@@ -76,7 +76,7 @@ func TestSendLike_Duplicate(t *testing.T) {
 
 // 存在しない相手にいいねすると404を返すことを検証
 func TestSendLike_UserNotFound(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	from := signUpOnlyEmail(t, router, "like-notfound@example.com")
 
@@ -87,7 +87,7 @@ func TestSendLike_UserNotFound(t *testing.T) {
 
 // to_user_idが未指定の場合400を返すことを検証
 func TestSendLike_ValidationError(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	from := signUpOnlyEmail(t, router, "like-invalid@example.com")
 
@@ -98,7 +98,7 @@ func TestSendLike_ValidationError(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestSendLike_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := postJSON(t, router, "/likes", dto.LikeRequest{ToUserID: 1})
 
@@ -107,7 +107,7 @@ func TestSendLike_Unauthorized(t *testing.T) {
 
 // もらったいいねの送信元プロフィール一覧をtotal付きで取得できることを検証
 func TestGetPendingLikes_Success(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	// 送信元と送信先のユーザーを作成
 	from := signUpOnlyEmail(t, router, "like-received-from@example.com")
@@ -133,7 +133,7 @@ func TestGetPendingLikes_Success(t *testing.T) {
 
 // スキップ済みの相手はもらったいいね一覧から除外されることを検証
 func TestGetPendingLikes_ExcludesSkipped(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	from := signUpOnlyEmail(t, router, "like-skipped-from@example.com")
 	to := signUpOnlyEmail(t, router, "like-skipped-to@example.com")
@@ -157,7 +157,7 @@ func TestGetPendingLikes_ExcludesSkipped(t *testing.T) {
 
 // 保留中のいいねがない場合はtotal=0・空配列を返すことを検証
 func TestGetPendingLikes_Empty(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	// いいねをもらっていないユーザーを作成
 	me := signUpOnlyEmail(t, router, "like-received-empty@example.com")
@@ -175,7 +175,7 @@ func TestGetPendingLikes_Empty(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestGetPendingLikes_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := getJSON(t, router, "/likes/pending")
 

@@ -16,7 +16,7 @@ import (
 
 // 複数人登録されている場合に、自分以外の全員分のプロフィール詳細一覧を取得できることを検証
 func TestGetRecs_Success(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	profile1 := createProfile(t, db, "recs1@example.com", "テスト太郎", 30, seed.PrefectureTokyo)
 	profile2 := createProfile(t, db, "recs2@example.com", "テスト花子", 25, seed.PrefectureOsaka)
@@ -38,7 +38,7 @@ func TestGetRecs_Success(t *testing.T) {
 
 // 既にいいね済みの相手は候補から除外されることを検証
 func TestGetRecs_ExcludesAlreadyLiked(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	liked := createProfile(t, db, "recs-liked@example.com", "いいね済み", 30, seed.PrefectureTokyo)
 	other := createProfile(t, db, "recs-other@example.com", "未いいね", 28, seed.PrefectureTokyo)
@@ -59,7 +59,7 @@ func TestGetRecs_ExcludesAlreadyLiked(t *testing.T) {
 
 // 既にスキップ済みの相手は候補から除外されることを検証
 func TestGetRecs_ExcludesSkipped(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	skipped := createProfile(t, db, "recs-skipped@example.com", "スキップ済み", 30, seed.PrefectureTokyo)
 	other := createProfile(t, db, "recs-other2@example.com", "未スキップ", 28, seed.PrefectureTokyo)
@@ -80,7 +80,7 @@ func TestGetRecs_ExcludesSkipped(t *testing.T) {
 
 // マッチ済みの相手は候補から除外されることを検証
 func TestGetRecs_ExcludesMatched(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	// 相互いいねを送る側なのでaccess_tokenが要るためsignupで作る(signupは自動でプロフィールも作る)
 	matched := signUpOnlyEmail(t, router, "recs-matched@example.com")
@@ -104,7 +104,7 @@ func TestGetRecs_ExcludesMatched(t *testing.T) {
 
 // 候補となるプロフィールが1件もない場合に空配列(200)を返すことを検証
 func TestGetRecs_Empty(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	viewerRes := signUpOnlyEmail(t, router, "recs-viewer-empty@example.com")
 	require.NoError(t, db.Where("user_id = ?", viewerRes.ID).Delete(&models.Profile{}).Error)
@@ -120,7 +120,7 @@ func TestGetRecs_Empty(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestGetRecs_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := getJSON(t, router, "/partner/recs")
 
@@ -129,7 +129,7 @@ func TestGetRecs_Unauthorized(t *testing.T) {
 
 // タグ付きプロフィールの詳細(nickname・タグ・NEWバッジ判定など)を取得できることを検証(未いいね)
 func TestGetDetail_Success(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	profile := createProfile(t, db, "recs-detail@example.com", "テスト太郎", 30, seed.PrefectureTokyo)
 
@@ -161,7 +161,7 @@ func TestGetDetail_Success(t *testing.T) {
 
 // 既にいいね済みの相手はalready_liked: trueで返ることを検証
 func TestGetDetail_AlreadyLiked(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	profile := createProfile(t, db, "recs-already-liked@example.com", "テスト花子", 28, seed.PrefectureTokyo)
 
@@ -179,7 +179,7 @@ func TestGetDetail_AlreadyLiked(t *testing.T) {
 
 // 存在しないIDの場合404を返すことを検証
 func TestGetDetail_NotFound(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	accessToken := signUpOnlyEmail(t, router, "recs-viewer4@example.com").AccessToken
 

@@ -3,27 +3,38 @@ info:
   title: urekoi API
   description: 熟女専門マッチングアプリ urekoi のAPI仕様
   version: 0.1.0
+  license:
+    name: UNLICENSED
+    url: https://github.com/koudai001/urekoi
 servers:
-  - url: http://localhost:8080
-    description: ローカル開発環境
+  - url: https://github.com/koudai001/urekoi
+    description: 本番環境のAPIサーバー。実際のURLは環境変数で切り替える想定。
 
 tags:
   - name: auth
     x-displayName: 認証
+    description: サインアップ・ログイン・トークン管理
   - name: myprofile
     x-displayName: 自分のプロフィール
+    description: 自分のプロフィール情報・画像の取得と編集
   - name: partner
     x-displayName: 相手プロフィール（スワイプ候補）
+    description: スワイプ候補の一覧・詳細の取得
   - name: likes
     x-displayName: いいね
+    description: いいねの送信・受信一覧の取得
   - name: skips
     x-displayName: スキップ
+    description: スキップの送信
   - name: matches
     x-displayName: マッチング
+    description: マッチ済みの相手一覧・詳細の取得
   - name: messages
     x-displayName: メッセージ
+    description: マッチ相手とのメッセージ送受信
   - name: websocket
     x-displayName: リアルタイム通信
+    description: WebSocketによるメッセージのリアルタイム配信
 
 paths:
   /signup:
@@ -31,6 +42,7 @@ paths:
       tags: [auth]
       operationId: postSignup
       summary: 新規登録
+      security: []
       requestBody:
         required: true
         content:
@@ -66,6 +78,7 @@ paths:
       tags: [auth]
       operationId: postLogin
       summary: ログイン
+      security: []
       requestBody:
         required: true
         content:
@@ -101,6 +114,7 @@ paths:
       tags: [auth]
       operationId: postRefresh
       summary: アクセストークンの再発行
+      security: []
       requestBody:
         required: true
         content:
@@ -136,6 +150,7 @@ paths:
       tags: [auth]
       operationId: postLogout
       summary: ログアウト(refresh_tokenを失効させる)
+      security: []
       requestBody:
         required: true
         content:
@@ -162,14 +177,18 @@ paths:
               example:
                 error: invalid or expired refresh token
 
-  /users/me:
+  /me:
     delete:
       tags: [auth]
       operationId: deleteUsersMe
       summary: 退会
+      security:
+        - bearerAuth: []
       responses:
         "200":
           description: 退会成功
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
   /myprofile:
     get:
@@ -269,6 +288,125 @@ paths:
                 $ref: "#/components/schemas/Error"
               example:
                 error: profile not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /myprofile/images/presign:
+    post:
+      tags: [myprofile]
+      operationId: postMyprofileImagesPresign
+      summary: プロフィール画像アップロード用の署名付きURLを発行
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileImagePresignRequest"
+      responses:
+        "200":
+          description: 発行成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileImagePresignResponse"
+        "400":
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /myprofile/images:
+    post:
+      tags: [myprofile]
+      operationId: postMyprofileImages
+      summary: presignでアップロード済みのkeyからプロフィール画像を登録
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileImageCreateRequest"
+      responses:
+        "201":
+          description: 登録成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileImageResponse"
+        "400":
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /myprofile/images/{image_id}:
+    delete:
+      tags: [myprofile]
+      operationId: deleteMyprofileImage
+      summary: プロフィール画像を削除
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: image_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: 削除成功
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: 画像が見つからない、または自分の画像でない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: image not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /myprofile/images/order:
+    put:
+      tags: [myprofile]
+      operationId: putMyprofileImagesOrder
+      summary: プロフィール画像の並び替え
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileImageOrderRequest"
+      responses:
+        "204":
+          description: 並び替え成功
+        "400":
+          description: バリデーションエラー(自分の画像でないIDを含む場合も含む)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -697,6 +835,8 @@ paths:
       responses:
         "101":
           description: WebSocketへアップグレード成功
+        "200":
+          description: WebSocket接続成功（Linter用に明示的に記載）
         "400":
           description: ticket未指定、または既に失効・使用済み
           content:
@@ -1124,6 +1264,60 @@ components:
           items:
             type: integer
           example: [1, 2, 3]
+    ProfileImagePresignRequest:
+      type: object
+      required: [content_type, extension]
+      properties:
+        content_type:
+          type: string
+          example: image/jpeg
+        extension:
+          type: string
+          description: S3のkeyに使う拡張子(先頭のドット無し)
+          example: jpg
+    ProfileImagePresignResponse:
+      type: object
+      properties:
+        upload_url:
+          type: string
+          description: このURLに画像本体をPUTでアップロードする(署名付き、短時間で失効)
+          example: https://urekoi-profile-images.s3.ap-northeast-1.amazonaws.com/profiles/1/xxxx.jpg?X-Amz-...
+        image_key:
+          type: string
+          description: アップロード完了後、POST /myprofile/imagesに渡すkey
+          example: profiles/1/xxxx.jpg
+    ProfileImageCreateRequest:
+      type: object
+      required: [image_key]
+      properties:
+        image_key:
+          type: string
+          description: POST /myprofile/images/presignで発行されたimage_key
+          example: profiles/1/xxxx.jpg
+    ProfileImageOrderRequest:
+      type: object
+      required: [image_ids]
+      properties:
+        image_ids:
+          type: array
+          description: 並び替え後の全画像IDを新しい順序で並べた配列
+          items:
+            type: integer
+            format: int64
+          example: [3, 1, 2]
+    ProfileImageResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        url:
+          type: string
+          example: https://images.urekoi.example.com/profiles/1/xxxx.jpg
+        sort_order:
+          type: integer
+          example: 0
     Error:
       type: object
       properties:

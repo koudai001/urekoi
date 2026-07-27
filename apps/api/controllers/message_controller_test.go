@@ -30,7 +30,7 @@ func createMatch(t *testing.T, router http.Handler, db *gorm.DB, a, b dto.Signup
 
 // マッチ相手にメッセージを送信できることを検証
 func TestSendMessage_Success(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	// aとbを相互いいねでマッチさせる
 	a := signUpOnlyEmail(t, router, "message-send-a@example.com")
@@ -52,7 +52,7 @@ func TestSendMessage_Success(t *testing.T) {
 
 // マッチの当事者以外が送信すると403を返すことを検証
 func TestSendMessage_NotParticipant(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	// aとbを相互いいねでマッチさせる
 	a := signUpOnlyEmail(t, router, "message-outsider-a@example.com")
@@ -68,7 +68,7 @@ func TestSendMessage_NotParticipant(t *testing.T) {
 
 // 存在しないmatchIDへの送信は404を返すことを検証
 func TestSendMessage_MatchNotFound(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	me := signUpOnlyEmail(t, router, "message-notfound@example.com")
 
@@ -79,7 +79,7 @@ func TestSendMessage_MatchNotFound(t *testing.T) {
 
 // 本文が空の場合は400を返すことを検証
 func TestSendMessage_ValidationError(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	a := signUpOnlyEmail(t, router, "message-invalid-a@example.com")
 	b := signUpOnlyEmail(t, router, "message-invalid-b@example.com")
@@ -92,7 +92,7 @@ func TestSendMessage_ValidationError(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestSendMessage_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := postJSON(t, router, "/matches/1/messages", dto.MessageRequest{Body: "hi"})
 
@@ -101,7 +101,7 @@ func TestSendMessage_Unauthorized(t *testing.T) {
 
 // メッセージ履歴を新しい順に取得できることを検証
 func TestGetMessages_Success(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	// aとbを相互いいねでマッチさせる
 	a := signUpOnlyEmail(t, router, "message-history-a@example.com")
@@ -128,7 +128,7 @@ func TestGetMessages_Success(t *testing.T) {
 
 // before_idを指定すると、それより古いメッセージだけ取得できることを検証
 func TestGetMessages_BeforeIDCursor(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	// aとbを相互いいねでマッチさせる
 	a := signUpOnlyEmail(t, router, "message-cursor-a@example.com")
@@ -155,7 +155,7 @@ func TestGetMessages_BeforeIDCursor(t *testing.T) {
 
 // マッチの当事者以外が取得しようとすると403を返すことを検証
 func TestGetMessages_NotParticipant(t *testing.T) {
-	router, db := setupWithDB(t)
+	router, db, _ := setup(t)
 
 	a := signUpOnlyEmail(t, router, "message-get-outsider-a@example.com")
 	b := signUpOnlyEmail(t, router, "message-get-outsider-b@example.com")
@@ -169,7 +169,7 @@ func TestGetMessages_NotParticipant(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestGetMessages_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := getJSON(t, router, "/matches/1/messages")
 
