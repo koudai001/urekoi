@@ -12,7 +12,8 @@ func main() {
 	infra.Initialize()
 	db := infra.SetupDB()
 	redisClient := infra.SetupRedis()
-	router := router.SetupRouter(db, redisClient)
+	s3Client := infra.SetupS3()
+	router := router.SetupRouter(db, redisClient, s3Client)
 
 	port := os.Getenv("PORT")
 	if port == "" {

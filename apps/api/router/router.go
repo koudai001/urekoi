@@ -9,12 +9,13 @@ import (
 	"api/usecases"
 	"api/ws"
 
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
-func SetupRouter(db *gorm.DB, redisClient *redis.Client) *gin.Engine {
+func SetupRouter(db *gorm.DB, redisClient *redis.Client, s3Client *s3.Client) *gin.Engine {
 	router := gin.Default()
 
 	profileRepo := repositories.NewProfileRepository(db)
@@ -34,6 +35,11 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client) *gin.Engine {
 
 	myProfileUsecase := usecases.NewMyProfileUsecase(profileRepo)
 	myProfileController := controllers.NewMyProfileController(myProfileUsecase)
+
+	s3Repo := repositories.NewS3Repository(s3Client)
+	profileImageRepo := repositories.NewProfileImageRepository(db)
+	profileImageUsecase := usecases.NewProfileImageUsecase(s3Repo, profileRepo, profileImageRepo)
+	profileImageController := controllers.NewProfileImageController(profileImageUsecase)
 
 	matchRepo := repositories.NewMatchRepository(db)
 	likeUsecase := usecases.NewLikeUsecase(likeRepo, authRepo, matchRepo)
@@ -79,6 +85,10 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client) *gin.Engine {
 
 	authRequired.GET("/tags", tagController.ListTags)
 	authRequired.GET("/myprofile", myProfileController.GetMyProfile)
+
+	authRequired.POST("/myprofile/images/presign", profileImageController.PresignUpload)
+	authRequired.POST("/myprofile/images", profileImageController.CreateImage)
+	authRequired.DELETE("/myprofile/images/:imageId", profileImageController.DeleteImage)
 
 	likeRouter := authRequired.Group("/likes")
 	likeRouter.POST("", likeController.SendLike)

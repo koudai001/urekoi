@@ -13,7 +13,7 @@ import (
 
 // seed済みの全タグ(id・label・category)を取得できることを検証
 func TestListTags_Success(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	accessToken := signUpOnlyEmail(t, router, "tags-viewer@example.com").AccessToken
 
@@ -38,7 +38,7 @@ func TestListTags_Success(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestListTags_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := getJSON(t, router, "/tags")
 

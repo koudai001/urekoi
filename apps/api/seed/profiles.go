@@ -150,8 +150,8 @@ func SeedDummyProfiles(db *gorm.DB) error {
 		}
 
 		for i, url := range dp.PhotoURLs {
-			profileImage := models.ProfileImage{ProfileID: profile.ID, URL: url, SortOrder: int16(i)}
-			if err := db.Where(models.ProfileImage{ProfileID: profile.ID, URL: url}).
+			profileImage := models.ProfileImage{ProfileID: profile.ID, ImageKey: url, SortOrder: int16(i)}
+			if err := db.Where(models.ProfileImage{ProfileID: profile.ID, ImageKey: url}).
 				FirstOrCreate(&profileImage).Error; err != nil {
 				return err
 			}

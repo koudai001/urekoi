@@ -27,28 +27,14 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-// テスト環境のセットアップ
-func setup(t *testing.T) *gin.Engine {
-	router, _ := setupWithDB(t)
-	return router
-}
-
-// DBへ直接データを仕込む
-func setupWithDB(t *testing.T) (*gin.Engine, *gorm.DB) {
+// テスト環境のセットアップ(DB・Redis・S3はGO_ENV=testでそれぞれインメモリ化される)
+func setup(t *testing.T) (*gin.Engine, *gorm.DB, *redis.Client) {
 	db := infra.SetupDB()
 	migrateAndSeed(t, db)
 	redisClient := infra.SetupRedis()
+	s3Client := infra.SetupS3()
 
-	return router.SetupRouter(db, redisClient), db
-}
-
-// RedisClient自体を検証したいテスト用
-func setupWithRedis(t *testing.T) (*gin.Engine, *gorm.DB, *redis.Client) {
-	db := infra.SetupDB()
-	migrateAndSeed(t, db)
-	redisClient := infra.SetupRedis()
-
-	return router.SetupRouter(db, redisClient), db, redisClient
+	return router.SetupRouter(db, redisClient, s3Client), db, redisClient
 }
 
 // マイグレーションとマスタデータのシード投入を行う

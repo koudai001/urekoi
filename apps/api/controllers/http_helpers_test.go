@@ -40,6 +40,16 @@ func getJSONWithAuth(_ *testing.T, router http.Handler, path string, accessToken
 	return w
 }
 
+// Authorizationヘッダーにaccess_tokenを付けてDELETEする
+func deleteWithAuth(_ *testing.T, router http.Handler, path string, accessToken string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(http.MethodDelete, path, nil)
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+	return w
+}
+
 // Authorizationヘッダーにaccess_tokenを付けてPOSTする
 func postJSONWithAuth(t *testing.T, router http.Handler, path string, body any, accessToken string) *httptest.ResponseRecorder {
 	payload, err := json.Marshal(body) // JSONに変換

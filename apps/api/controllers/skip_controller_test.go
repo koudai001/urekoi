@@ -12,7 +12,7 @@ import (
 
 // スキップを送ると201を返すことを検証
 func TestSendSkip_Success(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	from := signUpOnlyEmail(t, router, "skip-from@example.com")
 	to := signUpOnlyEmail(t, router, "skip-to@example.com")
@@ -24,7 +24,7 @@ func TestSendSkip_Success(t *testing.T) {
 
 // 自分自身をスキップすると400を返すことを検証
 func TestSendSkip_Self(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	me := signUpOnlyEmail(t, router, "skip-self@example.com")
 
@@ -35,7 +35,7 @@ func TestSendSkip_Self(t *testing.T) {
 
 // 同じ相手を重複してスキップすると409を返すことを検証
 func TestSendSkip_Duplicate(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	from := signUpOnlyEmail(t, router, "skip-dup-from@example.com")
 	to := signUpOnlyEmail(t, router, "skip-dup-to@example.com")
@@ -49,7 +49,7 @@ func TestSendSkip_Duplicate(t *testing.T) {
 
 // 存在しない相手をスキップすると404を返すことを検証
 func TestSendSkip_UserNotFound(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	from := signUpOnlyEmail(t, router, "skip-notfound@example.com")
 
@@ -60,7 +60,7 @@ func TestSendSkip_UserNotFound(t *testing.T) {
 
 // to_user_idが未指定の場合400を返すことを検証
 func TestSendSkip_ValidationError(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	from := signUpOnlyEmail(t, router, "skip-invalid@example.com")
 
@@ -71,7 +71,7 @@ func TestSendSkip_ValidationError(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestSendSkip_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := postJSON(t, router, "/skips", dto.SkipRequest{ToUserID: 1})
 

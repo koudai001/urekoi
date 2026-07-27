@@ -183,6 +183,35 @@ export interface MyProfileResponse {
   tag_ids?: number[];
 }
 
+export interface ProfileImagePresignRequest {
+  content_type: string;
+  /** S3のkeyに使う拡張子(先頭のドット無し) */
+  extension: string;
+}
+
+export interface ProfileImagePresignResponse {
+  /** このURLに画像本体をPUTでアップロードする(署名付き、短時間で失効) */
+  upload_url?: string;
+  /** アップロード完了後、POST /myprofile/imagesに渡すkey */
+  image_key?: string;
+}
+
+export interface ProfileImageCreateRequest {
+  /** POST /myprofile/images/presignで発行されたimage_key */
+  image_key: string;
+}
+
+export interface ProfileImageOrderRequest {
+  /** 並び替え後の全画像IDを新しい順序で並べた配列 */
+  image_ids: number[];
+}
+
+export interface ProfileImageResponse {
+  id?: number;
+  url?: string;
+  sort_order?: number;
+}
+
 export interface Error {
   error?: string;
 }

@@ -9,6 +9,11 @@ import type {
   Error,
   InternalServerErrorResponse,
   MyProfileResponse,
+  ProfileImageCreateRequest,
+  ProfileImageOrderRequest,
+  ProfileImagePresignRequest,
+  ProfileImagePresignResponse,
+  ProfileImageResponse,
   UnauthorizedResponse
 } from '../urekoiAPI.schemas';
 
@@ -62,6 +67,214 @@ export const getMyprofile = async ( options?: RequestInit): Promise<getMyprofile
     method: 'GET'
 
 
+  }
+);}
+
+
+export type postMyprofileImagesPresignResponse200 = {
+  data: ProfileImagePresignResponse
+  status: 200
+}
+
+export type postMyprofileImagesPresignResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type postMyprofileImagesPresignResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type postMyprofileImagesPresignResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type postMyprofileImagesPresignResponseSuccess = (postMyprofileImagesPresignResponse200) & {
+  headers: Headers;
+};
+export type postMyprofileImagesPresignResponseError = (postMyprofileImagesPresignResponse400 | postMyprofileImagesPresignResponse401 | postMyprofileImagesPresignResponse500) & {
+  headers: Headers;
+};
+
+export type postMyprofileImagesPresignResponse = (postMyprofileImagesPresignResponseSuccess | postMyprofileImagesPresignResponseError)
+
+export const getPostMyprofileImagesPresignUrl = () => {
+
+
+
+
+  return `/myprofile/images/presign`
+}
+
+/**
+ * @summary プロフィール画像アップロード用の署名付きURLを発行
+ */
+export const postMyprofileImagesPresign = async (profileImagePresignRequest: ProfileImagePresignRequest, options?: RequestInit): Promise<postMyprofileImagesPresignResponse> => {
+
+  return customFetch<postMyprofileImagesPresignResponse>(getPostMyprofileImagesPresignUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(profileImagePresignRequest)
+  }
+);}
+
+
+export type postMyprofileImagesResponse201 = {
+  data: ProfileImageResponse
+  status: 201
+}
+
+export type postMyprofileImagesResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type postMyprofileImagesResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type postMyprofileImagesResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type postMyprofileImagesResponseSuccess = (postMyprofileImagesResponse201) & {
+  headers: Headers;
+};
+export type postMyprofileImagesResponseError = (postMyprofileImagesResponse400 | postMyprofileImagesResponse401 | postMyprofileImagesResponse500) & {
+  headers: Headers;
+};
+
+export type postMyprofileImagesResponse = (postMyprofileImagesResponseSuccess | postMyprofileImagesResponseError)
+
+export const getPostMyprofileImagesUrl = () => {
+
+
+
+
+  return `/myprofile/images`
+}
+
+/**
+ * @summary presignでアップロード済みのkeyからプロフィール画像を登録
+ */
+export const postMyprofileImages = async (profileImageCreateRequest: ProfileImageCreateRequest, options?: RequestInit): Promise<postMyprofileImagesResponse> => {
+
+  return customFetch<postMyprofileImagesResponse>(getPostMyprofileImagesUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(profileImageCreateRequest)
+  }
+);}
+
+
+export type deleteMyprofileImageResponse204 = {
+  data: void
+  status: 204
+}
+
+export type deleteMyprofileImageResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type deleteMyprofileImageResponse404 = {
+  data: Error
+  status: 404
+}
+
+export type deleteMyprofileImageResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type deleteMyprofileImageResponseSuccess = (deleteMyprofileImageResponse204) & {
+  headers: Headers;
+};
+export type deleteMyprofileImageResponseError = (deleteMyprofileImageResponse401 | deleteMyprofileImageResponse404 | deleteMyprofileImageResponse500) & {
+  headers: Headers;
+};
+
+export type deleteMyprofileImageResponse = (deleteMyprofileImageResponseSuccess | deleteMyprofileImageResponseError)
+
+export const getDeleteMyprofileImageUrl = (imageId: number,) => {
+
+
+
+
+  return `/myprofile/images/${imageId}`
+}
+
+/**
+ * @summary プロフィール画像を削除
+ */
+export const deleteMyprofileImage = async (imageId: number, options?: RequestInit): Promise<deleteMyprofileImageResponse> => {
+
+  return customFetch<deleteMyprofileImageResponse>(getDeleteMyprofileImageUrl(imageId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+export type putMyprofileImagesOrderResponse204 = {
+  data: void
+  status: 204
+}
+
+export type putMyprofileImagesOrderResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type putMyprofileImagesOrderResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type putMyprofileImagesOrderResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type putMyprofileImagesOrderResponseSuccess = (putMyprofileImagesOrderResponse204) & {
+  headers: Headers;
+};
+export type putMyprofileImagesOrderResponseError = (putMyprofileImagesOrderResponse400 | putMyprofileImagesOrderResponse401 | putMyprofileImagesOrderResponse500) & {
+  headers: Headers;
+};
+
+export type putMyprofileImagesOrderResponse = (putMyprofileImagesOrderResponseSuccess | putMyprofileImagesOrderResponseError)
+
+export const getPutMyprofileImagesOrderUrl = () => {
+
+
+
+
+  return `/myprofile/images/order`
+}
+
+/**
+ * @summary プロフィール画像の並び替え
+ */
+export const putMyprofileImagesOrder = async (profileImageOrderRequest: ProfileImageOrderRequest, options?: RequestInit): Promise<putMyprofileImagesOrderResponse> => {
+
+  return customFetch<putMyprofileImagesOrderResponse>(getPutMyprofileImagesOrderUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(profileImageOrderRequest)
   }
 );}
 

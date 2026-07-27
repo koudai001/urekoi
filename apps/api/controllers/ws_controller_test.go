@@ -17,7 +17,7 @@ import (
 
 // チケットが発行され、空でない文字列が返ることを検証
 func TestIssueTicket_Success(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	me := signUpOnlyEmail(t, router, "ws-ticket@example.com")
 
@@ -32,7 +32,7 @@ func TestIssueTicket_Success(t *testing.T) {
 
 // 同じユーザーでも呼ぶたびに異なるチケットが発行されることを検証
 func TestIssueTicket_UniquePerCall(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	me := signUpOnlyEmail(t, router, "ws-ticket-unique@example.com")
 
@@ -47,7 +47,7 @@ func TestIssueTicket_UniquePerCall(t *testing.T) {
 
 // access_tokenがない場合は401を返すことを検証
 func TestIssueTicket_Unauthorized(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	w := postJSON(t, router, "/ws/ticket", nil)
 
@@ -56,7 +56,7 @@ func TestIssueTicket_Unauthorized(t *testing.T) {
 
 // 接続後、サーバーからpingが送られてくることを検証
 func TestConnect_SendsPing(t *testing.T) {
-	router := setup(t)
+	router, _, _ := setup(t)
 
 	server := httptest.NewServer(router)
 	defer server.Close()
