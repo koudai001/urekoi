@@ -61,6 +61,11 @@ export const postWsTicket = async ( options?: RequestInit): Promise<postWsTicket
 );}
 
 
+export type getWsResponse200 = {
+  data: void
+  status: 200
+}
+
 export type getWsResponse101 = {
   data: void
   status: 101
@@ -76,12 +81,14 @@ export type getWsResponse500 = {
   status: 500
 }
 
-;
+export type getWsResponseSuccess = (getWsResponse200) & {
+  headers: Headers;
+};
 export type getWsResponseError = (getWsResponse101 | getWsResponse400 | getWsResponse500) & {
   headers: Headers;
 };
 
-export type getWsResponse = (getWsResponseError)
+export type getWsResponse = (getWsResponseSuccess | getWsResponseError)
 
 export const getGetWsUrl = () => {
 

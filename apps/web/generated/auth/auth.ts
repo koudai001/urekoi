@@ -13,7 +13,8 @@ import type {
   RefreshRequest,
   RefreshResponse,
   SignupRequest,
-  SignupResponse
+  SignupResponse,
+  UnauthorizedResponse
 } from '../urekoiAPI.schemas';
 
 import { customFetch } from '../../lib/api/custom-fetch';
@@ -211,19 +212,26 @@ export type deleteUsersMeResponse200 = {
   status: 200
 }
 
+export type deleteUsersMeResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
 export type deleteUsersMeResponseSuccess = (deleteUsersMeResponse200) & {
   headers: Headers;
 };
-;
+export type deleteUsersMeResponseError = (deleteUsersMeResponse401) & {
+  headers: Headers;
+};
 
-export type deleteUsersMeResponse = (deleteUsersMeResponseSuccess)
+export type deleteUsersMeResponse = (deleteUsersMeResponseSuccess | deleteUsersMeResponseError)
 
 export const getDeleteUsersMeUrl = () => {
 
 
 
 
-  return `/users/me`
+  return `/me`
 }
 
 /**
