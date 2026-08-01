@@ -82,9 +82,8 @@ func (u *ProfileImageUsecase) CreateImage(userID uint64, imageKey string) (dto.P
 	}
 
 	return dto.ProfileImageResponse{
-		ID: image.ID,
-		// TODO: 閲覧用URLの組み立て(IMAGE_BASE_URL + ImageKey)は未実装。今は暫定でImageKeyをそのまま返す
-		URL:       image.ImageKey,
+		ID:        image.ID,
+		URL:       buildImageURL(image.ImageKey),
 		SortOrder: image.SortOrder,
 	}, nil
 }

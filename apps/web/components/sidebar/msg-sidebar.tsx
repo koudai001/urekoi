@@ -5,10 +5,11 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Heart } from 'lucide-react'
 import {
-  useUnmessagedMatches,
   useMessagedMatches,
+  useUnmessagedMatches,
 } from '@/components/messages/use-match-profiles'
 import { useReceivedLikes } from '@/components/likes/use-received-likes'
+import { SidebarHeader } from '@/components/sidebar/sidebar-header'
 import { cn } from '@/lib/utils'
 
 type Tab = 'matching' | 'msg'
@@ -34,23 +35,6 @@ export function MsgSidebar() {
       </div>
 
       {tab === 'matching' ? <MatchingGrid /> : <MsgList />}
-    </div>
-  )
-}
-
-function SidebarHeader() {
-  return (
-    <div
-      className="flex items-center gap-4 px-5 py-5"
-      style={{
-        background:
-          'linear-gradient(135deg, oklch(0.3 0.14 338), oklch(0.2 0.1 330))',
-      }}
-    >
-      <div className="h-14 w-14 shrink-0 rounded-full bg-swipe-surface" />
-      <span className="flex-1 text-lg font-bold text-swipe-foreground">
-        マイページ
-      </span>
     </div>
   )
 }

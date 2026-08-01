@@ -43,7 +43,35 @@ func TestGetMyProfile_Success(t *testing.T) {
 		PrefectureCode: seed.PrefectureTokyo,
 		Prefecture:     "東京都",
 		TagIDs:         []uint64{tag.ID},
+		Images:         []dto.ProfileImageResponse{},
 	}, res)
+}
+
+// アップロード済みの画像がsort_order順に含まれることを検証
+func TestGetMyProfile_WithImages(t *testing.T) {
+	// セットアップ: ルーターとログイン済みユーザーを用意し、画像を2枚アップロードしておく
+	router, _, _ := setup(t)
+	req := validSignupRequest("myprofile-images@example.com")
+	signupRes := signUpWithFields(t, router, req)
+
+	first := createImage(t, router, signupRes.AccessToken)
+	second := createImage(t, router, signupRes.AccessToken)
+
+	// 実行: 自分のプロフィールを取得する
+	w := getJSONWithAuth(t, router, "/myprofile", signupRes.AccessToken)
+	require.Equal(t, http.StatusOK, w.Code)
+
+	var res dto.MyProfileResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+
+	// 検証: アップロード順(sort_order昇順)のまま2枚とも含まれ、URLが組み立てられていることを確認する
+	require.Len(t, res.Images, 2)
+	assert.Equal(t, first.ID, res.Images[0].ID)
+	assert.Equal(t, second.ID, res.Images[1].ID)
+	assert.Equal(t, int16(0), res.Images[0].SortOrder)
+	assert.Equal(t, int16(1), res.Images[1].SortOrder)
+	assert.NotEmpty(t, res.Images[0].URL)
+	assert.NotEmpty(t, res.Images[1].URL)
 }
 
 // プロフィールが存在しない場合は404を返すことを検証
@@ -67,4 +95,50 @@ func TestGetMyProfile_Unauthorized(t *testing.T) {
 	w := getJSON(t, router, "/myprofile")
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
+// プロフィール属性の更新と、tag_idsによるタグの入れ替えを検証
+func TestUpdateMyProfile_Success(t *testing.T) {
+	// セットアップ: ログイン済みユーザーを用意する
+	router, db, _ := setup(t)
+	signupRes := signUpOnlyEmail(t, router, "myprofile-update@example.com")
+
+	// 更新前のプロフィールに既存タグを紐付けておく
+	var profile models.Profile
+	require.NoError(t, db.Where("user_id = ?", signupRes.ID).First(&profile).Error)
+	oldTag := findTagByLabel(t, db, "旅行")
+	createProfileTag(t, db, profile.ID, oldTag.ID)
+
+	// 更新後に紐付ける新しいタグを用意する
+	newTag := findTagByLabel(t, db, "読書")
+
+	// 実行: 属性とtag_idsをまとめて更新する
+	w := putJSONWithAuth(t, router, "/myprofile", dto.MyProfileUpdateRequest{
+		Nickname:       "更新後太郎",
+		PrefectureCode: seed.PrefectureOsaka,
+		Bio:            "よろしくお願いします",
+		TagIDs:         []uint64{newTag.ID},
+	}, signupRes.AccessToken)
+
+	// 検証: 200と、更新後の値・都道府県名・入れ替わったタグが返ることを確認する
+	require.Equal(t, http.StatusOK, w.Code)
+
+	var res dto.MyProfileResponse
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	assert.Equal(t, "更新後太郎", res.Nickname)
+	assert.Equal(t, "大阪府", res.Prefecture)
+	assert.Equal(t, "よろしくお願いします", res.Bio)
+	assert.Equal(t, []uint64{newTag.ID}, res.TagIDs)
+}
+
+// ニックネーム未入力の場合400を返すことを検証
+func TestUpdateMyProfile_ValidationError(t *testing.T) {
+	router, _, _ := setup(t)
+	signupRes := signUpOnlyEmail(t, router, "myprofile-update-invalid@example.com")
+
+	w := putJSONWithAuth(t, router, "/myprofile", dto.MyProfileUpdateRequest{
+		PrefectureCode: seed.PrefectureTokyo,
+	}, signupRes.AccessToken)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
 }

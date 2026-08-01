@@ -147,7 +147,6 @@ export interface WsTicketResponse {
 
 export interface MyProfileRequest {
   nickname: string;
-  age: number;
   prefecture_code: number;
   bio?: string;
   occupation?: string;
@@ -161,6 +160,12 @@ export interface MyProfileRequest {
   smoking?: string;
   height_cm?: number;
   tag_ids?: number[];
+}
+
+export interface ProfileImageResponse {
+  id?: number;
+  url?: string;
+  sort_order?: number;
 }
 
 export interface MyProfileResponse {
@@ -181,6 +186,8 @@ export interface MyProfileResponse {
   smoking?: string;
   height_cm?: number;
   tag_ids?: number[];
+  /** sort_order順に並んだ登録済みのプロフィール画像 */
+  images?: ProfileImageResponse[];
 }
 
 export interface ProfileImagePresignRequest {
@@ -204,12 +211,6 @@ export interface ProfileImageCreateRequest {
 export interface ProfileImageOrderRequest {
   /** 並び替え後の全画像IDを新しい順序で並べた配列 */
   image_ids: number[];
-}
-
-export interface ProfileImageResponse {
-  id?: number;
-  url?: string;
-  sort_order?: number;
 }
 
 export interface Error {

@@ -13,19 +13,33 @@
 
 ## フロントエンド
 
+### 言語・FW
+
 - TypeScript 5.7
 - Next.js 16(App Router)
 - React 19
 - pnpm(パッケージマネージャ)
+
+### UI
+
 - Tailwind CSS v4
 - shadcn/ui(UIコンポーネント)
 - lucide-react(アイコン)
-- React Hook Form + Zod(フォーム状態管理・バリデーション)
+
+### データ取得・フォーム
+
 - SWR(クライアント側のポーリング・キャッシュ付きデータ取得)
 - react-use-websocket(WebSocket接続・再接続ロジック)
 - orval(OpenAPI仕様からAPIクライアントを自動生成)
+- React Hook Form + Zod(フォーム状態管理・バリデーション)
+
+### Lint/Format
+
 - ESLint(eslint-config-next)
 - Prettier
+
+### テスト・Storybook
+
 - Vitest(`vitest.config.ts`で2つのprojectに分割)
   - `storybook`: @storybook/addon-vitestでStorybookのplay関数をテストとして実行。Playwright(chromium)のブラウザモードで実行するため、初回は`pnpm exec playwright install chromium`が必要。`pnpm test:storybook`
   - `unit`: Server Actionなどブラウザ不要なロジックをNode環境でテスト。`pnpm test:unit`
@@ -35,24 +49,44 @@
 
 ## バックエンド
 
+### 言語・FW
+
 - Go 1.26
 - Gin v1.12(Webフレームワーク)
-- GORM v1.31(ORM, PostgreSQLドライバ使用)
-- PostgreSQL
-- golang-jwt/jwt v5(JWTによるアクセストークン)
-- golang.org/x/crypto/bcrypt(パスワードハッシュ化)
-- testify(テスト, sqliteドライバでDBをインメモリ化)
-- ozzo-validation v4(リクエストのバリデーション)
-- golangci-lint v2(複数のlinterをまとめて実行)
 - クリーンアーキテクチャ(controllers / usecases / repositories / models)
+
+### DB
+
+- PostgreSQL
+- GORM v1.31(ORM, PostgreSQLドライバ使用)
 - Atlas(GORMモデルからマイグレーションSQLを自動生成)
 - golang-migrate v4(マイグレーションの適用)
+
+### 認証・バリデーション
+
+- golang-jwt/jwt v5(JWTによるアクセストークン)
+- golang.org/x/crypto/bcrypt(パスワードハッシュ化)
+- ozzo-validation v4(リクエストのバリデーション)
+
+### リアルタイム通信
+
 - Redis + go-redis v9(WS認証チケットの保管、複数インスタンス間のPub/Subによるリアルタイム配信)
 - gorilla/websocket(WebSocketサーバー)
+
+### 画像ストレージ
+
+- aws-sdk-go-v2(S3互換ストレージへのプロフィール画像アップロード。環境ごとにAWS S3/Cloudflare R2/MinIOを切り替え)
+
+### テスト・Lint
+
+- testify(テスト, sqliteドライバでDBをインメモリ化)
 - alicebob/miniredis(テスト用のin-memory Redis)
+- golangci-lint v2(複数のlinterをまとめて実行)
+
+### APIドキュメント生成
+
 - @redocly/cli(OpenAPI仕様のlint・ドキュメント生成)
 - @asyncapi/cli(AsyncAPI仕様のvalidate・ドキュメント生成)
-- aws-sdk-go-v2(S3互換ストレージへのプロフィール画像アップロード。環境ごとにAWS S3/Cloudflare R2/MinIOを切り替え)
 
 ## インフラ
 
@@ -78,7 +112,6 @@
 ### ローカル環境
 
 - DB・Redis・MinIO(S3互換、プロフィール画像アップロード用)をコンテナ化(`docker-compose up -d`)
-- DBクライアント: pgAdmin
 - APIサーバー: `cd apps/api && go run .`(`docker-compose.yml`の`api`サービスは、本番用Dockerfileの動作確認用。普段の開発では使わない)
 - フロントエンド: `cd apps/web && pnpm dev` → [http://localhost:3000](http://localhost:3000)
 

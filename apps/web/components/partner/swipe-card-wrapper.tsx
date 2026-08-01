@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import { SwipeActions } from './swipe-actions'
 import { SwipeProfileCard } from './swipe-profile-card'
+import { CardContainer } from '@/components/ui/card-container'
 import type { ProfileDetail } from '@/generated/urekoiAPI.schemas'
 
 type Direction = 'like' | 'skip'
@@ -76,50 +77,56 @@ export function SwipeCard({
   const skipOpacity = Math.max(0, Math.min(1, -translateX / threshold))
 
   return (
-    <div className="flex w-full max-w-[460px] flex-col">
-      <div className="relative aspect-[3/4] w-full shrink-0">
-        {/* 次の人(背後に少し覗かせるだけ、操作不可) */}
-        {nextProfile && (
-          <div className="absolute inset-x-3 bottom-0 top-2">
-            <SwipeProfileCard profile={nextProfile} />
-          </div>
-        )}
+    <div className="flex w-full max-w-[460px] flex-col items-center">
+      <div className="relative w-full max-w-[380px]">
+        <CardContainer>
+          <div className="relative h-full w-full">
+            {/* 次の人(背後に少し覗かせるだけ、操作不可) */}
+            {nextProfile && (
+              <div className="absolute inset-x-3 bottom-0 top-2">
+                <SwipeProfileCard profile={nextProfile} />
+              </div>
+            )}
 
-        <div
-          className="absolute inset-0 select-none touch-none"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          style={{
-            transform: `translateX(${translateX}px) rotate(${rotate}deg)`,
-            transition:
-              leaving || !isDragging
-                ? `transform ${FLY_ANIMATION_MS}ms ease-out, opacity ${FLY_ANIMATION_MS}ms ease-out`
-                : 'none',
-            opacity: leaving ? 0 : 1,
-            cursor: isDragging ? 'grabbing' : 'grab',
-          }}
-        >
-          <SwipeProfileCard profile={profile} priority>
-            {/* スワイプ中のラベル */}
-            <span
-              className="pointer-events-none absolute left-5 top-5 rotate-[-12deg] rounded-lg border-4 border-swipe-accent px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-accent"
-              style={{ opacity: likeOpacity }}
+            <div
+              className="absolute inset-0 select-none touch-none"
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+              style={{
+                transform: `translateX(${translateX}px) rotate(${rotate}deg)`,
+                transition:
+                  leaving || !isDragging
+                    ? `transform ${FLY_ANIMATION_MS}ms ease-out, opacity ${FLY_ANIMATION_MS}ms ease-out`
+                    : 'none',
+                opacity: leaving ? 0 : 1,
+                cursor: isDragging ? 'grabbing' : 'grab',
+              }}
             >
-              いいね！
-            </span>
-            <span
-              className="pointer-events-none absolute right-5 top-5 rotate-[12deg] rounded-lg border-4 border-swipe-muted-foreground px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-muted-foreground"
-              style={{ opacity: skipOpacity }}
-            >
-              スキップ
-            </span>
-          </SwipeProfileCard>
+              <SwipeProfileCard profile={profile} priority>
+                {/* スワイプ中のラベル */}
+                <span
+                  className="pointer-events-none absolute left-5 top-5 rotate-[-12deg] rounded-lg border-4 border-swipe-accent px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-accent"
+                  style={{ opacity: likeOpacity }}
+                >
+                  いいね！
+                </span>
+                <span
+                  className="pointer-events-none absolute right-5 top-5 rotate-[12deg] rounded-lg border-4 border-swipe-muted-foreground px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-muted-foreground"
+                  style={{ opacity: skipOpacity }}
+                >
+                  スキップ
+                </span>
+              </SwipeProfileCard>
+            </div>
+          </div>
+        </CardContainer>
+
+        <div className="absolute left-1/2 bottom-[-22px] z-10 -translate-x-1/2">
+          <SwipeActions onSkip={() => fly('skip')} onLike={() => fly('like')} />
         </div>
       </div>
-
-      <SwipeActions onSkip={() => fly('skip')} onLike={() => fly('like')} />
     </div>
   )
 }
