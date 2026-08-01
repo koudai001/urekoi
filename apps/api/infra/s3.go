@@ -48,6 +48,9 @@ func SetupS3() *s3.Client {
 				os.Getenv("S3_SECRET_KEY"),
 				"",
 			)),
+			// SDKがデフォルトで付与するx-amz-sdk-checksum-algorithm等は署名対象に含まれるが、
+			// ブラウザからの直PUTはそのヘッダーを送らないためSignatureDoesNotMatchになる。付与自体を止める
+			config.WithRequestChecksumCalculation(aws.RequestChecksumCalculationWhenRequired),
 		)
 		optFns = append(optFns, func(o *s3.Options) {
 			o.BaseEndpoint = aws.String(os.Getenv("S3_ENDPOINT"))
@@ -55,7 +58,10 @@ func SetupS3() *s3.Client {
 		})
 	case "prod":
 		// AWS S3(本番): ECSタスクロールの認証情報をそのまま使うため、Credentialsは指定しない
-		cfg, err = config.LoadDefaultConfig(ctx, config.WithRegion(os.Getenv("S3_REGION")))
+		cfg, err = config.LoadDefaultConfig(ctx,
+			config.WithRegion(os.Getenv("S3_REGION")),
+			config.WithRequestChecksumCalculation(aws.RequestChecksumCalculationWhenRequired),
+		)
 	default:
 		panic("Unknown GO_ENV: " + env)
 	}

@@ -58,6 +58,8 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  /* スワイプカード・プロフィール写真編集カードなど、カード系コンポーネントで共通の角丸 */
+  --radius-card: 1.25rem;
 }
 
 :root {

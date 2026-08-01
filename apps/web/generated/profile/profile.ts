@@ -6,129 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
-  Error,
   InternalServerErrorResponse,
-  MyProfileRequest,
-  MyProfileResponse,
   TagOption,
   UnauthorizedResponse
 } from '../urekoiAPI.schemas';
 
 import { customFetch } from '../../lib/api/custom-fetch';
-
-export type postMyprofileResponse201 = {
-  data: MyProfileResponse
-  status: 201
-}
-
-export type postMyprofileResponse400 = {
-  data: Error
-  status: 400
-}
-
-export type postMyprofileResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
-}
-
-export type postMyprofileResponse409 = {
-  data: Error
-  status: 409
-}
-
-export type postMyprofileResponse500 = {
-  data: InternalServerErrorResponse
-  status: 500
-}
-
-export type postMyprofileResponseSuccess = (postMyprofileResponse201) & {
-  headers: Headers;
-};
-export type postMyprofileResponseError = (postMyprofileResponse400 | postMyprofileResponse401 | postMyprofileResponse409 | postMyprofileResponse500) & {
-  headers: Headers;
-};
-
-export type postMyprofileResponse = (postMyprofileResponseSuccess | postMyprofileResponseError)
-
-export const getPostMyprofileUrl = () => {
-
-
-
-
-  return `/myprofile`
-}
-
-/**
- * @summary プロフィール作成
- */
-export const postMyprofile = async (myProfileRequest: MyProfileRequest, options?: RequestInit): Promise<postMyprofileResponse> => {
-
-  return customFetch<postMyprofileResponse>(getPostMyprofileUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(myProfileRequest)
-  }
-);}
-
-
-export type putMyprofileResponse200 = {
-  data: MyProfileResponse
-  status: 200
-}
-
-export type putMyprofileResponse400 = {
-  data: Error
-  status: 400
-}
-
-export type putMyprofileResponse401 = {
-  data: UnauthorizedResponse
-  status: 401
-}
-
-export type putMyprofileResponse404 = {
-  data: Error
-  status: 404
-}
-
-export type putMyprofileResponse500 = {
-  data: InternalServerErrorResponse
-  status: 500
-}
-
-export type putMyprofileResponseSuccess = (putMyprofileResponse200) & {
-  headers: Headers;
-};
-export type putMyprofileResponseError = (putMyprofileResponse400 | putMyprofileResponse401 | putMyprofileResponse404 | putMyprofileResponse500) & {
-  headers: Headers;
-};
-
-export type putMyprofileResponse = (putMyprofileResponseSuccess | putMyprofileResponseError)
-
-export const getPutMyprofileUrl = () => {
-
-
-
-
-  return `/myprofile`
-}
-
-/**
- * @summary プロフィール更新
- */
-export const putMyprofile = async (myProfileRequest: MyProfileRequest, options?: RequestInit): Promise<putMyprofileResponse> => {
-
-  return customFetch<putMyprofileResponse>(getPutMyprofileUrl(),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(myProfileRequest)
-  }
-);}
-
 
 export type getTagsResponse200 = {
   data: TagOption[]

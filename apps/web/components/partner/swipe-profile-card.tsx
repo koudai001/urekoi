@@ -31,7 +31,7 @@ export function SwipeProfileCard({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-3xl bg-swipe-surface shadow-xl ring-1 ring-swipe-border">
+    <div className="relative h-full w-full overflow-hidden rounded-card bg-swipe-surface shadow-xl ring-1 ring-swipe-border">
       <Image
         src={photos[photoIndex] || '/placeholder.svg'}
         alt={`${profile.nickname}さんの写真`}

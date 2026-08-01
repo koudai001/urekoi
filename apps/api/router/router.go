@@ -85,6 +85,7 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client, s3Client *s3.Client) *g
 
 	authRequired.GET("/tags", tagController.ListTags)
 	authRequired.GET("/myprofile", myProfileController.GetMyProfile)
+	authRequired.PUT("/myprofile", myProfileController.UpdateMyProfile)
 
 	authRequired.POST("/myprofile/images/presign", profileImageController.PresignUpload)
 	authRequired.POST("/myprofile/images", profileImageController.CreateImage)

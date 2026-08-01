@@ -1,4 +1,4 @@
-import { MsgSidebar } from '@/components/partner/msg-sidebar'
+import { MsgSidebar } from '@/components/sidebar/msg-sidebar'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

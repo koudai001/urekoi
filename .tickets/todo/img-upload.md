@@ -18,3 +18,8 @@ signupの動線
   - `PUT /myprofile/images/order`: 並び替え後の全画像ID配列(`image_ids`)を受け取り、配列内の位置をそのままsort_orderとして一括反映
 - `repositories`層にS3操作用のインターフェースを新設。AWS SDK for Go v2を追加
 - `ProfileImage`はフルURLではなくS3のkeyを保存する(`URL`→`Key`)。CloudFrontのドメインが将来変わってもDBの全件バックフィルが不要になるよう、閲覧用URLは`usecases`層で`IMAGE_BASE_URL`(env)+keyを組み立てて返す
+
+## TODO2
+
+・並び替え以外のエンドポイントは用意したので、フロント作成する
+・動作できたら並び替えも可能にする。ドラッグ。

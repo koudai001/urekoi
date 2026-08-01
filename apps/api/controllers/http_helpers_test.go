@@ -67,3 +67,17 @@ func postJSONWithAuth(t *testing.T, router http.Handler, path string, body any, 
 	router.ServeHTTP(w, req)
 	return w
 }
+
+// Authorizationヘッダーにaccess_tokenを付けてPUTする
+func putJSONWithAuth(t *testing.T, router http.Handler, path string, body any, accessToken string) *httptest.ResponseRecorder {
+	payload, err := json.Marshal(body)
+	require.NoError(t, err)
+
+	req := httptest.NewRequest(http.MethodPut, path, bytes.NewReader(payload))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+	return w
+}

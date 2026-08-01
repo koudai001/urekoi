@@ -8,6 +8,7 @@
 import type {
   Error,
   InternalServerErrorResponse,
+  MyProfileRequest,
   MyProfileResponse,
   ProfileImageCreateRequest,
   ProfileImageOrderRequest,
@@ -67,6 +68,63 @@ export const getMyprofile = async ( options?: RequestInit): Promise<getMyprofile
     method: 'GET'
 
 
+  }
+);}
+
+
+export type putMyprofileResponse200 = {
+  data: MyProfileResponse
+  status: 200
+}
+
+export type putMyprofileResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type putMyprofileResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type putMyprofileResponse404 = {
+  data: Error
+  status: 404
+}
+
+export type putMyprofileResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type putMyprofileResponseSuccess = (putMyprofileResponse200) & {
+  headers: Headers;
+};
+export type putMyprofileResponseError = (putMyprofileResponse400 | putMyprofileResponse401 | putMyprofileResponse404 | putMyprofileResponse500) & {
+  headers: Headers;
+};
+
+export type putMyprofileResponse = (putMyprofileResponseSuccess | putMyprofileResponseError)
+
+export const getPutMyprofileUrl = () => {
+
+
+
+
+  return `/myprofile`
+}
+
+/**
+ * @summary プロフィール更新
+ */
+export const putMyprofile = async (myProfileRequest: MyProfileRequest, options?: RequestInit): Promise<putMyprofileResponse> => {
+
+  return customFetch<putMyprofileResponse>(getPutMyprofileUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(myProfileRequest)
   }
 );}
 
