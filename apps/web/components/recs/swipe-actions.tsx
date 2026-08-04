@@ -9,7 +9,7 @@ export function SwipeActions({
   onLike: () => void
 }) {
   return (
-    <div className="flex items-center justify-center gap-4.5">
+    <div className="flex items-center justify-center gap-12">
       <ActionButton icon={X} label="スキップ" onClick={onSkip} />
       <ActionButton
         icon={Heart}

@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { ArrowUp } from 'lucide-react'
 
-// カード上から相手の詳細プロフィールへ移動する導線
-export function ProfileDetailLink({
+// Recsカード上から相手の詳細プロフィールへ移動する導線
+export function RecsProfileLink({
   userId,
   from,
 }: {

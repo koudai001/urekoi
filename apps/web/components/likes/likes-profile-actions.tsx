@@ -9,8 +9,8 @@ import { sendSkip } from '@/actions/skips'
 import { showLikeToast } from '@/components/likes/like-toast'
 import { showMatchToast } from '@/components/likes/match-toast'
 
-// 詳細画面の下部に重ねる、スワイプと同じ意思決定用アクション
-export function ProfileDetailActions({
+// いいね一覧から開いた詳細では、一覧側のデッキ状態を持たないため直接送信する
+export function LikesProfileActions({
   userId,
   nickname,
   age,

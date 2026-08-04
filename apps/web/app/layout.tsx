@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
 import { Toaster } from '@/components/ui/sonner'
+import { QueryProvider } from '@/providers/query-provider'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -34,9 +35,11 @@ export default function RootLayout({
   return (
     <html lang="ja" className="bg-background">
       <body className="font-sans antialiased">
-        {children}
-        <Toaster position="bottom-left" />
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <QueryProvider>
+          {children}
+          <Toaster position="bottom-left" />
+          {process.env.NODE_ENV === 'production' && <Analytics />}
+        </QueryProvider>
       </body>
     </html>
   )

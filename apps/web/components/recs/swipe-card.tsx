@@ -1,9 +1,9 @@
-import { PhotoViewer } from '@/components/profile-viewer/photo-viewer'
+import { PhotoViewer } from '@/components/myprofile/photo-viewer'
 import { cn } from '@/lib/utils'
 import type { ProfileDetail } from '@/generated/urekoiAPI.schemas'
 
 // スワイプカードの静的な表示部分(写真送り+名前・年齢・自己紹介)。ドラッグなどの操作は持たない
-export function SwipeProfileCard({
+export function SwipeCard({
   profile,
   children,
 }: {

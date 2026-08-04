@@ -1,8 +1,9 @@
 import { cookies } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
-import { ProfileDetailActions } from '@/components/profile-viewer/profile-detail-actions'
-import { ProfileDetailBackButton } from '@/components/profile-viewer/profile-detail-back-button'
-import { ProfileViewer } from '@/components/profile-viewer/profile-viewer'
+import { RecsProfileActions } from '@/components/recs/recs-profile-actions'
+import { RecsProfileBackButton } from '@/components/recs/recs-profile-back-button'
+import { LikesProfileActions } from '@/components/likes/likes-profile-actions'
+import { ProfileViewer } from '@/components/myprofile/profile-viewer'
 import { CardContainer } from '@/components/ui/card-container'
 import { getPartnerByUserId } from '@/generated/partner/partner'
 import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
@@ -37,13 +38,17 @@ export default async function RecsProfilePage({
       <CardContainer>
         <div className="relative h-full w-full overflow-hidden rounded-card">
           <ProfileViewer profile={profile} />
-          <ProfileDetailBackButton returnHref={returnHref} />
-          <ProfileDetailActions
-            userId={userId}
-            nickname={profile.nickname ?? ''}
-            age={profile.age ?? 0}
-            returnHref={returnHref}
-          />
+          <RecsProfileBackButton returnHref={returnHref} />
+          {from === 'likes' ? (
+            <LikesProfileActions
+              userId={userId}
+              nickname={profile.nickname ?? ''}
+              age={profile.age ?? 0}
+              returnHref={returnHref}
+            />
+          ) : (
+            <RecsProfileActions userId={userId} returnHref={returnHref} />
+          )}
         </div>
       </CardContainer>
     </div>

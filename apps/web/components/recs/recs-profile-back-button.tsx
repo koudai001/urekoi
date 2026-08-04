@@ -3,12 +3,8 @@
 import { useRouter } from 'next/navigation'
 import { ArrowDown } from 'lucide-react'
 
-// 詳細カードを閉じて、遷移元の一覧へ戻るボタン
-export function ProfileDetailBackButton({
-  returnHref,
-}: {
-  returnHref: string
-}) {
+// Recs詳細カードを閉じて、遷移元の一覧へ戻るボタン
+export function RecsProfileBackButton({ returnHref }: { returnHref: string }) {
   const router = useRouter()
 
   const handleClick = () => {
