@@ -89,9 +89,9 @@ func (u *MatchUsecase) GetMatch(userID uint64, matchID uint64) (dto.MatchProfile
 	}
 
 	return dto.MatchProfileDetail{
-		MatchID:         match.ID,
-		MatchedAt:       match.MatchedAt,
-		PartnerResponse: toPartnerResponse(*profile, profileTags, true),
+		MatchID:       match.ID,
+		MatchedAt:     match.MatchedAt,
+		ProfileDetail: toProfileDetail(*profile, profileTags, true),
 	}, nil
 }
 

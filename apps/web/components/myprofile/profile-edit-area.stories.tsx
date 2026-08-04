@@ -1,15 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { mocked } from 'storybook/test'
 import * as useMyProfileModule from '@/components/myprofile/use-my-profile'
-import type {
-  MyProfileResponse,
-  TagOption,
-} from '@/generated/urekoiAPI.schemas'
+import type { ProfileDetail, TagOption } from '@/generated/urekoiAPI.schemas'
 
 import { ProfileEditArea } from './profile-edit-area'
 
-const sampleProfile: MyProfileResponse = {
-  id: 1,
+const sampleProfile: ProfileDetail = {
   nickname: 'たろう',
   age: 42,
   prefecture_code: 13,

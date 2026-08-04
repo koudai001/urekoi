@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { ChatView } from '@/components/messages/chat-view'
-import { PartnerProfilePanel } from '@/components/messages/partner-profile-panel'
+import { ProfileViewer } from '@/components/profile-viewer/profile-viewer'
 import { getMatch } from '@/generated/matches/matches'
 import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
 
@@ -29,11 +29,13 @@ export default async function MessagePage({
           match_id: match.match_id,
           user_id: match.user_id,
           nickname: match.nickname,
-          image: match.images?.[0],
+          image: match.images?.[0]?.url,
           matched_at: match.matched_at,
         }}
       />
-      <PartnerProfilePanel profile={match} />
+      <div className="w-[340px] shrink-0 border-l border-swipe-border">
+        <ProfileViewer profile={match} />
+      </div>
     </div>
   )
 }

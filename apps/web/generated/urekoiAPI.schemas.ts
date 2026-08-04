@@ -68,17 +68,38 @@ export interface TagSummary {
   image_url?: string;
 }
 
+export interface ProfileImageResponse {
+  id?: number;
+  url?: string;
+  sort_order?: number;
+}
+
 export interface ProfileDetail {
   user_id?: number;
   nickname?: string;
   age?: number;
+  prefecture_code?: number;
   prefecture?: string;
   bio?: string;
-  is_new?: boolean;
-  online?: string;
-  images?: string[];
+  occupation?: string;
+  hometown?: string;
+  blood_type?: string;
+  mbti?: string;
+  body_type?: string;
+  education?: string;
+  holiday?: string;
+  alcohol?: string;
+  smoking?: string;
+  height_cm?: number;
+  tag_ids?: number[];
   tags?: TagSummary[];
-  /** 閲覧者が既にこの相手にいいね済みか */
+  /** sort_order順に並んだ登録済みのプロフィール画像 */
+  images?: ProfileImageResponse[];
+  /** 相手プロフィール表示時のみ使用 */
+  is_new?: boolean;
+  /** 相手プロフィール表示時のみ使用 */
+  online?: string;
+  /** 相手プロフィール表示時のみ使用。閲覧者が既にこの相手にいいね済みか */
   already_liked?: boolean;
 }
 
@@ -160,34 +181,6 @@ export interface MyProfileRequest {
   smoking?: string;
   height_cm?: number;
   tag_ids?: number[];
-}
-
-export interface ProfileImageResponse {
-  id?: number;
-  url?: string;
-  sort_order?: number;
-}
-
-export interface MyProfileResponse {
-  id?: number;
-  nickname?: string;
-  age?: number;
-  prefecture_code?: number;
-  prefecture?: string;
-  bio?: string;
-  occupation?: string;
-  hometown?: string;
-  blood_type?: string;
-  mbti?: string;
-  body_type?: string;
-  education?: string;
-  holiday?: string;
-  alcohol?: string;
-  smoking?: string;
-  height_cm?: number;
-  tag_ids?: number[];
-  /** sort_order順に並んだ登録済みのプロフィール画像 */
-  images?: ProfileImageResponse[];
 }
 
 export interface ProfileImagePresignRequest {

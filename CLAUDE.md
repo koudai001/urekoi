@@ -22,6 +22,10 @@ README.mdを参照
   - usecases側で追加の計算や別ソースからの値の合成が必要など、dtoの形と乖離する場合は`usecases`パッケージ内に専用のinput struct（json/bindingタグなし）を定義する
   - レスポンスの`dto`は`usecases`が直接組み立てて返してよい(一覧をmodelからdtoに詰め替える処理などを`controllers`に持たせると肥大化するため)
 
+### API仕様とDTOの同期
+- `docs/openapi.yaml`のスキーマと`dto`パッケージの構造体は1対1で対応させる。どちらかを変更したら、もう片方も同じ形に追従させる
+- `dto`のファイルはユースケース単位ではなくリソース単位で分ける(例: 自分用/相手用でファイルを分けず`profile_dto.go`にまとめる)。`openapi.yaml`のスキーマ名とGoの型名も一致させる
+
 ### バリデーション方針
 - リクエストの形式検証(必須・email形式・文字数など)は`validators`パッケージ(ozzo-validation)で行う。`dto`に`binding`タグは付けない(Ginの`ShouldBindJSON`はパースのみ)
 - `validators`はdto→`controllers`内で呼ぶ。形式検証は`usecases`に到達する前に済ませておく責務のため、`usecases`からは呼ばない
@@ -36,6 +40,7 @@ README.mdを参照
 - コンポーネント数が増えて見通しが悪くなった機能ドメインは、`components/search/`のようにサブフォルダを切ってよい。ストーリーファイルも同じフォルダに一緒に移す
 - ストーリーファイルは対象コンポーネントと同じディレクトリに置く(例: `components/ui/button.tsx` → `components/ui/button.stories.tsx`)
 - 色・余白などのデザイン値はなるべく`app/globals.css`の`@theme`トークン(CSS変数)に寄せる。`bg-[#xxxxxx]`のような直書きの値は避け、トークン化してから使う
+- Tailwindの任意値記法(`text-[15px]`、`w-[340px]`など`[]`を使う書き方)は基本的に使わない。管理が煩雑になるため、`text-lg`のような標準スケールのクラスで代替できないか先に検討する
 
 ### Storybookのstory作成方針
 - 全コンポーネントに機械的にstoryを書く必要はない。ロジックや状態遷移があり、実際にテストとして機能するもの(play関数で意味のある検証ができるもの)に絞って書く
