@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { SwipeActions } from './swipe-actions'
 import { SwipeProfileCard } from './swipe-profile-card'
 import { CardContainer } from '@/components/ui/card-container'
+import { ProfileDetailLink } from '@/components/profile-viewer/profile-detail-link'
 import type { ProfileDetail } from '@/generated/urekoiAPI.schemas'
 
 type Direction = 'like' | 'skip'
@@ -81,8 +82,8 @@ export function SwipeCard({
       <div className="relative w-full max-w-[380px]">
         <CardContainer>
           <div className="relative h-full w-full">
-            {/* 次の人(背後に少し覗かせるだけ、操作不可) */}
-            {nextProfile && (
+            {/* 次の人(ドラッグ中だけ背後に少し覗かせる、操作不可) */}
+            {nextProfile && isDragging && (
               <div className="absolute inset-x-3 bottom-0 top-2">
                 <SwipeProfileCard profile={nextProfile} />
               </div>
@@ -104,7 +105,8 @@ export function SwipeCard({
                 cursor: isDragging ? 'grabbing' : 'grab',
               }}
             >
-              <SwipeProfileCard profile={profile} priority>
+              <SwipeProfileCard profile={profile}>
+                <ProfileDetailLink userId={profile.user_id} />
                 {/* スワイプ中のラベル */}
                 <span
                   className="pointer-events-none absolute left-5 top-5 rotate-[-12deg] rounded-lg border-4 border-swipe-accent px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-accent"

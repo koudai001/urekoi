@@ -9,7 +9,7 @@ import type {
   Error,
   InternalServerErrorResponse,
   MyProfileRequest,
-  MyProfileResponse,
+  ProfileDetail,
   ProfileImageCreateRequest,
   ProfileImageOrderRequest,
   ProfileImagePresignRequest,
@@ -21,7 +21,7 @@ import type {
 import { customFetch } from '../../lib/api/custom-fetch';
 
 export type getMyprofileResponse200 = {
-  data: MyProfileResponse
+  data: ProfileDetail
   status: 200
 }
 
@@ -73,7 +73,7 @@ export const getMyprofile = async ( options?: RequestInit): Promise<getMyprofile
 
 
 export type putMyprofileResponse200 = {
-  data: MyProfileResponse
+  data: ProfileDetail
   status: 200
 }
 

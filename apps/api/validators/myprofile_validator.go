@@ -9,7 +9,7 @@ import (
 const maxFieldLength = 20
 const maxBioLength = 200
 
-func ValidateMyProfileUpdateRequest(req dto.MyProfileUpdateRequest) error {
+func ValidateMyProfileUpdateRequest(req dto.ProfileUpdateRequest) error {
 	if err := validation.Validate(req.Nickname,
 		validation.Required.Error("ニックネームを入力してください"),
 		validation.RuneLength(1, maxFieldLength).Error("ニックネームは20文字以内で入力してください"),

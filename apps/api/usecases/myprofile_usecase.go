@@ -10,9 +10,9 @@ import (
 
 type IMyProfileUsecase interface {
 	// 自分のプロフィールを取得する
-	GetMyProfile(userID uint64) (dto.MyProfileResponse, error)
+	GetMyProfile(userID uint64) (dto.ProfileDetail, error)
 	// 自分のプロフィールを更新する(タグも入れ替える)
-	UpdateMyProfile(userID uint64, req dto.MyProfileUpdateRequest) (dto.MyProfileResponse, error)
+	UpdateMyProfile(userID uint64, req dto.ProfileUpdateRequest) (dto.ProfileDetail, error)
 }
 
 type MyProfileUsecase struct {
@@ -25,23 +25,29 @@ func NewMyProfileUsecase(profileRepo repositories.IProfileRepository) IMyProfile
 	}
 }
 
-func (u *MyProfileUsecase) GetMyProfile(userID uint64) (dto.MyProfileResponse, error) {
+func (u *MyProfileUsecase) GetMyProfile(userID uint64) (dto.ProfileDetail, error) {
 	profile, err := u.profileRepo.GetProfileByUserID(userID)
 	if err != nil {
 		if errors.Is(err, repositories.ErrProfileNotFound) {
-			return dto.MyProfileResponse{}, ErrProfileNotFound
+			return dto.ProfileDetail{}, ErrProfileNotFound
 		}
-		return dto.MyProfileResponse{}, err
+		return dto.ProfileDetail{}, err
 	}
 
 	profileTags, err := u.profileRepo.GetProfileTags(profile.ID)
 	if err != nil {
-		return dto.MyProfileResponse{}, err
+		return dto.ProfileDetail{}, err
 	}
 
 	tagIDs := make([]uint64, 0, len(profileTags))
+	tags := make([]dto.TagSummary, 0, len(profileTags))
 	for _, pt := range profileTags {
 		tagIDs = append(tagIDs, pt.TagID)
+		tags = append(tags, dto.TagSummary{
+			Label:    pt.Tag.Label,
+			Category: pt.Tag.Category,
+			ImageURL: pt.Tag.ImageURL,
+		})
 	}
 
 	// sort_order順にpreload済みのImagesをそのままレスポンスへ詰め替える
@@ -54,8 +60,8 @@ func (u *MyProfileUsecase) GetMyProfile(userID uint64) (dto.MyProfileResponse, e
 		})
 	}
 
-	return dto.MyProfileResponse{
-		ID:             profile.ID,
+	return dto.ProfileDetail{
+		UserID:         profile.UserID,
 		Nickname:       profile.Nickname,
 		Age:            profile.User.Age(),
 		PrefectureCode: profile.PrefectureCode,
@@ -72,17 +78,18 @@ func (u *MyProfileUsecase) GetMyProfile(userID uint64) (dto.MyProfileResponse, e
 		Smoking:        profile.Smoking,
 		HeightCm:       profile.HeightCm,
 		TagIDs:         tagIDs,
+		Tags:           tags,
 		Images:         images,
 	}, nil
 }
 
-func (u *MyProfileUsecase) UpdateMyProfile(userID uint64, req dto.MyProfileUpdateRequest) (dto.MyProfileResponse, error) {
+func (u *MyProfileUsecase) UpdateMyProfile(userID uint64, req dto.ProfileUpdateRequest) (dto.ProfileDetail, error) {
 	profile, err := u.profileRepo.GetProfileByUserID(userID)
 	if err != nil {
 		if errors.Is(err, repositories.ErrProfileNotFound) {
-			return dto.MyProfileResponse{}, ErrProfileNotFound
+			return dto.ProfileDetail{}, ErrProfileNotFound
 		}
-		return dto.MyProfileResponse{}, err
+		return dto.ProfileDetail{}, err
 	}
 
 	profile.Nickname = req.Nickname
@@ -103,11 +110,11 @@ func (u *MyProfileUsecase) UpdateMyProfile(userID uint64, req dto.MyProfileUpdat
 	profile.HeightCm = req.HeightCm
 
 	if err := u.profileRepo.UpdateProfile(profile); err != nil {
-		return dto.MyProfileResponse{}, err
+		return dto.ProfileDetail{}, err
 	}
 
 	if err := u.profileRepo.ReplaceProfileTags(profile.ID, req.TagIDs); err != nil {
-		return dto.MyProfileResponse{}, err
+		return dto.ProfileDetail{}, err
 	}
 
 	// 都道府県名・タグを更新後の状態で反映するため取得し直す

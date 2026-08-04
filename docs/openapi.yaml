@@ -203,7 +203,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MyProfileResponse"
+                $ref: "#/components/schemas/ProfileDetail"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -234,7 +234,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MyProfileResponse"
+                $ref: "#/components/schemas/ProfileDetail"
         "400":
           description: バリデーションエラー
           content:
@@ -952,30 +952,70 @@ components:
         age:
           type: integer
           example: 42
+        prefecture_code:
+          type: integer
+          example: 13
         prefecture:
           type: string
           example: 東京都
         bio:
           type: string
           example: よろしくお願いします
-        is_new:
-          type: boolean
-          example: true
-        online:
+        occupation:
           type: string
-          example: online
-        images:
+          example: エンジニア
+        hometown:
+          type: string
+          example: 東京
+        blood_type:
+          type: string
+          example: A型
+        mbti:
+          type: string
+          example: INTJ
+        body_type:
+          type: string
+          example: 普通
+        education:
+          type: string
+          example: 大学卒
+        holiday:
+          type: string
+          example: 土日
+        alcohol:
+          type: string
+          example: 時々飲む
+        smoking:
+          type: string
+          example: 吸わない
+        height_cm:
+          type: integer
+          example: 175
+        tag_ids:
           type: array
           items:
-            type: string
-          example: [/placeholder.svg]
+            type: integer
+          example: [1, 2, 3]
         tags:
           type: array
           items:
             $ref: "#/components/schemas/TagSummary"
+        images:
+          type: array
+          description: sort_order順に並んだ登録済みのプロフィール画像
+          items:
+            $ref: "#/components/schemas/ProfileImageResponse"
+        is_new:
+          type: boolean
+          description: 相手プロフィール表示時のみ使用
+          example: true
+        online:
+          type: string
+          description: 相手プロフィール表示時のみ使用
+          example: online
         already_liked:
           type: boolean
-          description: 閲覧者が既にこの相手にいいね済みか
+          description: 相手プロフィール表示時のみ使用。閲覧者が既にこの相手にいいね済みか
           example: false
     TagSummary:
       type: object
@@ -1167,68 +1207,6 @@ components:
           items:
             type: integer
           example: [1, 2, 3]
-    MyProfileResponse:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
-        nickname:
-          type: string
-          example: たろう
-        age:
-          type: integer
-          example: 42
-        prefecture_code:
-          type: integer
-          example: 13
-        prefecture:
-          type: string
-          example: 東京都
-        bio:
-          type: string
-          example: よろしくお願いします
-        occupation:
-          type: string
-          example: エンジニア
-        hometown:
-          type: string
-          example: 東京
-        blood_type:
-          type: string
-          example: A型
-        mbti:
-          type: string
-          example: INTJ
-        body_type:
-          type: string
-          example: 普通
-        education:
-          type: string
-          example: 大学卒
-        holiday:
-          type: string
-          example: 土日
-        alcohol:
-          type: string
-          example: 時々飲む
-        smoking:
-          type: string
-          example: 吸わない
-        height_cm:
-          type: integer
-          example: 175
-        tag_ids:
-          type: array
-          items:
-            type: integer
-          example: [1, 2, 3]
-        images:
-          type: array
-          description: sort_order順に並んだ登録済みのプロフィール画像
-          items:
-            $ref: "#/components/schemas/ProfileImageResponse"
     ProfileImagePresignRequest:
       type: object
       required: [content_type, extension]

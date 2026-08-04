@@ -159,15 +159,16 @@ func TestGetMatch_Success(t *testing.T) {
 	assert.Equal(t, dto.MatchProfileDetail{
 		MatchID:   match.ID,
 		MatchedAt: match.MatchedAt,
-		PartnerResponse: dto.PartnerResponse{
+		ProfileDetail: dto.ProfileDetail{
 			UserID:       b.ID,
 			Nickname:     "テストユーザー",
 			Age:          defaultTestAge,
 			Prefecture:   "東京都",
 			IsNew:        true,
 			Online:       "online",
-			Images:       []string{""},
-			Tags:         []dto.RecsTagSummary{},
+			Images:       []dto.ProfileImageResponse{},
+			TagIDs:       []uint64{},
+			Tags:         []dto.TagSummary{},
 			AlreadyLiked: true, // マッチしている時点で相互いいね済み
 		},
 	}, res)

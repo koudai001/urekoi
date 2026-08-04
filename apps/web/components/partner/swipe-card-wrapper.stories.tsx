@@ -14,7 +14,10 @@ const baseProfile: ProfileDetail = {
   prefecture: '東京都',
   bio: 'よろしくお願いします',
   online: 'online',
-  images: ['/profiles/woman-1.png', '/profiles/woman-2.png'],
+  images: [
+    { id: 1, url: '/profiles/woman-1.png', sort_order: 0 },
+    { id: 2, url: '/profiles/woman-2.png', sort_order: 1 },
+  ],
   tags: [],
   already_liked: false,
 }
@@ -52,23 +55,32 @@ export const WithNextProfile: Story = {
       prefecture: '神奈川県',
       bio: 'よろしくお願いします',
       online: 'online',
-      images: ['/profiles/woman-2.png'],
+      images: [{ id: 3, url: '/profiles/woman-2.png', sort_order: 0 }],
       tags: [],
       already_liked: false,
     },
   },
 }
 
-// 写真送りボタンで写真が切り替わり、最後の次は最初にループすることを確認
+// 写真送りボタンで写真が切り替わり、最後の写真で止まることを確認
 export const ChangePhoto: Story = {
   play: async ({ canvas }) => {
-    await expect(canvas.getByText('1 / 2')).toBeInTheDocument()
+    await expect(canvas.getByAltText('美咲さんの写真')).toHaveAttribute(
+      'src',
+      '/profiles/woman-1.png',
+    )
 
     await userEvent.click(canvas.getByRole('button', { name: '次の写真' }))
-    await expect(canvas.getByText('2 / 2')).toBeInTheDocument()
+    await expect(canvas.getByAltText('美咲さんの写真')).toHaveAttribute(
+      'src',
+      '/profiles/woman-2.png',
+    )
 
     await userEvent.click(canvas.getByRole('button', { name: '次の写真' }))
-    await expect(canvas.getByText('1 / 2')).toBeInTheDocument()
+    await expect(canvas.getByAltText('美咲さんの写真')).toHaveAttribute(
+      'src',
+      '/profiles/woman-2.png',
+    )
   },
 }
 

@@ -23,5 +23,5 @@ type MatchProfileWithLastMessage struct {
 type MatchProfileDetail struct {
 	MatchID   uint64    `json:"match_id"`
 	MatchedAt time.Time `json:"matched_at"`
-	PartnerResponse
+	ProfileDetail
 }

@@ -4,13 +4,12 @@ import { cookies } from 'next/headers'
 import { putMyprofile } from '@/generated/myprofile/myprofile'
 import type {
   MyProfileRequest,
-  MyProfileResponse,
+  ProfileDetail,
 } from '@/generated/urekoiAPI.schemas'
 import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
 
 export type UpdateMyProfileResult =
-  | { success: true; profile: MyProfileResponse }
-  | { success: false; error: string }
+  { success: true; profile: ProfileDetail } | { success: false; error: string }
 
 // プロフィール属性(タグ含む)を更新する
 export async function updateMyProfile(

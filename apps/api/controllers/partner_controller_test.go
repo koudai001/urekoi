@@ -27,12 +27,12 @@ func TestGetRecs_Success(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.PartnerResponse
+	var res []dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	require.Len(t, res, 2)
-	assert.ElementsMatch(t, []dto.PartnerResponse{
-		{UserID: profile1.UserID, Nickname: "テスト太郎", Age: 30, Prefecture: "東京都", Images: []string{""}, IsNew: true, Online: "online", Tags: []dto.RecsTagSummary{}, AlreadyLiked: false},
-		{UserID: profile2.UserID, Nickname: "テスト花子", Age: 25, Prefecture: "大阪府", Images: []string{""}, IsNew: true, Online: "online", Tags: []dto.RecsTagSummary{}, AlreadyLiked: false},
+	assert.ElementsMatch(t, []dto.ProfileDetail{
+		{UserID: profile1.UserID, Nickname: "テスト太郎", Age: 30, Prefecture: "東京都", Images: []dto.ProfileImageResponse{}, IsNew: true, Online: "online", TagIDs: []uint64{}, Tags: []dto.TagSummary{}, AlreadyLiked: false},
+		{UserID: profile2.UserID, Nickname: "テスト花子", Age: 25, Prefecture: "大阪府", Images: []dto.ProfileImageResponse{}, IsNew: true, Online: "online", TagIDs: []uint64{}, Tags: []dto.TagSummary{}, AlreadyLiked: false},
 	}, res)
 }
 
@@ -51,7 +51,7 @@ func TestGetRecs_ExcludesAlreadyLiked(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.PartnerResponse
+	var res []dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	require.Len(t, res, 1)
 	assert.Equal(t, other.UserID, res[0].UserID)
@@ -72,7 +72,7 @@ func TestGetRecs_ExcludesSkipped(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.PartnerResponse
+	var res []dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	require.Len(t, res, 1)
 	assert.Equal(t, other.UserID, res[0].UserID)
@@ -96,7 +96,7 @@ func TestGetRecs_ExcludesMatched(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.PartnerResponse
+	var res []dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	require.Len(t, res, 1)
 	assert.Equal(t, other.UserID, res[0].UserID)
@@ -113,7 +113,7 @@ func TestGetRecs_Empty(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.PartnerResponse
+	var res []dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.Empty(t, res)
 }
@@ -142,18 +142,19 @@ func TestGetDetail_Success(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res dto.PartnerResponse
+	var res dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	assert.Equal(t, dto.PartnerResponse{
+	assert.Equal(t, dto.ProfileDetail{
 		UserID:       profile.UserID,
 		Nickname:     "テスト太郎",
 		Age:          30,
 		Prefecture:   "東京都",
 		IsNew:        true, // 作成直後なので新着
 		Online:       "online",
-		Images:       []string{""},
+		Images:       []dto.ProfileImageResponse{},
 		AlreadyLiked: false, // まだいいねしていない
-		Tags: []dto.RecsTagSummary{
+		TagIDs:       []uint64{tag.ID},
+		Tags: []dto.TagSummary{
 			{Label: "旅行", Category: "好きなこと・挑戦してみたいこと", ImageURL: ""},
 		},
 	}, res)
@@ -172,7 +173,7 @@ func TestGetDetail_AlreadyLiked(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res dto.PartnerResponse
+	var res dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.True(t, res.AlreadyLiked)
 }

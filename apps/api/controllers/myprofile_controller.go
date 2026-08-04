@@ -41,7 +41,7 @@ func (ctrl *MyProfileController) GetMyProfile(c *gin.Context) {
 }
 
 func (ctrl *MyProfileController) UpdateMyProfile(c *gin.Context) {
-	var req dto.MyProfileUpdateRequest
+	var req dto.ProfileUpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": errInvalidRequestFormat})
 		return

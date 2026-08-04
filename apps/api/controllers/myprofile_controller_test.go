@@ -34,16 +34,19 @@ func TestGetMyProfile_Success(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res dto.MyProfileResponse
+	var res dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	assert.Equal(t, dto.MyProfileResponse{
-		ID:             profile.ID,
+	assert.Equal(t, dto.ProfileDetail{
+		UserID:         signupRes.ID,
 		Nickname:       "テスト太郎",
 		Age:            30,
 		PrefectureCode: seed.PrefectureTokyo,
 		Prefecture:     "東京都",
 		TagIDs:         []uint64{tag.ID},
-		Images:         []dto.ProfileImageResponse{},
+		Tags: []dto.TagSummary{
+			{Label: "旅行", Category: "好きなこと・挑戦してみたいこと"},
+		},
+		Images: []dto.ProfileImageResponse{},
 	}, res)
 }
 
@@ -61,7 +64,7 @@ func TestGetMyProfile_WithImages(t *testing.T) {
 	w := getJSONWithAuth(t, router, "/myprofile", signupRes.AccessToken)
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res dto.MyProfileResponse
+	var res dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 
 	// 検証: アップロード順(sort_order昇順)のまま2枚とも含まれ、URLが組み立てられていることを確認する
@@ -113,7 +116,7 @@ func TestUpdateMyProfile_Success(t *testing.T) {
 	newTag := findTagByLabel(t, db, "読書")
 
 	// 実行: 属性とtag_idsをまとめて更新する
-	w := putJSONWithAuth(t, router, "/myprofile", dto.MyProfileUpdateRequest{
+	w := putJSONWithAuth(t, router, "/myprofile", dto.ProfileUpdateRequest{
 		Nickname:       "更新後太郎",
 		PrefectureCode: seed.PrefectureOsaka,
 		Bio:            "よろしくお願いします",
@@ -123,7 +126,7 @@ func TestUpdateMyProfile_Success(t *testing.T) {
 	// 検証: 200と、更新後の値・都道府県名・入れ替わったタグが返ることを確認する
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res dto.MyProfileResponse
+	var res dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.Equal(t, "更新後太郎", res.Nickname)
 	assert.Equal(t, "大阪府", res.Prefecture)
@@ -136,7 +139,7 @@ func TestUpdateMyProfile_ValidationError(t *testing.T) {
 	router, _, _ := setup(t)
 	signupRes := signUpOnlyEmail(t, router, "myprofile-update-invalid@example.com")
 
-	w := putJSONWithAuth(t, router, "/myprofile", dto.MyProfileUpdateRequest{
+	w := putJSONWithAuth(t, router, "/myprofile", dto.ProfileUpdateRequest{
 		PrefectureCode: seed.PrefectureTokyo,
 	}, signupRes.AccessToken)
 

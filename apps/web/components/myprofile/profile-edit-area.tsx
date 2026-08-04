@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { CardContainer } from '@/components/ui/card-container'
+import { ScrollContainer } from '@/components/ui/scroll-container'
 import { ProfilePhotos } from '@/components/myprofile/profile-photos'
 import {
   SectionTitle,
@@ -12,10 +13,7 @@ import {
 import { updateMyProfile } from '@/actions/myprofile'
 import { PREFECTURES } from '@/lib/prefectures'
 import { cn } from '@/lib/utils'
-import type {
-  MyProfileResponse,
-  TagOption,
-} from '@/generated/urekoiAPI.schemas'
+import type { ProfileDetail, TagOption } from '@/generated/urekoiAPI.schemas'
 
 const TAGS_PER_CATEGORY_LIMIT = 3
 
@@ -61,7 +59,7 @@ export function ProfileEditArea({
   profile,
   tags,
 }: {
-  profile: MyProfileResponse
+  profile: ProfileDetail
   tags: TagOption[]
 }) {
   const [formData, setFormData] = useState<ProfileFormData>({
@@ -127,7 +125,7 @@ export function ProfileEditArea({
         <Header />
 
         {/* 各セクション: 残り領域内でスクロール可能 */}
-        <ScrollArea>
+        <ScrollContainer className="px-7">
           <PhotoArea />
 
           <MeetingArea
@@ -150,7 +148,7 @@ export function ProfileEditArea({
           <ProfileFieldsArea formData={formData} onChange={handleChange} />
 
           <div className="h-4 shrink-0" />
-        </ScrollArea>
+        </ScrollContainer>
 
         {/* 保存ボタン: 固定、スクロールしない */}
         <SaveButton onClick={handleSave} saving={saving} />
@@ -169,15 +167,6 @@ function Header() {
       <span className="flex flex-1 items-center justify-center text-xl font-semibold text-swipe-muted-foreground">
         プレビュー
       </span>
-    </div>
-  )
-}
-
-// 残り高さいっぱいに広がり、はみ出た分だけ縦スクロールする領域
-function ScrollArea({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-7">
-      {children}
     </div>
   )
 }
@@ -391,7 +380,7 @@ function SaveButton({
         type="button"
         onClick={onClick}
         disabled={saving}
-        className="rounded-full bg-swipe-foreground px-12 py-3.5 text-[15px] font-bold text-swipe-background disabled:opacity-60"
+        className="whitespace-nowrap rounded-full bg-swipe-foreground px-12 py-3.5 text-[15px] font-bold text-swipe-background disabled:opacity-60"
       >
         {saving ? '保存中...' : '保存'}
       </button>
