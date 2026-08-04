@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react'
 import { LikeActions } from './like-actions'
 import { LikeProfileCard } from './like-profile-card'
-import { ProfileDetailLink } from '@/components/profile-viewer/profile-detail-link'
+import { RecsProfileLink } from '@/components/recs/recs-profile-link'
 import type { LikeProfile } from '@/generated/urekoiAPI.schemas'
 
 type Direction = 'like' | 'skip'
@@ -102,7 +102,7 @@ export function LikeSwipeCard({
           }}
         >
           <LikeProfileCard profile={profile} priority>
-            <ProfileDetailLink userId={profile.user_id} from="likes" />
+            <RecsProfileLink userId={profile.user_id} from="likes" />
             {/* スワイプ中のラベル */}
             <span
               className="pointer-events-none absolute left-5 top-5 rotate-[-12deg] rounded-lg border-4 border-primary px-4 py-1 text-2xl font-extrabold tracking-wide text-primary"

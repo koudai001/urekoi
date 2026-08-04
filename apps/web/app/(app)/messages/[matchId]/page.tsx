@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { ChatView } from '@/components/messages/chat-view'
-import { ProfileViewer } from '@/components/profile-viewer/profile-viewer'
+import { ProfileViewer } from '@/components/myprofile/profile-viewer'
 import { getMatch } from '@/generated/matches/matches'
 import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
 

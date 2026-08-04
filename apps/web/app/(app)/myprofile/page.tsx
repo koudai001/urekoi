@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { getMyprofile } from '@/generated/myprofile/myprofile'
 import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
 import { CardContainer } from '@/components/ui/card-container'
-import { ProfileViewer } from '@/components/profile-viewer/profile-viewer'
+import { ProfileViewer } from '@/components/myprofile/profile-viewer'
 
 // サーバーコンポーネントで自分のプロフィールを取得し、閲覧専用のProfileViewerを表示する
 export default async function ProfilePage() {

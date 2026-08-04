@@ -1,10 +1,14 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { SwipeActions } from './swipe-actions'
-import { SwipeProfileCard } from './swipe-profile-card'
+import { SwipeCard } from './swipe-card'
 import { CardContainer } from '@/components/ui/card-container'
-import { ProfileDetailLink } from '@/components/profile-viewer/profile-detail-link'
+import { RecsProfileLink } from './recs-profile-link'
+import {
+  type RecsContextValue,
+  useRecsContext,
+} from '@/providers/recs-provider'
 import type { ProfileDetail } from '@/generated/urekoiAPI.schemas'
 
 type Direction = 'like' | 'skip'
@@ -12,20 +16,55 @@ type Direction = 'like' | 'skip'
 // カードが吹っ飛ぶアニメーションの時間(ms)
 const FLY_ANIMATION_MS = 500
 
+// 候補デッキを表示し、現在の候補が切り替わるたびに操作状態をリセットする
+export function SwipeCardDeck() {
+  return <SwipeCardDeckContent {...useRecsContext()} />
+}
+
+// Providerの値を受け取り、現在の候補をカード本体へ渡すローカルコンポーネント
+function SwipeCardDeckContent({
+  current,
+  next,
+  swipeRequest,
+  clearSwipeRequest,
+  submitDecision,
+}: RecsContextValue) {
+  if (!current) {
+    return <p className="text-sm text-swipe-muted-foreground">候補がいません</p>
+  }
+
+  return (
+    <SwipeCardDeckItem
+      key={current.user_id}
+      profile={current}
+      nextProfile={next}
+      swipeRequest={
+        swipeRequest?.userId === current.user_id ? swipeRequest : null
+      }
+      clearSwipeRequest={clearSwipeRequest}
+      submitDecision={submitDecision}
+    />
+  )
+}
+
 // スワイプ対象1人分のカード(ドラッグ/フリックでいいね・スキップできる)
-export function SwipeCard({
+function SwipeCardDeckItem({
   profile,
   nextProfile,
-  onSwipe,
+  swipeRequest,
+  clearSwipeRequest,
+  submitDecision,
 }: {
   profile: ProfileDetail
   // 背後に覗かせる次の人(居なければ表示しない)
   nextProfile?: ProfileDetail
-  onSwipe: (dir: Direction) => void
+  swipeRequest: RecsContextValue['swipeRequest']
+  clearSwipeRequest: () => void
+  submitDecision: (direction: Direction) => Promise<boolean>
 }) {
   // 今のスワイプ量(px)
   const [drag, setDrag] = useState(0)
-  // 吹っ飛び中かどうか、どっち方向か
+  // 吹っ飛ぶ方向が決まったかどうかと、どっち方向か
   const [leaving, setLeaving] = useState<Direction | null>(null)
   // ドラッグ中かどうか
   const [isDragging, setIsDragging] = useState(false)
@@ -36,13 +75,28 @@ export function SwipeCard({
   // スワイプ判定の閾値(px)
   const threshold = 110
 
-  // スワイプ確定処理
-  const fly = (dir: Direction) => {
-    if (leaving) return
-    setLeaving(dir)
-    // アニメーション後に親へ通知
-    window.setTimeout(() => onSwipe(dir), FLY_ANIMATION_MS)
-  }
+  // カードを画面外へ飛ばす見た目の処理
+  const startSwipeAnimation = useCallback(
+    (direction: Direction) => {
+      if (leaving) return
+      setLeaving(direction)
+    },
+    [leaving],
+  )
+
+  // 詳細画面から届いた依頼も、通常操作と同じアニメーションへ流す
+  useEffect(() => {
+    if (!swipeRequest || leaving) return
+
+    // ブラウザAPIを使って、レンダリングのタイミングでアニメーションを開始
+    const frame = window.requestAnimationFrame(() => {
+      clearSwipeRequest()
+      startSwipeAnimation(swipeRequest.direction)
+    })
+
+    // クリーンアップ
+    return () => window.cancelAnimationFrame(frame)
+  }, [clearSwipeRequest, leaving, startSwipeAnimation, swipeRequest])
 
   // 指を置いた瞬間: ドラッグ開始位置を記録してドラッグ中フラグを立てる
   const onPointerDown = (e: React.PointerEvent) => {
@@ -64,10 +118,24 @@ export function SwipeCard({
     if (!dragging.current) return
     dragging.current = false
     setIsDragging(false)
-    if (drag > threshold) fly('like')
-    else if (drag < -threshold) fly('skip')
+    if (drag > threshold) startSwipeAnimation('like')
+    else if (drag < -threshold) startSwipeAnimation('skip')
     setDrag(0)
     startX.current = null
+  }
+
+  // CSSの移動アニメーションが完了してから、Providerでデータ操作を委ねる
+  const handleTransitionEnd = async (event: React.TransitionEvent) => {
+    if (
+      event.target !== event.currentTarget ||
+      event.propertyName !== 'transform' ||
+      !leaving
+    ) {
+      return
+    }
+
+    const succeeded = await submitDecision(leaving)
+    if (!succeeded) setLeaving(null)
   }
 
   // 見た目の計算関連
@@ -82,10 +150,10 @@ export function SwipeCard({
       <div className="relative w-full max-w-[380px]">
         <CardContainer>
           <div className="relative h-full w-full">
-            {/* 次の人(ドラッグ中だけ背後に少し覗かせる、操作不可) */}
-            {nextProfile && isDragging && (
+            {/* ドラッグ・退出アニメーション中は、次の人を背後に表示する */}
+            {nextProfile && (isDragging || leaving) && (
               <div className="absolute inset-x-3 bottom-0 top-2">
-                <SwipeProfileCard profile={nextProfile} />
+                <SwipeCard profile={nextProfile} />
               </div>
             )}
 
@@ -95,6 +163,7 @@ export function SwipeCard({
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
               onPointerCancel={onPointerUp}
+              onTransitionEnd={handleTransitionEnd}
               style={{
                 transform: `translateX(${translateX}px) rotate(${rotate}deg)`,
                 transition:
@@ -105,8 +174,8 @@ export function SwipeCard({
                 cursor: isDragging ? 'grabbing' : 'grab',
               }}
             >
-              <SwipeProfileCard profile={profile}>
-                <ProfileDetailLink userId={profile.user_id} />
+              <SwipeCard profile={profile}>
+                <RecsProfileLink userId={profile.user_id} />
                 {/* スワイプ中のラベル */}
                 <span
                   className="pointer-events-none absolute left-5 top-5 rotate-[-12deg] rounded-lg border-4 border-swipe-accent px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-accent"
@@ -120,13 +189,16 @@ export function SwipeCard({
                 >
                   スキップ
                 </span>
-              </SwipeProfileCard>
+              </SwipeCard>
             </div>
           </div>
         </CardContainer>
 
         <div className="absolute left-1/2 bottom-[-22px] z-10 -translate-x-1/2">
-          <SwipeActions onSkip={() => fly('skip')} onLike={() => fly('like')} />
+          <SwipeActions
+            onSkip={() => startSwipeAnimation('skip')}
+            onLike={() => startSwipeAnimation('like')}
+          />
         </div>
       </div>
     </div>

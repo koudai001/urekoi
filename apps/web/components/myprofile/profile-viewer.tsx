@@ -1,5 +1,5 @@
 import { ScrollContainer } from '@/components/ui/scroll-container'
-import { PhotoViewer } from '@/components/profile-viewer/photo-viewer'
+import { PhotoViewer } from './photo-viewer'
 import { SectionTitle } from '@/components/myprofile/profile-form'
 import { cn } from '@/lib/utils'
 import type { ProfileDetail, TagSummary } from '@/generated/urekoiAPI.schemas'
