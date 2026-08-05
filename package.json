@@ -8,7 +8,7 @@
     "build": "pnpm -C apps/web build",
     "start": "pnpm -C apps/web start",
     "lint": "pnpm -C apps/web lint",
-    "db:reset": "apps/api/scripts/reset-db.sh",
+    "db:refresh": "apps/api/scripts/refresh-db.sh",
     "prepare": "husky"
   },
   "dependencies": {

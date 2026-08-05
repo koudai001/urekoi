@@ -30,8 +30,8 @@ export function ProfileViewer({ profile }: { profile: ProfileDetail }) {
   const tags = profile.tags ?? []
 
   return (
-    <ScrollContainer className="h-full rounded-card bg-swipe-sidebar">
-      <div className="flex items-baseline gap-2.5 p-5 pb-3 text-[30px] font-extrabold text-swipe-foreground">
+    <ScrollContainer className="h-full rounded-3xl bg-swipe-sidebar">
+      <div className="flex items-baseline gap-2.5 p-5 pb-3 text-3xl font-extrabold text-swipe-foreground">
         <span>{profile.nickname}</span>
         <span>{profile.age}</span>
       </div>

@@ -12,6 +12,6 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    children: <div className="h-full w-full rounded-card bg-swipe-sidebar" />,
+    children: <div className="h-full w-full rounded-3xl bg-swipe-sidebar" />,
   },
 }

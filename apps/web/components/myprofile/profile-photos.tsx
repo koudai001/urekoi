@@ -136,7 +136,7 @@ export function ProfilePhotos() {
             return (
               <div
                 key={image.id}
-                className="relative overflow-hidden rounded-card bg-swipe-surface"
+                className="relative overflow-hidden rounded-2xl bg-swipe-surface"
               >
                 <Image
                   src={image.url || '/placeholder.svg'}
@@ -184,7 +184,7 @@ function AddSlot({
       type="button"
       disabled={!active || uploading}
       onClick={onClick}
-      className="flex flex-col items-center justify-center gap-1.5 rounded-card bg-swipe-surface text-swipe-muted-foreground transition-colors disabled:cursor-not-allowed enabled:hover:text-swipe-accent"
+      className="flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-swipe-surface text-swipe-muted-foreground transition-colors disabled:cursor-not-allowed enabled:hover:text-swipe-accent"
     >
       {uploading ? (
         <Loader2 className="h-6 w-6 animate-spin" />

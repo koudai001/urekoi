@@ -42,7 +42,7 @@ export function ChatView({ match }: { match: ChatMatch }) {
   }
 
   return (
-    <div className="flex h-screen flex-1 flex-col bg-swipe-background">
+    <div className="flex h-full min-w-0 flex-1 flex-col bg-swipe-background md:h-screen">
       <ChatViewHeader
         conversation={{ name: match.nickname ?? '', image: match.image ?? '' }}
         matchedAt={match.matched_at}
@@ -70,7 +70,7 @@ export function ChatView({ match }: { match: ChatMatch }) {
 
 export function EmptyChat() {
   return (
-    <div className="hidden h-screen flex-1 flex-col items-center justify-center bg-swipe-background md:flex">
+    <div className="hidden h-full flex-1 flex-col items-center justify-center bg-swipe-background md:h-screen md:flex">
       <p className="text-xl font-bold text-swipe-foreground">
         選択中のやりとりはありません
       </p>
