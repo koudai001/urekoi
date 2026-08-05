@@ -34,23 +34,25 @@ export default async function RecsProfilePage({
   const profile = res.data
   const returnHref = from === 'likes' ? '/likes/from-partner-card' : '/recs'
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-6 sm:px-8">
-      <CardContainer>
-        <div className="relative h-full w-full overflow-hidden rounded-3xl">
-          <ProfileViewer profile={profile} />
-          <RecsProfileBackButton returnHref={returnHref} />
-          {from === 'likes' ? (
-            <LikesProfileActions
-              userId={userId}
-              nickname={profile.nickname ?? ''}
-              age={profile.age ?? 0}
-              returnHref={returnHref}
-            />
-          ) : (
-            <RecsProfileActions userId={userId} returnHref={returnHref} />
-          )}
-        </div>
-      </CardContainer>
-    </div>
+    <main className="flex flex-1 justify-center p-2 md:items-center md:px-6 md:py-12">
+      <div className="relative h-full w-full md:h-auto md:w-auto">
+        <CardContainer>
+          <div className="relative h-full w-full overflow-hidden rounded-3xl">
+            <ProfileViewer profile={profile} />
+            <RecsProfileBackButton returnHref={returnHref} />
+            {from === 'likes' ? (
+              <LikesProfileActions
+                userId={userId}
+                nickname={profile.nickname ?? ''}
+                age={profile.age ?? 0}
+                returnHref={returnHref}
+              />
+            ) : (
+              <RecsProfileActions userId={userId} returnHref={returnHref} />
+            )}
+          </div>
+        </CardContainer>
+      </div>
+    </main>
   )
 }

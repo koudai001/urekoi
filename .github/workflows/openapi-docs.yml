@@ -2,12 +2,12 @@ name: Deploy OpenAPI docs to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
     paths:
       - "docs/openapi.yaml"
       - "docs/package.json"
       - "docs/pnpm-lock.yaml"
-      - ".github/workflows/deploy-openapi-docs.yml"
+      - ".github/workflows/openapi-docs.yml"
   workflow_dispatch:
 
 permissions:

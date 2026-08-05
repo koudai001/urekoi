@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, mocked, userEvent, waitFor } from 'storybook/test'
-import * as useMessagesModule from './use-messages'
+import * as useMessagesModule from '@/hooks/use-messages'
 import * as messagesActions from '@/actions/messages'
 
 import { ChatView } from './chat-view'

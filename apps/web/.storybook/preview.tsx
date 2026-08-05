@@ -7,10 +7,10 @@ sb.mock(import('../actions/likes.ts'))
 sb.mock(import('../actions/messages.ts'))
 sb.mock(import('../actions/myprofile.ts'))
 sb.mock(import('../actions/profile-images.ts'))
-sb.mock(import('../components/likes/use-received-likes.ts'))
-sb.mock(import('../components/messages/use-match-profiles.ts'))
-sb.mock(import('../components/messages/use-messages.ts'))
-sb.mock(import('../components/myprofile/use-my-profile.ts'))
+sb.mock(import('../hooks/use-received-likes.ts'))
+sb.mock(import('../hooks/use-match-profiles.ts'))
+sb.mock(import('../hooks/use-messages.ts'))
+sb.mock(import('../hooks/use-my-profile.ts'))
 
 const preview: Preview = {
   parameters: {

@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useMyProfile } from '@/components/myprofile/use-my-profile'
+import { useMyProfile } from '@/hooks/use-my-profile'
 
 // サイドバー上部の自分用ヘッダー。プロフィール画像は自分のプロフィールキャッシュから表示する。
 export function SidebarHeader() {

@@ -50,6 +50,7 @@
     "@types/react-dom": "^19",
     "@vitest/browser-playwright": "^4.1.9",
     "@vitest/coverage-v8": "^4.1.9",
+    "chromatic": "^18.1.0",
     "eslint": "^9.39.4",
     "eslint-config-next": "16.2.6",
     "eslint-config-prettier": "^10.1.8",

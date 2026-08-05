@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, mocked, userEvent } from 'storybook/test'
-import * as useReceivedLikesModule from '@/components/likes/use-received-likes'
-import * as useMatchProfilesModule from '@/components/messages/use-match-profiles'
-import * as useMyProfileModule from '@/components/myprofile/use-my-profile'
+import * as useReceivedLikesModule from '@/hooks/use-received-likes'
+import * as useMatchProfilesModule from '@/hooks/use-match-profiles'
+import * as useMyProfileModule from '@/hooks/use-my-profile'
 import type {
   MatchProfile,
   MatchProfileWithLastMessage,

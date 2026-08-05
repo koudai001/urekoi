@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { LikeSwipeCard } from '@/components/likes/like-swipe-card'
 import { LikeEmptyState } from '@/components/likes/like-empty-state'
-import { useReceivedLikes } from '@/components/likes/use-received-likes'
+import { useReceivedLikes } from '@/hooks/use-received-likes'
 import { showMatchToast } from '@/components/likes/match-toast'
 import { showSkipToast } from '@/components/likes/skip-toast'
 import { PageHeader } from '@/components/ui/page-header'

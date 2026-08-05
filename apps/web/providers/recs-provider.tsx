@@ -9,7 +9,7 @@ import { sendSkip } from '@/actions/skips'
 import { showLikeToast } from '@/components/likes/like-toast'
 import { showMatchToast } from '@/components/likes/match-toast'
 import { showSkipToast } from '@/components/likes/skip-toast'
-import { UNMESSAGED_MATCHES_KEY } from '@/components/messages/use-match-profiles'
+import { UNMESSAGED_MATCHES_KEY } from '@/hooks/use-match-profiles'
 import type { ProfileDetail } from '@/generated/urekoiAPI.schemas'
 import { RECS_QUERY_KEY, useRecs } from '@/hooks/use-recs'
 

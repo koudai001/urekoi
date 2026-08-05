@@ -43,27 +43,21 @@ export function applyNewMessageToMatchesCache(
     senderUserId: number
   },
 ) {
-  // 現在のキャッシュを取得（マッチ一覧）
   const current = cache.get(MESSAGED_MATCHES_KEY)?.data as
     MatchProfileWithLastMessage[] | undefined
 
-  // もし現在のキャッシュに対象matchが無ければ、再検証して最新のマッチ一覧を取得する
   if (!current?.some((m) => m.match_id === message.matchId)) {
     mutate(MESSAGED_MATCHES_KEY)
     return
   }
 
-  // 対象matchがキャッシュにあれば、最新メッセージを反映した上で一覧の先頭に移動する
   mutate<MatchProfileWithLastMessage[]>(
     MESSAGED_MATCHES_KEY,
     (list) => {
-      // list:現在のキャッシュデータ
       const rest = list?.filter((m) => m.match_id !== message.matchId) ?? []
-      // 更新対象のmatch
       const target = list?.find((m) => m.match_id === message.matchId)
       if (!target) return list
 
-      // キャッシュ一覧の先頭に最新メッセージを反映したmatchを移動する
       return [
         {
           ...target,
