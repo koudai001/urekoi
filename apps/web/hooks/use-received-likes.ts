@@ -1,7 +1,6 @@
 import useSWR from 'swr'
 import type { PendingLikesResponse } from '@/generated/urekoiAPI.schemas'
 
-// 新着いいねをどれくらいの間隔で反映するか
 const POLLING_INTERVAL_MS = 15000
 
 const fetcher = (url: string) =>

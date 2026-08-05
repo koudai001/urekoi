@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, mocked, userEvent, waitFor } from 'storybook/test'
-import * as useMessagesModule from './use-messages'
+import * as useMessagesModule from '@/hooks/use-messages'
 import * as messagesActions from '@/actions/messages'
 
 import { ChatView } from './chat-view'
@@ -55,7 +55,7 @@ type Story = StoryObj<typeof meta>
 // 相手の名前とメッセージが古い順に表示されることを確認
 export const WithMessages: Story = {
   play: async ({ canvas }) => {
-    await expect(canvas.getByText('美咲')).toBeInTheDocument()
+    await expect(canvas.getAllByText('美咲')).not.toHaveLength(0)
     await expect(canvas.getByText('こんにちは')).toBeInTheDocument()
     await expect(canvas.getByText('よろしくお願いします')).toBeInTheDocument()
   },

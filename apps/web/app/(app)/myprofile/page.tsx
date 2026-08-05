@@ -22,7 +22,7 @@ export default async function ProfilePage() {
   return (
     <main className="flex flex-1 justify-center p-2 md:items-center md:px-6 md:py-12">
       <div className="relative h-full w-full md:h-auto md:w-auto">
-        <CardContainer fullBleed>
+        <CardContainer>
           <ProfileViewer profile={profileRes.data} />
         </CardContainer>
 

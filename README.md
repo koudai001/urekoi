@@ -2,12 +2,13 @@
 
 熟女専門マッチングアプリ。Go + Next.js のモノレポ構成。
 
-![検索画面](apps/web/public/readme.png)
+![メッセージ画面](public/messages.png)
 
 ## ドキュメント
 
 - REST API仕様: https://koudai001.github.io/urekoi/ (ReDoc, [docs/openapi.yaml](docs/openapi.yaml)から生成)
 - WebSocket仕様: https://urekoi-async-api.netlify.app/ (AsyncAPI, [docs/asyncapi.yaml](docs/asyncapi.yaml)から生成。ハンドシェイク自体はopenapi.yamlの`POST /ws/ticket`・`GET /ws`を参照)
+- UIカタログ: https://dev--6a72aa415243acd00aff142a.chromatic.com (Chromatic、devの最新Storybook)
 - DBテーブル定義: [docs/table-definitions.md](docs/table-definitions.md)(ER図)
 - AWS本番環境の構成図: [docs/aws-infra.md](docs/aws-infra.md)
 

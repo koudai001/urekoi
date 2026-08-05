@@ -7,8 +7,8 @@ import { Heart } from 'lucide-react'
 import {
   useMessagedMatches,
   useUnmessagedMatches,
-} from '@/components/messages/use-match-profiles'
-import { useReceivedLikes } from '@/components/likes/use-received-likes'
+} from '@/hooks/use-match-profiles'
+import { useReceivedLikes } from '@/hooks/use-received-likes'
 import { SidebarHeader } from '@/components/sidebar/sidebar-header'
 import { cn } from '@/lib/utils'
 

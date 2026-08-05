@@ -148,7 +148,7 @@ function SwipeCardDeckItem({
   return (
     <div className="flex h-full w-full flex-col items-center md:h-auto md:max-w-[460px]">
       <div className="relative h-full w-full md:h-auto md:max-w-96">
-        <CardContainer fullBleed>
+        <CardContainer>
           <div className="relative h-full w-full">
             {/* ドラッグ・退出アニメーション中は、次の人を背後に表示する */}
             {nextProfile && (isDragging || leaving) && (

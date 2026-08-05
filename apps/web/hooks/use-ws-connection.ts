@@ -4,14 +4,12 @@ import { messagesKey } from './use-messages'
 import { applyNewMessageToMatchesCache } from './use-match-profiles'
 import type { MessageResponse } from '@/generated/urekoiAPI.schemas'
 
-// asyncapi.yamlのNewMessagePayloadに対応(openapiの自動生成対象外)
 type NewMessagePayload = {
   recipient_user_id: number
   match_id: number
   message: MessageResponse
 }
 
-// 使い捨てticketを取得し、WS接続用URLを組み立てる(再接続のたびに新しいticketを取り直す)
 const getSocketUrl = async () => {
   const res = await fetch('/api/ws/ticket', { method: 'POST' })
   const { ticket } = await res.json()
@@ -25,7 +23,6 @@ export function useWsConnection() {
   useWebSocket(getSocketUrl, {
     onMessage: (event) => {
       const payload: NewMessagePayload = JSON.parse(event.data)
-      // 再フェッチはせず、届いたmessageをそのままキャッシュに反映する
       mutate(
         messagesKey(payload.match_id),
         (current: MessageResponse[] | undefined) => [
@@ -35,7 +32,6 @@ export function useWsConnection() {
         { revalidate: false },
       )
 
-      // 新着メッセージをマッチ一覧のキャッシュにも反映する
       applyNewMessageToMatchesCache(mutate, cache, {
         matchId: payload.match_id,
         body: payload.message.body ?? '',
@@ -43,7 +39,6 @@ export function useWsConnection() {
         senderUserId: payload.message.sender_user_id ?? 0,
       })
     },
-    // 切断時は再接続する
     shouldReconnect: () => true,
   })
 }

@@ -9,10 +9,7 @@ import {
   createProfileImage,
   deleteProfileImage,
 } from '@/actions/profile-images'
-import {
-  useMyProfile,
-  MY_PROFILE_KEY,
-} from '@/components/myprofile/use-my-profile'
+import { useMyProfile, MY_PROFILE_KEY } from '@/hooks/use-my-profile'
 import { mutate as globalMutate } from 'swr'
 import type { ProfileImageResponse } from '@/generated/urekoiAPI.schemas'
 

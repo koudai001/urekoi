@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { mocked } from 'storybook/test'
-import * as useMyProfileModule from '@/components/myprofile/use-my-profile'
+import * as useMyProfileModule from '@/hooks/use-my-profile'
 import type { ProfileDetail, TagOption } from '@/generated/urekoiAPI.schemas'
 
 import { ProfileEditArea } from './profile-edit-area'

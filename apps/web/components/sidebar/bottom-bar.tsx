@@ -39,7 +39,7 @@ export function BottomBar() {
   return (
     <nav
       aria-label="メインナビゲーション"
-      className="border-t border-swipe-border bg-swipe-background/95 px-3 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+      className="bg-swipe-background px-3 pb-[env(safe-area-inset-bottom)]"
     >
       <div className="mx-auto flex h-16 max-w-lg items-center justify-around">
         {navigationItems.map(({ href, label, icon: Icon, matches }) => {
