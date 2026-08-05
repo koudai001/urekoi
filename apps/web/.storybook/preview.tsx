@@ -14,6 +14,9 @@ sb.mock(import('../components/myprofile/use-my-profile.ts'))
 
 const preview: Preview = {
   parameters: {
+    nextjs: {
+      appDirectory: true,
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

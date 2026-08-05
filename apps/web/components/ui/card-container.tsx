@@ -1,4 +1,23 @@
-// スワイプカード・プロフィール写真編集カードなど、幅380px×9:16のサイズを固定で持つだけの汎用コンテナ
-export function CardContainer({ children }: { children: React.ReactNode }) {
-  return <div className="aspect-[9/16] w-full max-w-[380px]">{children}</div>
+import { cn } from '@/lib/utils'
+
+// スワイプカード・プロフィール写真編集カードなど、カードの表示領域を整える汎用コンテナ
+export function CardContainer({
+  children,
+  fullBleed = false,
+}: {
+  children: React.ReactNode
+  fullBleed?: boolean
+}) {
+  return (
+    <div
+      className={cn(
+        'w-full',
+        fullBleed
+          ? 'h-full max-w-none aspect-auto md:h-auto md:max-w-96 md:aspect-[9/16]'
+          : 'aspect-[9/16] max-w-96',
+      )}
+    >
+      {children}
+    </div>
+  )
 }

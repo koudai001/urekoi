@@ -19,7 +19,7 @@ export function MsgSidebar() {
   const [tab, setTab] = useState<Tab>('matching')
 
   return (
-    <div className="flex w-[340px] shrink-0 flex-col border-r border-swipe-border">
+    <div className="flex w-96 shrink-0 flex-col border-r border-swipe-border">
       <SidebarHeader />
 
       <div className="flex gap-6 border-b border-swipe-border px-5 pt-4.5">

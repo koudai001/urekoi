@@ -120,7 +120,7 @@ export function ProfileEditArea({
 
   return (
     <CardContainer>
-      <div className="flex h-full w-full flex-col overflow-hidden rounded-card bg-swipe-sidebar">
+      <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-swipe-sidebar">
         {/* 編集タブ: 固定、スクロールしない */}
         <Header />
 

@@ -33,7 +33,7 @@ export default async function MessagePage({
           matched_at: match.matched_at,
         }}
       />
-      <div className="w-[340px] shrink-0 border-l border-swipe-border">
+      <div className="hidden w-96 shrink-0 border-l border-swipe-border md:block">
         <ProfileViewer profile={match} />
       </div>
     </div>

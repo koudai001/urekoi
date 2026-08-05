@@ -20,13 +20,15 @@ export default async function ProfilePage() {
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center px-6 py-12">
-      <div className="relative">
-        <CardContainer>
+    <main className="flex flex-1 justify-center p-2 md:items-center md:px-6 md:py-12">
+      <div className="relative h-full w-full md:h-auto md:w-auto">
+        <CardContainer fullBleed>
           <ProfileViewer profile={profileRes.data} />
         </CardContainer>
 
-        <EditButton />
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+          <EditButton />
+        </div>
       </div>
     </main>
   )
@@ -37,7 +39,7 @@ function EditButton() {
   return (
     <Link
       href="/myprofile/edit"
-      className="absolute bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-swipe-foreground px-12 py-3.5 text-lg font-bold text-swipe-background shadow-lg"
+      className="whitespace-nowrap rounded-full bg-swipe-foreground px-12 py-3.5 text-lg font-bold text-swipe-background shadow-lg"
     >
       プロフィールの編集
     </Link>
