@@ -1,15 +1,38 @@
 'use client'
 
 import { useActionState, useState } from 'react'
-import { Mail, MessageCircle } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { Apple, Mail, X } from 'lucide-react'
 import { login } from '@/actions/auth'
-import { AuthLogo } from '@/components/ui/auth-logo'
-import { BackButton } from '@/components/ui/back-button'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 
 type Step = 'select' | 'email'
+
+function GoogleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18C3.99 20.53 7.7 23 12 23z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+      />
+    </svg>
+  )
+}
 
 export default function LoginPage() {
   const [step, setStep] = useState<Step>('select')
@@ -18,119 +41,145 @@ export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(login, null)
 
   return (
-    <main className="flex min-h-svh flex-col items-center justify-center bg-background px-4 py-12">
-      <AuthLogo />
-
+    <main className="flex min-h-svh flex-col bg-swipe-background px-6 py-6 text-swipe-foreground">
       {step === 'select' ? (
-        /* ===== ステップ1: ログイン方法の選択 ===== */
-        <div className="flex w-full max-w-md flex-col items-center">
-          <div className="flex w-full flex-col gap-4">
-            {/* LINE（ダミー） */}
-            <Button
-              type="button"
-              className="h-auto w-full gap-3 rounded-full bg-line py-4 text-base font-bold text-white hover:opacity-90"
-            >
-              <MessageCircle className="h-5 w-5 fill-white" />
-              LINEでログイン
-            </Button>
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-10">
+          <div className="flex flex-col items-center gap-4">
+            <Image
+              src="/login/urekoi-icon-final.png"
+              alt="熟恋"
+              width={224}
+              height={224}
+              priority
+              className="h-56 w-56 rounded-full shadow-2xl"
+            />
+            <p className="text-sm font-semibold tracking-[0.12em] text-swipe-muted-foreground">
+              大人の出会いを、もっと自然に
+            </p>
+          </div>
 
-            {/* メールアドレス */}
+          <div className="flex w-full flex-col gap-3">
             <Button
               type="button"
               onClick={() => setStep('email')}
-              className="h-auto w-full gap-3 rounded-full py-4 text-base font-bold hover:opacity-90"
+              className="h-auto w-full gap-2.5 rounded-full bg-gradient-to-br from-swipe-accent to-primary py-4 text-base font-extrabold text-white hover:opacity-90"
             >
               <Mail className="h-5 w-5" />
               メールアドレスでログイン
             </Button>
-          </div>
-
-          <div className="mt-10 flex flex-col items-center gap-4">
-            <a
-              href="#"
-              className="text-sm font-medium text-primary hover:underline"
+            <Button
+              type="button"
+              variant="outline"
+              className="h-auto w-full gap-2.5 rounded-full border-swipe-border bg-transparent py-4 text-base font-bold text-swipe-foreground hover:bg-swipe-surface hover:text-swipe-foreground"
             >
-              ログインでお困りの方はこちら
-            </a>
-            <a
+              <Apple className="h-5 w-5 fill-current" />
+              Appleで続ける
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-auto w-full gap-2.5 rounded-full border-swipe-border bg-transparent py-4 text-base font-bold text-swipe-foreground hover:bg-swipe-surface hover:text-swipe-foreground"
+            >
+              <GoogleIcon />
+              Googleで続ける
+            </Button>
+
+            <Link
               href="/signup"
-              className="text-base font-bold text-card-foreground hover:underline"
+              className="mt-1 py-3 text-center text-sm font-semibold text-swipe-accent underline underline-offset-4"
             >
               新規登録はこちら
-            </a>
+            </Link>
+
+            <div className="flex justify-center gap-4 pt-1 text-xs text-swipe-muted-foreground">
+              <span>利用規約</span>
+              <span>プライバシーポリシー</span>
+            </div>
           </div>
         </div>
-      ) : (
-        /* ===== ステップ2: メールアドレス＋パスワード ===== */
-        <div className="w-full max-w-md">
-          <BackButton
-            onClick={() => {
-              setStep('select')
-              setEmail('')
-              setPassword('')
-            }}
-          />
-
+      ) : step === 'email' ? (
+        <CredentialStep
+          icon={Mail}
+          title={<>メールアドレスとパスワードを入力してください</>}
+          onClose={() => setStep('select')}
+        >
           <form className="flex flex-col gap-7" action={formAction}>
-            {/* メール */}
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="email"
-                className="text-base font-bold text-card-foreground"
-              >
-                メールアドレス
-              </label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="sample@sample.com"
-                className="h-auto w-full rounded-none border-0 border-b border-border bg-transparent p-0 pb-2 text-lg focus-visible:border-primary focus-visible:ring-0"
-              />
-            </div>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="sample@example.com"
+              className="h-auto w-full rounded-none border-0 border-b border-swipe-border !bg-transparent p-0 pb-3 text-xl text-swipe-foreground placeholder:text-swipe-muted-foreground focus-visible:border-swipe-accent focus-visible:ring-0"
+            />
+            <PasswordInput
+              id="password"
+              name="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="パスワード"
+              className="border-swipe-border pb-3 [&_button]:text-swipe-foreground [&_input]:!bg-transparent [&_input]:text-xl [&_input]:text-swipe-foreground [&_input]:placeholder:text-swipe-muted-foreground"
+            />
 
-            {/* パスワード */}
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="password"
-                className="text-base font-bold text-card-foreground"
-              >
-                パスワード
-              </label>
-              <PasswordInput
-                id="password"
-                name="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="パスワード"
-              />
-            </div>
-
-            {/* 結果表示（エラーの場合） */}
             {state?.success === false && (
               <p className="text-sm font-medium text-destructive">
                 {state.error}
               </p>
             )}
 
-            {/* ログインボタン */}
             <Button
               type="submit"
               disabled={isPending}
-              className="mt-2 h-auto w-full rounded-full py-4 text-base font-bold hover:opacity-90"
+              className="h-auto w-full rounded-full bg-gradient-to-br from-swipe-accent to-primary py-4 text-lg font-bold text-white hover:opacity-90"
             >
               {isPending ? 'ログイン中...' : 'ログイン'}
             </Button>
           </form>
-        </div>
-      )}
+        </CredentialStep>
+      ) : null}
     </main>
+  )
+}
+
+function CredentialStep({
+  icon: Icon,
+  title,
+  onClose,
+  children,
+}: {
+  icon: React.ElementType
+  title: React.ReactNode
+  onClose: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <div className="relative mx-auto flex w-full max-w-md flex-1 flex-col">
+      <button
+        type="button"
+        aria-label="ログイン方法の選択へ戻る"
+        onClick={onClose}
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-swipe-surface text-swipe-foreground shadow-lg"
+      >
+        <X className="h-7 w-7" />
+      </button>
+
+      <div className="flex flex-1 flex-col justify-center">
+        <div className="mb-9 flex flex-col items-center gap-6 text-center">
+          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-swipe-accent to-primary text-white shadow-lg">
+            <Icon className="h-9 w-9" />
+          </span>
+          <h1 className="whitespace-pre-line text-3xl font-bold leading-tight text-swipe-foreground">
+            {title}
+          </h1>
+        </div>
+        {children}
+      </div>
+    </div>
   )
 }
