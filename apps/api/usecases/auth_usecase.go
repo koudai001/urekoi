@@ -31,7 +31,7 @@ var (
 
 type IAuthUsecase interface {
 	// サインアップ成功時もログインと同様にaccessToken(JWT)とrefreshTokenを返す(自動ログイン)。
-	// signup時にUser(認証情報・性別・生年月日)とProfile(ニックネーム・居住地)をまとめて作成する
+	// signup時にUser・PasswordCredential・Profileをまとめて作成する
 	SignUp(req dto.SignupRequest) (user *models.User, accessToken string, refreshToken string, err error)
 	// ログイン成功時はaccessToken(JWT)とrefreshTokenを返す
 	Login(email string, password string) (accessToken string, refreshToken string, err error)
@@ -66,21 +66,30 @@ func (u *AuthUsecase) SignUp(req dto.SignupRequest) (*models.User, string, strin
 	birthdate, _ := time.Parse(birthdateLayout, req.Birthdate)
 
 	user := models.User{
-		Email:     req.Email,
-		Password:  string(hashedPassword),
-		Gender:    req.Gender,
-		Birthdate: birthdate,
+		Email: req.Email,
 	}
 
-	// User・Profileの作成をひとつのトランザクションにまとめる
+	// User・PasswordCredential・Profileの作成をひとつのトランザクションにまとめる
 	err = u.authRepo.Transaction(func(tx *gorm.DB) error {
+		// Userの作成
 		if err := u.authRepo.WithTx(tx).CreateUser(&user); err != nil {
 			return err
 		}
+		// PasswordCredentialの作成
+		credential := models.PasswordCredential{
+			UserID:       user.ID,
+			PasswordHash: string(hashedPassword),
+		}
+		if err := u.authRepo.WithTx(tx).CreatePasswordCredential(&credential); err != nil {
+			return err
+		}
 
+		// Profileの作成
 		profile := models.Profile{
 			UserID:         user.ID,
 			Nickname:       req.Nickname,
+			Gender:         req.Gender,
+			Birthdate:      birthdate,
 			PrefectureCode: req.PrefectureCode,
 		}
 		return u.profileRepo.WithTx(tx).CreateProfile(&profile)
@@ -91,7 +100,7 @@ func (u *AuthUsecase) SignUp(req dto.SignupRequest) (*models.User, string, strin
 		}
 		return nil, "", "", err
 	}
-
+	// サインアップ成功時もログインと同様にaccessToken(JWT)とrefreshTokenを返す(自動ログイン)
 	accessToken, refreshToken, err := u.issueTokens(&user)
 	if err != nil {
 		return nil, "", "", err
@@ -107,8 +116,14 @@ func (u *AuthUsecase) Login(email string, password string) (string, string, erro
 		return "", "", ErrInvalidCredentials
 	}
 
+	// ユーザーIDからパスワード認証情報を取得
+	credential, err := u.authRepo.GetPasswordCredentialByUserID(user.ID)
+	if err != nil {
+		return "", "", ErrInvalidCredentials
+	}
+
 	// パスワードを比較
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(credential.PasswordHash), []byte(password)); err != nil {
 		return "", "", ErrInvalidCredentials
 	}
 

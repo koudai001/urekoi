@@ -95,8 +95,8 @@ func validateBirthdate(birthdate string, gender string) error {
 	if err != nil || parsed.Format(birthdateLayout) != birthdate {
 		return errors.New("実在する日付を入力してください")
 	}
-	// models.User構造体を使って年齢を計算する
-	age := models.User{Birthdate: parsed}.Age()
+	// 年齢を計算する
+	age := models.Profile{Birthdate: parsed}.Age()
 	if age < minAge {
 		return errors.New("18歳未満の方はご登録いただけません")
 	}

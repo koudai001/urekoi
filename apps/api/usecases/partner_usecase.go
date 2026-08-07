@@ -107,7 +107,7 @@ func toProfileDetail(profile models.Profile, profileTags []models.ProfileTag, al
 	return dto.ProfileDetail{
 		UserID:       profile.UserID,
 		Nickname:     profile.Nickname,
-		Age:          profile.User.Age(),
+		Age:          profile.Age(),
 		Prefecture:   profile.Prefecture.Name,
 		Bio:          profile.Bio,
 		IsNew:        isNewPartner(profile.CreatedAt),

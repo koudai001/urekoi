@@ -94,7 +94,7 @@ func (u *LikeUsecase) GetPendingLikes(userID uint64) (dto.PendingLikesResponse, 
 		res = append(res, dto.LikeProfile{
 			UserID:     p.UserID,
 			Nickname:   p.Nickname,
-			Age:        p.User.Age(),
+			Age:        p.Age(),
 			Prefecture: p.Prefecture.Name,
 			Online:     mockOnlineStatus,
 			Photos:     imageURLs(p.Images),

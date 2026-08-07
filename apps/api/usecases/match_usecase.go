@@ -100,7 +100,7 @@ func toMatchProfile(p repositories.MatchedProfile) dto.MatchProfile {
 		MatchID:    p.MatchID,
 		UserID:     p.UserID,
 		Nickname:   p.Nickname,
-		Age:        p.User.Age(),
+		Age:        p.Age(),
 		Prefecture: p.Prefecture.Name,
 		Image:      firstImageURL(p.Images),
 	}
