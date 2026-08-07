@@ -17,7 +17,7 @@ export function SignupLocation({
   const prefectureCode = watch('prefectureCode')
 
   return (
-    <div className="flex min-h-[520px] w-full max-w-md flex-col rounded-3xl bg-card p-8 shadow-sm">
+    <div className="flex min-h-[520px] w-full max-w-md flex-col p-8">
       <SignupProgressBar
         icon={<MapPin className="h-5 w-5" />}
         currentStep={3}
@@ -25,10 +25,10 @@ export function SignupLocation({
       />
 
       {/* 見出し */}
-      <h1 className="mt-8 text-2xl font-bold text-balance text-card-foreground">
-        あなたはどちらにお住まいですか?
+      <h1 className="mt-8 text-2xl font-bold text-balance text-swipe-foreground">
+        どちらにお住まいですか?
       </h1>
-      <p className="mt-2 text-sm text-muted-foreground">
+      <p className="mt-2 text-sm text-swipe-muted-foreground">
         地域が近いお相手に探しやすくなります
       </p>
 
@@ -42,16 +42,16 @@ export function SignupLocation({
               type="button"
               onClick={() => setValue('prefectureCode', pref.code)}
               aria-pressed={selected}
-              className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-1 py-2.5 text-left transition-colors hover:bg-secondary/60"
+              className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-1 py-2.5 text-left transition-colors hover:bg-swipe-surface/60"
             >
               <span className="flex w-4 shrink-0 items-center justify-center">
-                {selected && <Check className="h-4 w-4 text-primary" />}
+                {selected && <Check className="h-4 w-4 text-swipe-accent" />}
               </span>
               <span
                 className={`text-[17px] ${
                   selected
-                    ? 'font-bold text-card-foreground'
-                    : 'font-medium text-muted-foreground'
+                    ? 'font-bold text-swipe-foreground'
+                    : 'font-medium text-swipe-muted-foreground'
                 }`}
               >
                 {pref.name}

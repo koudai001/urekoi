@@ -1,7 +1,6 @@
 import { cookies } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { ChatView } from '@/components/messages/chat-view'
-import { ProfileViewer } from '@/components/myprofile/profile-viewer'
 import { getMatch } from '@/generated/matches/matches'
 import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
 
@@ -33,9 +32,6 @@ export default async function MessagePage({
           matched_at: match.matched_at,
         }}
       />
-      <div className="hidden w-96 shrink-0 border-l border-swipe-border md:block">
-        <ProfileViewer profile={match} />
-      </div>
     </div>
   )
 }

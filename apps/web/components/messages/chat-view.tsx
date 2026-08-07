@@ -5,7 +5,6 @@ import { useSWRConfig } from 'swr'
 import { sendMessage } from '@/actions/messages'
 import { useMessages } from '@/hooks/use-messages'
 import { applyNewMessageToMatchesCache } from '@/hooks/use-match-profiles'
-import { ChatViewHeader } from './chat-view-header'
 import { ChatMessageBubble } from './chat-message-bubble'
 import { ChatDateDivider, isDifferentDay } from './chat-date-divider'
 import { ChatInput } from './chat-input'
@@ -49,25 +48,13 @@ export function ChatView({ match }: { match: ChatMatch }) {
   }
 
   return (
-    <div className="flex h-full min-w-0 flex-1 flex-col bg-swipe-background md:h-screen">
-      {/* ヘッダー部分 */}
-      <div className="md:hidden">
-        <SpChatHeader
-          conversation={{
-            name: match.nickname ?? '',
-            image: match.image ?? '',
-          }}
-        />
-      </div>
-      <div className="hidden md:block">
-        <ChatViewHeader
-          conversation={{
-            name: match.nickname ?? '',
-            image: match.image ?? '',
-          }}
-          matchedAt={match.matched_at}
-        />
-      </div>
+    <div className="flex h-full min-w-0 flex-1 flex-col bg-swipe-background">
+      <SpChatHeader
+        conversation={{
+          name: match.nickname ?? '',
+          image: match.image ?? '',
+        }}
+      />
 
       {/* メッセージ部分 */}
       <div className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
@@ -100,7 +87,7 @@ function SpMatchBanner({
   nickname?: string
 }) {
   return (
-    <div className="flex justify-center md:hidden">
+    <div className="flex justify-center">
       <span className="text-xs text-swipe-muted-foreground">
         {matchedDate}に{nickname}さんとマッチしました
       </span>
@@ -110,7 +97,7 @@ function SpMatchBanner({
 
 export function EmptyChat() {
   return (
-    <div className="flex h-full flex-1 flex-col items-center justify-center bg-swipe-background md:h-screen">
+    <div className="flex h-full flex-1 flex-col items-center justify-center bg-swipe-background">
       <p className="text-xl font-bold text-swipe-foreground">
         選択中のやりとりはありません
       </p>

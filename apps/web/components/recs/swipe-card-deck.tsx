@@ -146,13 +146,13 @@ function SwipeCardDeckItem({
   const skipOpacity = Math.max(0, Math.min(1, -translateX / threshold))
 
   return (
-    <div className="flex h-full w-full flex-col items-center md:h-auto md:max-w-[460px]">
-      <div className="relative h-full w-full md:h-auto md:max-w-96">
-        <CardContainer>
+    <div className="flex h-full w-full flex-col items-center">
+      <div className="relative h-full w-full">
+        <CardContainer className="!h-full !max-w-none !aspect-auto">
           <div className="relative h-full w-full">
             {/* ドラッグ・退出アニメーション中は、次の人を背後に表示する */}
             {nextProfile && (isDragging || leaving) && (
-              <div className="absolute inset-0 md:inset-x-3 md:bottom-0 md:top-2">
+              <div className="absolute inset-0">
                 <SwipeCard profile={nextProfile} />
               </div>
             )}
@@ -194,7 +194,7 @@ function SwipeCardDeckItem({
           </div>
         </CardContainer>
 
-        <div className="absolute bottom-2 left-1/2 z-10 -translate-x-1/2 md:-bottom-6">
+        <div className="absolute bottom-2 left-1/2 z-10 -translate-x-1/2">
           <SwipeActions
             onSkip={() => startSwipeAnimation('skip')}
             onLike={() => startSwipeAnimation('like')}

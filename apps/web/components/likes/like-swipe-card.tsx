@@ -105,13 +105,13 @@ export function LikeSwipeCard({
             <RecsProfileLink userId={profile.user_id} from="likes" />
             {/* スワイプ中のラベル */}
             <span
-              className="pointer-events-none absolute left-5 top-5 rotate-[-12deg] rounded-lg border-4 border-primary px-4 py-1 text-2xl font-extrabold tracking-wide text-primary"
+              className="pointer-events-none absolute left-5 top-5 rotate-[-12deg] rounded-lg border-4 border-swipe-accent px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-accent"
               style={{ opacity: likeOpacity }}
             >
               いいね！
             </span>
             <span
-              className="pointer-events-none absolute right-5 top-5 rotate-[12deg] rounded-lg border-4 border-muted-foreground px-4 py-1 text-2xl font-extrabold tracking-wide text-muted-foreground"
+              className="pointer-events-none absolute right-5 top-5 rotate-[12deg] rounded-lg border-4 border-swipe-muted-foreground px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-muted-foreground"
               style={{ opacity: skipOpacity }}
             >
               スキップ

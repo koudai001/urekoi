@@ -15,7 +15,7 @@ export function BackButton({
       variant="ghost"
       onClick={onClick}
       className={cn(
-        'mb-6 h-auto gap-1.5 p-0 text-sm font-medium text-muted-foreground hover:bg-transparent hover:text-card-foreground',
+        'mb-6 h-auto gap-1.5 p-0 text-sm font-medium text-swipe-muted-foreground hover:bg-transparent hover:text-swipe-foreground',
         className,
       )}
     >

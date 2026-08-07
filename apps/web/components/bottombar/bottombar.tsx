@@ -32,7 +32,6 @@ const navigationItems = [
   },
 ]
 
-// SPだけで表示する、アプリ共通の画面遷移バー
 export function BottomBar() {
   const pathname = usePathname()
 

@@ -22,7 +22,7 @@ export function SignupGender({
   const gender = watch('gender')
 
   return (
-    <div className="flex min-h-[520px] w-full max-w-md flex-col rounded-3xl bg-card p-8 shadow-sm">
+    <div className="flex min-h-[520px] w-full max-w-md flex-col p-8">
       <SignupProgressBar
         icon={<Smile className="h-5 w-5" />}
         currentStep={1}
@@ -30,8 +30,8 @@ export function SignupGender({
       />
 
       {/* 見出し */}
-      <h1 className="mt-8 text-2xl font-bold text-balance text-card-foreground">
-        あなたの性別を教えてください
+      <h1 className="mt-8 text-2xl font-bold text-balance text-swipe-foreground">
+        あなたの性別は？
       </h1>
 
       {/* 選択肢 */}
@@ -46,11 +46,11 @@ export function SignupGender({
               aria-pressed={selected}
               className={`flex cursor-pointer flex-col items-center gap-3 rounded-full p-4 transition-all ${
                 selected
-                  ? 'bg-primary/15 ring-2 ring-primary'
-                  : 'bg-secondary hover:bg-secondary/70'
+                  ? 'bg-swipe-accent/15 ring-2 ring-swipe-accent'
+                  : 'bg-swipe-surface hover:bg-swipe-surface/70'
               }`}
             >
-              <span className="h-24 w-24 overflow-hidden rounded-full border-2 border-card shadow-sm">
+              <span className="h-24 w-24 overflow-hidden rounded-full border-2 border-swipe-border shadow-sm">
                 <Image
                   src={option.image || '/placeholder.svg'}
                   alt={option.label}
@@ -59,7 +59,7 @@ export function SignupGender({
                   className="h-full w-full object-cover"
                 />
               </span>
-              <span className="text-lg font-bold text-card-foreground">
+              <span className="text-lg font-bold text-swipe-foreground">
                 {option.label}
               </span>
             </button>
