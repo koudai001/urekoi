@@ -31,7 +31,7 @@ export function LikeProfileCard({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-3xl bg-muted shadow-xl ring-1 ring-border">
+    <div className="relative h-full w-full overflow-hidden rounded-3xl bg-swipe-surface shadow-xl ring-1 ring-swipe-border">
       <Image
         src={photos[photoIndex] || '/placeholder.svg'}
         alt={`${profile.nickname}さんの写真`}
@@ -50,14 +50,14 @@ export function LikeProfileCard({
       <button
         aria-label="前の写真"
         onClick={(e) => changePhoto(e, -1)}
-        className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/70 text-foreground/70 shadow backdrop-blur transition hover:bg-white"
+        className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-swipe-surface/80 text-swipe-foreground shadow backdrop-blur transition hover:bg-swipe-surface"
       >
         <ChevronLeft className="h-5 w-5" />
       </button>
       <button
         aria-label="次の写真"
         onClick={(e) => changePhoto(e, 1)}
-        className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/70 text-foreground/70 shadow backdrop-blur transition hover:bg-white"
+        className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-swipe-surface/80 text-swipe-foreground shadow backdrop-blur transition hover:bg-swipe-surface"
       >
         <ChevronRight className="h-5 w-5" />
       </button>

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
-import { BottomBar } from './bottom-bar'
+import { BottomBar } from './bottombar'
 
 const meta = {
-  title: 'sidebar/BottomBar',
+  title: 'bottombar/BottomBar',
   component: BottomBar,
   parameters: {
     layout: 'fullscreen',

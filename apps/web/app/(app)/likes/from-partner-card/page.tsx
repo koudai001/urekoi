@@ -36,16 +36,16 @@ export default function LikesPage() {
   return (
     <main className="flex flex-1 flex-col">
       <PageHeader>
-        <h1 className="text-3xl font-bold text-foreground">いいね！</h1>
-        <button className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+        <h1 className="text-3xl font-bold text-swipe-foreground">いいね！</h1>
+        <button className="flex items-center gap-1 text-sm font-medium text-swipe-muted-foreground transition-colors hover:text-swipe-foreground">
           スキップ一覧
           <ChevronRight className="h-4 w-4" />
         </button>
       </PageHeader>
 
-      <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-8 lg:px-12">
+      <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-8">
         {isLoading ? (
-          <p className="text-sm text-muted-foreground">読み込み中...</p>
+          <p className="text-sm text-swipe-muted-foreground">読み込み中...</p>
         ) : done ? (
           <LikeEmptyState />
         ) : (
@@ -57,7 +57,7 @@ export default function LikesPage() {
               onSwipe={handleSwipe}
             />
 
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-swipe-muted-foreground">
               残り {likes.length - index} 人
             </p>
           </>

@@ -23,7 +23,7 @@ export default async function ProfileEditPage() {
   }
 
   return (
-    <main className="flex min-h-0 flex-1 justify-center md:items-center md:px-6 md:py-12">
+    <main className="flex min-h-0 flex-1 justify-center">
       <ProfileEditArea profile={profileRes.data} tags={tagsRes.data} />
     </main>
   )

@@ -16,7 +16,7 @@ export function SignupNickname({
   const canProceed = watch('nickname').trim().length > 0
 
   return (
-    <div className="flex min-h-[520px] w-full max-w-md flex-col rounded-3xl bg-card p-8 shadow-sm">
+    <div className="flex min-h-[520px] w-full max-w-md flex-col p-8">
       <SignupProgressBar
         icon={<IdCard className="h-5 w-5" />}
         currentStep={4}
@@ -24,10 +24,12 @@ export function SignupNickname({
       />
 
       {/* 見出し */}
-      <h1 className="mt-8 text-2xl font-bold text-balance text-card-foreground">
-        あなたの表示名を決めましょう
+      <h1 className="mt-8 text-2xl font-bold text-balance text-swipe-foreground">
+        表示名を決めましょう
       </h1>
-      <p className="mt-2 text-sm text-muted-foreground">あとから変更できます</p>
+      <p className="mt-2 text-sm text-swipe-muted-foreground">
+        あとから変更できます
+      </p>
 
       {/* 表示名入力 */}
       <div className="mt-8">
@@ -36,7 +38,7 @@ export function SignupNickname({
           maxLength={20}
           placeholder="表示名を入力してください"
           {...register('nickname')}
-          className="w-full border-none border-b-2 border-primary bg-transparent px-0.5 pt-1 pb-3 text-[19px] text-card-foreground outline-none placeholder:text-muted-foreground"
+          className="w-full border-none border-b-2 border-swipe-accent bg-transparent px-0.5 pt-1 pb-3 text-[19px] text-swipe-foreground outline-none placeholder:text-swipe-muted-foreground"
         />
       </div>
 

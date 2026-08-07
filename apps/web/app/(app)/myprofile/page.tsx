@@ -20,13 +20,13 @@ export default async function ProfilePage() {
   }
 
   return (
-    <main className="flex flex-1 justify-center p-2 md:items-center md:px-6 md:py-12">
-      <div className="relative h-full w-full md:h-auto md:w-auto">
-        <CardContainer>
+    <main className="flex flex-1 justify-center p-2">
+      <div className="relative h-full w-full">
+        <CardContainer className="!h-full !max-w-none !aspect-auto">
           <ProfileViewer profile={profileRes.data} />
         </CardContainer>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+        <div className="fixed bottom-20 left-1/2 z-10 -translate-x-1/2">
           <EditButton />
         </div>
       </div>

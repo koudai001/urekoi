@@ -20,7 +20,7 @@ export function SwipeCard({
       />
 
       {/* 下部の名前・自己紹介*/}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent p-5 pb-24 pt-12 md:pb-16">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent p-5 pb-24 pt-12">
         <div className="flex items-baseline gap-2.5">
           {profile.online && (
             <span

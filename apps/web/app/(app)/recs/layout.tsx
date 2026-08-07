@@ -1,6 +1,5 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { MsgSidebar } from '@/components/sidebar/msg-sidebar'
 import { RecsProvider } from '@/providers/recs-provider'
 import { getPartnerRecs } from '@/generated/partner/partner'
 import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
@@ -18,13 +17,5 @@ export default async function Layout({
   if (res.status === 401) redirect('/login')
   if (res.status === 500) throw new Error('スワイプ候補の取得に失敗しました')
 
-  return (
-    <div className="flex h-full overflow-hidden bg-swipe-background md:h-screen">
-      <div className="hidden md:flex">
-        <MsgSidebar />
-      </div>
-
-      <RecsProvider initialRecs={res.data}>{children}</RecsProvider>
-    </div>
-  )
+  return <RecsProvider initialRecs={res.data}>{children}</RecsProvider>
 }

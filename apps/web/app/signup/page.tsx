@@ -4,7 +4,6 @@ import { useActionState, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
 import { signup } from '@/actions/auth'
-import { AuthLogo } from '@/components/ui/auth-logo'
 import { SignupBirthday } from '@/components/signup/signup-birthday'
 import { SignupConsent } from '@/components/signup/signup-consent'
 import { SignupEmailForm } from '@/components/signup/signup-email-form'
@@ -48,9 +47,7 @@ export default function SignupPage() {
 
   return (
     <FormProvider {...form}>
-      <main className="flex min-h-svh flex-col items-center justify-center bg-background px-4 py-12">
-        <AuthLogo />
-
+      <main className="flex min-h-svh flex-col items-center justify-center bg-swipe-background px-6 py-6 text-swipe-foreground">
         {step === 'consent' ? (
           <SignupConsent onNext={() => setStep('intro')} />
         ) : step === 'intro' ? (

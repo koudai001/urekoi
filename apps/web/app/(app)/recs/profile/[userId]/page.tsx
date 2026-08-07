@@ -34,9 +34,9 @@ export default async function RecsProfilePage({
   const profile = res.data
   const returnHref = from === 'likes' ? '/likes/from-partner-card' : '/recs'
   return (
-    <main className="flex flex-1 justify-center p-2 md:items-center md:px-6 md:py-12">
-      <div className="relative h-full w-full md:h-auto md:w-auto">
-        <CardContainer>
+    <main className="flex flex-1 justify-center p-2">
+      <div className="relative h-full w-full">
+        <CardContainer className="!h-full !max-w-none !aspect-auto">
           <div className="relative h-full w-full overflow-hidden rounded-3xl">
             <ProfileViewer profile={profile} />
             <RecsProfileBackButton returnHref={returnHref} />
