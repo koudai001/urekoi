@@ -13,16 +13,15 @@ import (
 // ユーザーとプロフィールをまとめて作成するヘルパー
 func createProfile(t *testing.T, db *gorm.DB, email string, nickname string, age int16, prefectureCode int16) models.Profile {
 	user := models.User{
-		Email:     email,
-		Password:  "hashed",
-		Gender:    "female",
-		Birthdate: time.Now().AddDate(-int(age), 0, 0),
+		Email: email,
 	}
 	require.NoError(t, db.Create(&user).Error)
 
 	profile := models.Profile{
 		UserID:         user.ID,
 		Nickname:       nickname,
+		Gender:         "female",
+		Birthdate:      time.Now().AddDate(-int(age), 0, 0),
 		PrefectureCode: prefectureCode,
 	}
 	require.NoError(t, db.Create(&profile).Error)

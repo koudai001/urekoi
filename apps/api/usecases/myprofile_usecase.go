@@ -63,7 +63,7 @@ func (u *MyProfileUsecase) GetMyProfile(userID uint64) (dto.ProfileDetail, error
 	return dto.ProfileDetail{
 		UserID:         profile.UserID,
 		Nickname:       profile.Nickname,
-		Age:            profile.User.Age(),
+		Age:            profile.Age(),
 		PrefectureCode: profile.PrefectureCode,
 		Prefecture:     profile.Prefecture.Name,
 		Bio:            profile.Bio,

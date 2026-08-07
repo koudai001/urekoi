@@ -17,6 +17,8 @@ type IAuthRepository interface {
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByID(id uint64) (*models.User, error)
 	CreateUser(user *models.User) error
+	CreatePasswordCredential(credential *models.PasswordCredential) error
+	GetPasswordCredentialByUserID(userID uint64) (*models.PasswordCredential, error)
 	CreateRefreshToken(refreshToken *models.RefreshToken) error
 	GetRefreshTokenByHash(tokenHash string) (*models.RefreshToken, error)
 	DeleteRefreshToken(id uint64) error
@@ -75,6 +77,19 @@ func (r *AuthRepository) CreateUser(user *models.User) error {
 	}
 
 	return nil
+}
+
+func (r *AuthRepository) CreatePasswordCredential(credential *models.PasswordCredential) error {
+	return r.db.Create(credential).Error
+}
+
+func (r *AuthRepository) GetPasswordCredentialByUserID(userID uint64) (*models.PasswordCredential, error) {
+	var credential models.PasswordCredential
+	if err := r.db.Where("user_id = ?", userID).First(&credential).Error; err != nil {
+		return nil, err
+	}
+
+	return &credential, nil
 }
 
 func (r *AuthRepository) CreateRefreshToken(refreshToken *models.RefreshToken) error {

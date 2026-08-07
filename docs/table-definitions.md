@@ -5,17 +5,30 @@ erDiagram
     USER {
         bigint id PK
         varchar email "NOT NULL UNIQUE"
-        varchar password "NOT NULL ハッシュ"
-        varchar gender "NOT NULL male/female signup時に確定、以降変更不可"
-        date birthdate "NOT NULL signup時に確定、以降変更不可。年齢はここから算出(Profileにカラムは持たない)"
         timestamptz created_at "NOT NULL DEFAULT now()"
         timestamptz updated_at "NOT NULL DEFAULT now()"
         timestamptz deleted_at "退会日時 NULLなら有効ユーザー 論理削除用"
+    }
+    PASSWORD_CREDENTIAL {
+        bigint user_id PK,FK "User.ID (1:1)"
+        varchar password_hash "NOT NULL bcryptハッシュ"
+        timestamptz created_at "NOT NULL DEFAULT now()"
+        timestamptz updated_at "NOT NULL DEFAULT now()"
+    }
+    AUTH_IDENTITY {
+        bigint id PK
+        bigint user_id FK "NOT NULL User.ID"
+        varchar provider "NOT NULL google/appleなど"
+        varchar provider_user_id "NOT NULL OIDCのsub UNIQUE(provider, provider_user_id)"
+        timestamptz created_at "NOT NULL DEFAULT now()"
+        timestamptz updated_at "NOT NULL DEFAULT now()"
     }
     PROFILE {
         bigint id PK
         bigint user_id FK "NOT NULL UNIQUE User.ID (1:1)"
         varchar nickname "NOT NULL"
+        varchar gender "NOT NULL male/female signup時に確定、以降変更不可"
+        date birthdate "NOT NULL signup時に確定、以降変更不可。年齢はここから算出"
         smallint prefecture_code FK "NOT NULL Prefecture.ID 居住地"
         text bio
         varchar occupation "職業。選択肢はコード側で固定管理(マスタ化しない)"
@@ -89,6 +102,8 @@ erDiagram
     }
 
     USER ||--o| PROFILE : has
+    USER ||--o| PASSWORD_CREDENTIAL : has
+    USER ||--o{ AUTH_IDENTITY : has
     PREFECTURE ||--o{ PROFILE : "located in"
     PROFILE ||--o{ PROFILE_IMAGE : has
     PROFILE ||--o{ PROFILE_TAG : has

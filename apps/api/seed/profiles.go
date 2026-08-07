@@ -117,18 +117,24 @@ func SeedDummyProfiles(db *gorm.DB) error {
 
 	for _, dp := range dummyProfiles {
 		user := models.User{
-			Email:     dp.Email,
-			Password:  string(hashedPassword),
-			Gender:    dp.Gender,
-			Birthdate: time.Now().AddDate(-int(dp.Age), 0, 0),
+			Email: dp.Email,
 		}
 		if err := db.Where(models.User{Email: dp.Email}).FirstOrCreate(&user).Error; err != nil {
+			return err
+		}
+		credential := models.PasswordCredential{
+			UserID:       user.ID,
+			PasswordHash: string(hashedPassword),
+		}
+		if err := db.Where(models.PasswordCredential{UserID: user.ID}).FirstOrCreate(&credential).Error; err != nil {
 			return err
 		}
 
 		profile := models.Profile{
 			UserID:         user.ID,
 			Nickname:       dp.Nickname,
+			Gender:         dp.Gender,
+			Birthdate:      time.Now().AddDate(-int(dp.Age), 0, 0),
 			PrefectureCode: dp.PrefectureCode,
 			Bio:            dp.Bio,
 		}

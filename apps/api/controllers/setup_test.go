@@ -43,6 +43,7 @@ func migrateAndSeed(t *testing.T, db *gorm.DB) {
 
 	require.NoError(t, db.AutoMigrate(
 		&models.User{},
+		&models.PasswordCredential{},
 		&models.Profile{},
 		&models.ProfileImage{},
 		&models.Prefecture{},

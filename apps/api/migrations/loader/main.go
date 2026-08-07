@@ -14,6 +14,8 @@ import (
 func main() {
 	stmts, err := gormschema.New("postgres").Load(
 		&models.User{},
+		&models.PasswordCredential{},
+		&models.AuthIdentity{},
 		&models.Profile{},
 		&models.ProfileImage{},
 		&models.Prefecture{},
