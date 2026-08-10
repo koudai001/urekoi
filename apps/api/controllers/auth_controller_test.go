@@ -73,10 +73,7 @@ func TestLogin_Success(t *testing.T) {
 	signupReq := validSignupRequest("login@example.com")
 	require.Equal(t, http.StatusCreated, postJSON(t, router, "/signup", signupReq).Code)
 
-	w := postJSON(t, router, "/login", dto.LoginRequest{
-		Email:    signupReq.Email,
-		Password: signupReq.Password,
-	})
+	w := postJSON(t, router, "/login", dto.LoginRequest(signupReq))
 
 	require.Equal(t, http.StatusOK, w.Code)
 
