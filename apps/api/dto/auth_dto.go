@@ -1,12 +1,8 @@
 package dto
 
 type SignupRequest struct {
-	Email          string `json:"email"`
-	Password       string `json:"password"`
-	Gender         string `json:"gender"`
-	Birthdate      string `json:"birthdate"` // YYYY-MM-DD
-	Nickname       string `json:"nickname"`
-	PrefectureCode int16  `json:"prefecture_code"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type SignupResponse struct {

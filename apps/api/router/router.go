@@ -21,7 +21,7 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client, s3Client *s3.Client) *g
 	profileRepo := repositories.NewProfileRepository(db)
 
 	authRepo := repositories.NewAuthRepository(db)
-	authUsecase := usecases.NewAuthUsecase(authRepo, profileRepo)
+	authUsecase := usecases.NewAuthUsecase(authRepo)
 	authController := controllers.NewAuthController(authUsecase)
 
 	likeRepo := repositories.NewLikeRepository(db)
@@ -85,6 +85,7 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client, s3Client *s3.Client) *g
 
 	authRequired.GET("/tags", tagController.ListTags)
 	authRequired.GET("/myprofile", myProfileController.GetMyProfile)
+	authRequired.POST("/myprofile", myProfileController.CreateMyProfile)
 	authRequired.PUT("/myprofile", myProfileController.UpdateMyProfile)
 
 	authRequired.POST("/myprofile/images/presign", profileImageController.PresignUpload)

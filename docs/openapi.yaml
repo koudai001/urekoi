@@ -41,7 +41,7 @@ paths:
     post:
       tags: [auth]
       operationId: postSignup
-      summary: 新規登録
+      summary: メールアドレス・パスワード登録
       security: []
       requestBody:
         required: true
@@ -214,6 +214,41 @@ paths:
                 $ref: "#/components/schemas/Error"
               example:
                 error: profile not found
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags: [myprofile]
+      operationId: postMyprofile
+      summary: 初回プロフィール作成
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MyProfileCreateRequest"
+      responses:
+        "201":
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileDetail"
+        "400":
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          description: プロフィール作成済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           $ref: "#/components/responses/InternalServerError"
     put:
@@ -832,7 +867,7 @@ components:
   schemas:
     SignupRequest:
       type: object
-      required: [email, password, gender, birthdate, nickname, prefecture_code]
+      required: [email, password]
       properties:
         email:
           type: string
@@ -842,20 +877,6 @@ components:
           type: string
           minLength: 8
           example: password123
-        gender:
-          type: string
-          enum: [male, female]
-          example: female
-        birthdate:
-          type: string
-          format: date
-          example: "1990-01-01"
-        nickname:
-          type: string
-          example: たろう
-        prefecture_code:
-          type: integer
-          example: 13
     SignupResponse:
       type: object
       properties:
@@ -1207,6 +1228,24 @@ components:
           items:
             type: integer
           example: [1, 2, 3]
+    MyProfileCreateRequest:
+      type: object
+      required: [nickname, prefecture_code, gender, birthdate]
+      properties:
+        nickname:
+          type: string
+          example: たろう
+        prefecture_code:
+          type: integer
+          example: 13
+        gender:
+          type: string
+          enum: [male, female]
+          example: female
+        birthdate:
+          type: string
+          format: date
+          example: "1990-01-01"
     ProfileImagePresignRequest:
       type: object
       required: [content_type, extension]

@@ -1,13 +1,13 @@
+import { startTransition } from 'react'
 import { useFormContext } from 'react-hook-form'
 import type { SignupResult } from '@/actions/auth'
 import { BackButton } from '@/components/ui/back-button'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
-import type { SignupFormValues } from './schema'
-import { startTransition } from 'react'
+import type { AuthFormValues } from '@/app/signup/schema'
 
-// signupフローの最終ステップ。メールアドレス・パスワードを入力して送信する
+// signupフローの最初のステップ。メールアドレス・パスワードを入力して送信する
 export function SignupEmailForm({
   formAction,
   isPending,
@@ -23,20 +23,13 @@ export function SignupEmailForm({
     register,
     handleSubmit,
     formState: { errors },
-  } = useFormContext<SignupFormValues>()
+  } = useFormContext<AuthFormValues>()
 
-  // zodバリデーションを通ってから、既存のsignup Server Actionに委譲する。
-  // DOMからではなくバリデーション済みのdataから直接FormDataを組み立てる
+  // 既存のsignup Server Actionに委譲する。DOMからではなくバリデーション済みのdataから直接FormDataを組み立てる
   const onSubmit = handleSubmit((data) => {
-    const birthdate = `${data.birthYear}-${data.birthMonth.padStart(2, '0')}-${data.birthDay.padStart(2, '0')}`
-
     const formData = new FormData()
     formData.set('email', data.email)
     formData.set('password', data.password)
-    formData.set('gender', data.gender ?? '')
-    formData.set('prefecture_code', String(data.prefectureCode ?? ''))
-    formData.set('nickname', data.nickname)
-    formData.set('birthdate', birthdate)
 
     startTransition(async () => {
       await formAction(formData)
@@ -53,9 +46,6 @@ export function SignupEmailForm({
       <h1 className="mt-6 text-2xl font-bold text-balance text-swipe-foreground">
         ログイン情報を作成してください
       </h1>
-      <p className="mt-3 text-sm leading-relaxed text-swipe-muted-foreground">
-        次回以降に熟恋にログインするためにメールアドレスとパスワードを設定してください。
-      </p>
 
       <form className="mt-8 flex flex-1 flex-col gap-7" onSubmit={onSubmit}>
         {/* メール */}

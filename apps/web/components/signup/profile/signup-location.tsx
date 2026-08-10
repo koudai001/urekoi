@@ -3,9 +3,9 @@ import { useFormContext } from 'react-hook-form'
 import { PREFECTURES } from '@/lib/prefectures'
 import { SignupProgressBar } from './signup-progress-bar'
 import { SignupStepNav } from './signup-step-nav'
-import type { SignupFormValues } from './schema'
+import type { ProfileFormValues } from '@/app/signup/profile/schema'
 
-// signupフローのステップ6。居住都道府県の選択(birthdayの次、nicknameの前)
+// 居住都道府県の選択
 export function SignupLocation({
   onBack,
   onNext,
@@ -13,7 +13,7 @@ export function SignupLocation({
   onBack: () => void
   onNext: () => void
 }) {
-  const { watch, setValue } = useFormContext<SignupFormValues>()
+  const { watch, setValue } = useFormContext<ProfileFormValues>()
   const prefectureCode = watch('prefectureCode')
 
   return (

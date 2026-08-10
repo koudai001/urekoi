@@ -1,10 +1,10 @@
 import { Check } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
-import type { SignupFormValues } from './schema'
+import type { AuthFormValues } from '@/app/signup/schema'
 
 // signupフローのステップ2。年齢・規約への同意を取る
 export function SignupConsent({ onNext }: { onNext: () => void }) {
-  const { watch, setValue } = useFormContext<SignupFormValues>()
+  const { watch, setValue } = useFormContext<AuthFormValues>()
   const isAdult = watch('isAdult') // チェックボックスの値を監視
   const agreeTerms = watch('agreeTerms') // チェックボックスの値を監視
   const canProceed = isAdult && agreeTerms // 両方のチェックボックスがオンの場合に進める

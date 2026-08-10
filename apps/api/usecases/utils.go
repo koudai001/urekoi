@@ -9,6 +9,8 @@ import (
 
 var ErrProfileNotFound = errors.New("profile not found")
 
+var ErrProfileAlreadyExists = errors.New("profile already exists")
+
 // オンライン状態は未実装のため固定で返す値
 const mockOnlineStatus = "online"
 

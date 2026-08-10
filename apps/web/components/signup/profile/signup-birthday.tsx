@@ -3,7 +3,7 @@ import { Cake } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import { SignupProgressBar } from './signup-progress-bar'
 import { SignupStepNav } from './signup-step-nav'
-import type { SignupFormValues } from './schema'
+import type { ProfileFormValues } from '@/app/signup/profile/schema'
 
 // 数字以外を除去し、指定桁数までに切り詰める
 function sanitizeDigits(value: string, maxLength: number) {
@@ -23,7 +23,7 @@ export function SignupBirthday({
     setValue,
     trigger,
     formState: { errors },
-  } = useFormContext<SignupFormValues>()
+  } = useFormContext<ProfileFormValues>()
   const year = watch('birthYear')
   const month = watch('birthMonth')
   const day = watch('birthDay')

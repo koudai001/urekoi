@@ -2,6 +2,7 @@ package controllers_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -14,15 +15,88 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// 認証済みユーザーが初回プロフィールを作成できることを検証
+func TestCreateMyProfile_Success(t *testing.T) {
+	router, _, _ := setup(t)
+	signupRes := signUpOnlyEmail(t, router, "myprofile-create@example.com")
+	req := validProfileCreateRequest()
+
+	res := createMyProfile(t, router, signupRes, req)
+
+	assert.Equal(t, signupRes.ID, res.UserID)
+	assert.Equal(t, req.Nickname, res.Nickname)
+	assert.Equal(t, req.PrefectureCode, res.PrefectureCode)
+}
+
+// 作成済みのプロフィールを再作成すると409を返すことを検証
+func TestCreateMyProfile_AlreadyExists(t *testing.T) {
+	router, _, _ := setup(t)
+	signupRes := signUpOnlyEmail(t, router, "myprofile-duplicate@example.com")
+	req := validProfileCreateRequest()
+	createMyProfile(t, router, signupRes, req)
+
+	w := postJSONWithAuth(t, router, "/myprofile", req, signupRes.AccessToken)
+
+	assert.Equal(t, http.StatusConflict, w.Code)
+}
+
+// 不正なプロフィール入力で400を返すことを検証
+func TestCreateMyProfile_ValidationErrors(t *testing.T) {
+	cases := []struct {
+		name   string
+		mutate func(*dto.ProfileCreateRequest)
+	}{
+		{"nicknameが空", func(r *dto.ProfileCreateRequest) { r.Nickname = "" }},
+		{"prefecture_codeが未指定", func(r *dto.ProfileCreateRequest) { r.PrefectureCode = 0 }},
+		{"genderが空", func(r *dto.ProfileCreateRequest) { r.Gender = "" }},
+		{"genderが不正な値", func(r *dto.ProfileCreateRequest) { r.Gender = "other" }},
+		{"birthdateが空", func(r *dto.ProfileCreateRequest) { r.Birthdate = "" }},
+		{"birthdateの形式が不正", func(r *dto.ProfileCreateRequest) { r.Birthdate = "2024/01/01" }},
+		{"実在しない日付", func(r *dto.ProfileCreateRequest) { r.Birthdate = "2024-02-30" }},
+		{"18歳未満", func(r *dto.ProfileCreateRequest) { r.Birthdate = time.Now().AddDate(-17, 0, 0).Format("2006-01-02") }},
+		{"100歳超え", func(r *dto.ProfileCreateRequest) { r.Birthdate = time.Now().AddDate(-101, 0, 0).Format("2006-01-02") }},
+		{"女性30歳未満", func(r *dto.ProfileCreateRequest) {
+			r.Gender = "female"
+			r.Birthdate = time.Now().AddDate(-25, 0, 0).Format("2006-01-02")
+		}},
+		{"男性35歳超え", func(r *dto.ProfileCreateRequest) {
+			r.Gender = "male"
+			r.Birthdate = time.Now().AddDate(-40, 0, 0).Format("2006-01-02")
+		}},
+	}
+
+	for i, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			router, _, _ := setup(t)
+			signupRes := signUpOnlyEmail(t, router, fmt.Sprintf("myprofile-invalid-%d@example.com", i))
+			req := validProfileCreateRequest()
+			c.mutate(&req)
+
+			w := postJSONWithAuth(t, router, "/myprofile", req, signupRes.AccessToken)
+
+			assert.Equal(t, http.StatusBadRequest, w.Code)
+		})
+	}
+}
+
+// access_tokenがない場合は401を返すことを検証
+func TestCreateMyProfile_Unauthorized(t *testing.T) {
+	router, _, _ := setup(t)
+
+	w := postJSON(t, router, "/myprofile", validProfileCreateRequest())
+
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
 // 自分のプロフィール(属性・タグ含む)を取得できることを検証
 func TestGetMyProfile_Success(t *testing.T) {
 	router, db, _ := setup(t)
 
-	req := validSignupRequest("myprofile-viewer@example.com")
+	signupRes := signUpOnlyEmail(t, router, "myprofile-viewer@example.com")
+	req := validProfileCreateRequest()
 	req.Nickname = "テスト太郎"
-	req.PrefectureCode = seed.PrefectureTokyo
 	req.Birthdate = time.Now().AddDate(-30, 0, 0).Format("2006-01-02")
-	signupRes := signUpWithFields(t, router, req)
+	createMyProfile(t, router, signupRes, req)
 
 	var profile models.Profile
 	require.NoError(t, db.Where("user_id = ?", signupRes.ID).First(&profile).Error)
@@ -54,8 +128,8 @@ func TestGetMyProfile_Success(t *testing.T) {
 func TestGetMyProfile_WithImages(t *testing.T) {
 	// セットアップ: ルーターとログイン済みユーザーを用意し、画像を2枚アップロードしておく
 	router, _, _ := setup(t)
-	req := validSignupRequest("myprofile-images@example.com")
-	signupRes := signUpWithFields(t, router, req)
+	signupRes := signUpOnlyEmail(t, router, "myprofile-images@example.com")
+	createMyProfile(t, router, signupRes, validProfileCreateRequest())
 
 	first := createImage(t, router, signupRes.AccessToken)
 	second := createImage(t, router, signupRes.AccessToken)
@@ -79,12 +153,9 @@ func TestGetMyProfile_WithImages(t *testing.T) {
 
 // プロフィールが存在しない場合は404を返すことを検証
 func TestGetMyProfile_NotFound(t *testing.T) {
-	router, db, _ := setup(t)
+	router, _, _ := setup(t)
 
 	signupRes := signUpOnlyEmail(t, router, "myprofilenonexistent@example.com")
-
-	// signupで自動作成されたプロフィールが無い状態を仕込む
-	require.NoError(t, db.Where("user_id = ?", signupRes.ID).Delete(&models.Profile{}).Error)
 
 	w := getJSONWithAuth(t, router, "/myprofile", signupRes.AccessToken)
 
@@ -105,6 +176,7 @@ func TestUpdateMyProfile_Success(t *testing.T) {
 	// セットアップ: ログイン済みユーザーを用意する
 	router, db, _ := setup(t)
 	signupRes := signUpOnlyEmail(t, router, "myprofile-update@example.com")
+	createMyProfile(t, router, signupRes, validProfileCreateRequest())
 
 	// 更新前のプロフィールに既存タグを紐付けておく
 	var profile models.Profile
@@ -138,6 +210,7 @@ func TestUpdateMyProfile_Success(t *testing.T) {
 func TestUpdateMyProfile_ValidationError(t *testing.T) {
 	router, _, _ := setup(t)
 	signupRes := signUpOnlyEmail(t, router, "myprofile-update-invalid@example.com")
+	createMyProfile(t, router, signupRes, validProfileCreateRequest())
 
 	w := putJSONWithAuth(t, router, "/myprofile", dto.ProfileUpdateRequest{
 		PrefectureCode: seed.PrefectureTokyo,

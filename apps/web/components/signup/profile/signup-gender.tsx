@@ -3,7 +3,7 @@ import { Smile } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import { SignupProgressBar } from './signup-progress-bar'
 import { SignupStepNav } from './signup-step-nav'
-import type { SignupFormValues } from './schema'
+import type { ProfileFormValues } from '@/app/signup/profile/schema'
 
 const options = [
   { value: 'male', label: '男性', image: '/profiles/me-1.png' },
@@ -18,7 +18,7 @@ export function SignupGender({
   onBack: () => void
   onNext: () => void
 }) {
-  const { watch, setValue } = useFormContext<SignupFormValues>()
+  const { watch, setValue } = useFormContext<ProfileFormValues>()
   const gender = watch('gender')
 
   return (

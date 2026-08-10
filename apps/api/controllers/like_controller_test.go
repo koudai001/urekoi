@@ -110,8 +110,8 @@ func TestGetPendingLikes_Success(t *testing.T) {
 	router, _, _ := setup(t)
 
 	// 送信元と送信先のユーザーを作成
-	from := signUpOnlyEmail(t, router, "like-received-from@example.com")
-	to := signUpOnlyEmail(t, router, "like-received-to@example.com")
+	from := signUpWithProfile(t, router, "like-received-from@example.com")
+	to := signUpWithProfile(t, router, "like-received-to@example.com")
 
 	// 送信元から送信先にいいねを送る
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: to.ID}, from.AccessToken).Code)

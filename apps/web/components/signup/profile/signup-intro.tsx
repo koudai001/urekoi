@@ -24,7 +24,10 @@ export function SignupIntro({ onNext }: { onNext: () => void }) {
           </span>
         </div>
 
-        <h1 className="mt-6 text-3xl leading-snug font-bold text-balance text-swipe-foreground">
+        <p className="mt-6 text-base font-bold text-swipe-accent">
+          熟恋へようこそ
+        </p>
+        <h1 className="mt-2 text-3xl leading-snug font-bold text-balance text-swipe-foreground">
           まず、あなたのことを
           <br />
           教えてください

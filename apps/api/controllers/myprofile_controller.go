@@ -40,6 +40,32 @@ func (ctrl *MyProfileController) GetMyProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, profile)
 }
 
+func (ctrl *MyProfileController) CreateMyProfile(c *gin.Context) {
+	var req dto.ProfileCreateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": errInvalidRequestFormat})
+		return
+	}
+
+	if err := validators.ValidateMyProfileCreateRequest(req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user := c.MustGet(middlewares.ContextUserKey).(*models.User)
+	profile, err := ctrl.myProfileUsecase.CreateMyProfile(user.ID, req)
+	if err != nil {
+		if errors.Is(err, usecases.ErrProfileAlreadyExists) {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, profile)
+}
+
 func (ctrl *MyProfileController) UpdateMyProfile(c *gin.Context) {
 	var req dto.ProfileUpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

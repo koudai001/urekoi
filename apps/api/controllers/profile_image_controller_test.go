@@ -85,7 +85,7 @@ func TestPresignUpload_Unauthorized(t *testing.T) {
 func TestCreateImage_Success(t *testing.T) {
 	// セットアップ: ルーターとログイン済みユーザーを用意する
 	router, _, _ := setup(t)
-	me := signUpOnlyEmail(t, router, "create-image-success@example.com")
+	me := signUpWithProfile(t, router, "create-image-success@example.com")
 
 	// 実行: 実際にpresignを叩いて発行されたimage_keyで登録する
 	imageKey := presignImageKey(t, router, me.AccessToken)
@@ -106,7 +106,7 @@ func TestCreateImage_Success(t *testing.T) {
 func TestCreateImage_SortOrderIncrements(t *testing.T) {
 	// セットアップ: ルーターとログイン済みユーザーを用意する
 	router, _, _ := setup(t)
-	me := signUpOnlyEmail(t, router, "create-image-sortorder@example.com")
+	me := signUpWithProfile(t, router, "create-image-sortorder@example.com")
 
 	// 実行: 実際にpresignを叩いて発行したimage_keyで、同じユーザーが2枚連続登録する
 	first := postJSONWithAuth(t, router, "/myprofile/images", dto.ProfileImageCreateRequest{
@@ -158,7 +158,7 @@ func TestCreateImage_Unauthorized(t *testing.T) {
 func TestDeleteImage_Success(t *testing.T) {
 	// セットアップ: ルーターとログイン済みユーザーを用意し、画像を1枚登録しておく
 	router, _, _ := setup(t)
-	me := signUpOnlyEmail(t, router, "delete-image-success@example.com")
+	me := signUpWithProfile(t, router, "delete-image-success@example.com")
 	image := createImage(t, router, me.AccessToken)
 
 	// 実行: 自分の画像を削除する
@@ -172,8 +172,8 @@ func TestDeleteImage_Success(t *testing.T) {
 func TestDeleteImage_NotOwner(t *testing.T) {
 	// セットアップ: 画像を持つユーザーaと、別のユーザーbを用意する
 	router, _, _ := setup(t)
-	a := signUpOnlyEmail(t, router, "delete-image-a@example.com")
-	b := signUpOnlyEmail(t, router, "delete-image-b@example.com")
+	a := signUpWithProfile(t, router, "delete-image-a@example.com")
+	b := signUpWithProfile(t, router, "delete-image-b@example.com")
 	image := createImage(t, router, a.AccessToken)
 
 	// 実行: bがaの画像を削除しようとする

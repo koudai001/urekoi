@@ -5,7 +5,6 @@ const MIN_AGE_FEMALE = 30
 const MAX_AGE_MALE = 35
 const MIN_AGE = 18
 const MAX_AGE = 100 // 現実的にあり得ない生年月日(1111年など)を弾くための上限
-const EMAIL_PATTERN = /\S+@\S+\.\S+/
 
 // 生年月日から年齢を計算する関数
 function calculateAge(
@@ -35,38 +34,18 @@ function isRealDate(year: number, month: number, day: number): boolean {
 
 // base schemaは型だけ緩く合わせておく(必須・形式チェックはsuperRefineで行う)。
 // マルチステップの途中は他のフィールドがまだ未入力(空文字/undefined)なので、
-// base schemaで厳密なmin/maxやemail形式まで見てしまうと、そこで検証が止まって
+// base schemaで厳密なmin/maxまで見てしまうと、そこで検証が止まって
 // 後続のsuperRefine(実在日付・年齢などのクロスフィールドチェック)が一切実行されなくなるため
-export const signupSchema = z
+export const profileSchema = z
   .object({
-    isAdult: z.boolean(),
-    agreeTerms: z.boolean(),
     gender: z.enum(['male', 'female']).optional(),
     birthYear: z.string(),
     birthMonth: z.string(),
     birthDay: z.string(),
     prefectureCode: z.number().optional(),
     nickname: z.string(),
-    email: z.string(),
-    password: z.string(),
   })
   .superRefine((data, ctx) => {
-    if (!data.isAdult) {
-      ctx.addIssue({
-        code: 'custom',
-        message: '18歳以上・独身であることの確認が必要です',
-        path: ['isAdult'],
-      })
-    }
-
-    if (!data.agreeTerms) {
-      ctx.addIssue({
-        code: 'custom',
-        message: '規約への同意が必要です',
-        path: ['agreeTerms'],
-      })
-    }
-
     if (!data.gender) {
       ctx.addIssue({
         code: 'custom',
@@ -148,22 +127,6 @@ export const signupSchema = z
         path: ['nickname'],
       })
     }
-
-    if (!EMAIL_PATTERN.test(data.email)) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'メールアドレスの形式が正しくありません',
-        path: ['email'],
-      })
-    }
-
-    if (data.password.length < 8) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'パスワードは8文字以上で入力してください',
-        path: ['password'],
-      })
-    }
   })
 
-export type SignupFormValues = z.infer<typeof signupSchema>
+export type ProfileFormValues = z.infer<typeof profileSchema>

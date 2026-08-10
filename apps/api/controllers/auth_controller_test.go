@@ -2,10 +2,8 @@ package controllers_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"testing"
-	"time"
 
 	"api/dto"
 
@@ -29,7 +27,7 @@ func TestSignUp_Success(t *testing.T) {
 	assert.NotEmpty(t, res.RefreshToken)
 }
 
-// 不正な入力(形式エラー・必須未入力・年齢制限違反)で400を返すことを検証 table-driven-test
+// 不正な認証情報で400を返すことを検証 table-driven-test
 func TestSignUp_ValidationErrors(t *testing.T) {
 	router, _, _ := setup(t)
 
@@ -38,64 +36,19 @@ func TestSignUp_ValidationErrors(t *testing.T) {
 		mutate func(req *dto.SignupRequest) // リクエストを不正に変形する関数
 	}{
 		{"emailの形式が不正", func(r *dto.SignupRequest) { r.Email = "not-an-email" }},
+		{"emailが空", func(r *dto.SignupRequest) { r.Email = "" }},
 		{"passwordが短すぎる", func(r *dto.SignupRequest) { r.Password = "short" }},
-		{"genderが空", func(r *dto.SignupRequest) { r.Gender = "" }},
-		{"genderが不正な値", func(r *dto.SignupRequest) { r.Gender = "other" }},
-		{"nicknameが空", func(r *dto.SignupRequest) { r.Nickname = "" }},
-		{"prefecture_codeが未指定", func(r *dto.SignupRequest) { r.PrefectureCode = 0 }},
-		{"birthdateが空", func(r *dto.SignupRequest) { r.Birthdate = "" }},
-		{"birthdateの形式が不正", func(r *dto.SignupRequest) { r.Birthdate = "2024/01/01" }},
-		{"実在しない日付(2月30日)", func(r *dto.SignupRequest) { r.Birthdate = "2024-02-30" }},
-		{"18歳未満", func(r *dto.SignupRequest) {
-			r.Birthdate = time.Now().AddDate(-17, 0, 0).Format("2006-01-02")
-		}},
-		{"100歳超え", func(r *dto.SignupRequest) {
-			r.Birthdate = time.Now().AddDate(-101, 0, 0).Format("2006-01-02")
-		}},
-		{"女性30歳未満", func(r *dto.SignupRequest) {
-			r.Gender = "female"
-			r.Birthdate = time.Now().AddDate(-25, 0, 0).Format("2006-01-02")
-		}},
-		{"男性35歳超え", func(r *dto.SignupRequest) {
-			r.Gender = "male"
-			r.Birthdate = time.Now().AddDate(-40, 0, 0).Format("2006-01-02")
-		}},
+		{"passwordが空", func(r *dto.SignupRequest) { r.Password = "" }},
 	}
 
-	for i, c := range cases {
+	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			req := validSignupRequest(fmt.Sprintf("signup-invalid-%d@example.com", i))
+			req := validSignupRequest("signup-invalid@example.com")
 			c.mutate(&req)
 
 			w := postJSON(t, router, "/signup", req)
 
 			assert.Equal(t, http.StatusBadRequest, w.Code)
-		})
-	}
-}
-
-// 性別×年齢の境界値(女性ちょうど30歳・男性ちょうど35歳)は許可されることを検証　table-driven-test
-func TestSignUp_AgeGenderBoundary_Success(t *testing.T) {
-	router, _, _ := setup(t)
-
-	cases := []struct {
-		name   string
-		gender string
-		age    int
-	}{
-		{"女性ちょうど30歳", "female", 30},
-		{"男性ちょうど35歳", "male", 35},
-	}
-
-	for i, c := range cases {
-		t.Run(c.name, func(t *testing.T) {
-			req := validSignupRequest(fmt.Sprintf("signup-boundary-%d@example.com", i))
-			req.Gender = c.gender
-			req.Birthdate = time.Now().AddDate(-c.age, 0, 0).Format("2006-01-02")
-
-			w := postJSON(t, router, "/signup", req)
-
-			assert.Equal(t, http.StatusCreated, w.Code)
 		})
 	}
 }

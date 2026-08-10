@@ -5,22 +5,10 @@
  * 熟女専門マッチングアプリ urekoi のAPI仕様
  * OpenAPI spec version: 0.1.0
  */
-export type SignupRequestGender = typeof SignupRequestGender[keyof typeof SignupRequestGender];
-
-
-export const SignupRequestGender = {
-  male: 'male',
-  female: 'female',
-} as const;
-
 export interface SignupRequest {
   email: string;
   /** @minLength 8 */
   password: string;
-  gender: SignupRequestGender;
-  birthdate: string;
-  nickname: string;
-  prefecture_code: number;
 }
 
 export interface SignupResponse {
@@ -181,6 +169,21 @@ export interface MyProfileRequest {
   smoking?: string;
   height_cm?: number;
   tag_ids?: number[];
+}
+
+export type MyProfileCreateRequestGender = typeof MyProfileCreateRequestGender[keyof typeof MyProfileCreateRequestGender];
+
+
+export const MyProfileCreateRequestGender = {
+  male: 'male',
+  female: 'female',
+} as const;
+
+export interface MyProfileCreateRequest {
+  nickname: string;
+  prefecture_code: number;
+  gender: MyProfileCreateRequestGender;
+  birthdate: string;
 }
 
 export interface ProfileImagePresignRequest {
