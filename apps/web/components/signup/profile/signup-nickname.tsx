@@ -2,9 +2,9 @@ import { IdCard } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import { SignupProgressBar } from './signup-progress-bar'
 import { SignupStepNav } from './signup-step-nav'
-import type { SignupFormValues } from './schema'
+import type { ProfileFormValues } from '@/app/signup/profile/schema'
 
-// signupフローのステップ7。表示名(ニックネーム)入力(locationの次、emailの前)
+// 表示名(ニックネーム)入力
 export function SignupNickname({
   onBack,
   onNext,
@@ -12,7 +12,7 @@ export function SignupNickname({
   onBack: () => void
   onNext: () => void
 }) {
-  const { register, watch } = useFormContext<SignupFormValues>()
+  const { register, watch } = useFormContext<ProfileFormValues>()
   const canProceed = watch('nickname').trim().length > 0
 
   return (

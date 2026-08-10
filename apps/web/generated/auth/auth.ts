@@ -52,7 +52,7 @@ export const getPostSignupUrl = () => {
 }
 
 /**
- * @summary 新規登録
+ * @summary メールアドレス・パスワード登録
  */
 export const postSignup = async (signupRequest: SignupRequest, options?: RequestInit): Promise<postSignupResponse> => {
 

@@ -8,6 +8,7 @@
 import type {
   Error,
   InternalServerErrorResponse,
+  MyProfileCreateRequest,
   MyProfileRequest,
   ProfileDetail,
   ProfileImageCreateRequest,
@@ -68,6 +69,63 @@ export const getMyprofile = async ( options?: RequestInit): Promise<getMyprofile
     method: 'GET'
 
 
+  }
+);}
+
+
+export type postMyprofileResponse201 = {
+  data: ProfileDetail
+  status: 201
+}
+
+export type postMyprofileResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type postMyprofileResponse401 = {
+  data: UnauthorizedResponse
+  status: 401
+}
+
+export type postMyprofileResponse409 = {
+  data: Error
+  status: 409
+}
+
+export type postMyprofileResponse500 = {
+  data: InternalServerErrorResponse
+  status: 500
+}
+
+export type postMyprofileResponseSuccess = (postMyprofileResponse201) & {
+  headers: Headers;
+};
+export type postMyprofileResponseError = (postMyprofileResponse400 | postMyprofileResponse401 | postMyprofileResponse409 | postMyprofileResponse500) & {
+  headers: Headers;
+};
+
+export type postMyprofileResponse = (postMyprofileResponseSuccess | postMyprofileResponseError)
+
+export const getPostMyprofileUrl = () => {
+
+
+
+
+  return `/myprofile`
+}
+
+/**
+ * @summary 初回プロフィール作成
+ */
+export const postMyprofile = async (myProfileCreateRequest: MyProfileCreateRequest, options?: RequestInit): Promise<postMyprofileResponse> => {
+
+  return customFetch<postMyprofileResponse>(getPostMyprofileUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(myProfileCreateRequest)
   }
 );}
 

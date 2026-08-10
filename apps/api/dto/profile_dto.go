@@ -44,6 +44,14 @@ type ProfileUpdateRequest struct {
 	TagIDs         []uint64 `json:"tag_ids"`
 }
 
+// 初回プロフィール作成に必要な最小項目。
+type ProfileCreateRequest struct {
+	Nickname       string `json:"nickname"`
+	PrefectureCode int16  `json:"prefecture_code"`
+	Gender         string `json:"gender"`
+	Birthdate      string `json:"birthdate"`
+}
+
 type TagSummary struct {
 	Label    string `json:"label"`
 	Category string `json:"category"`

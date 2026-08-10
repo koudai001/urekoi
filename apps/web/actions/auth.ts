@@ -3,7 +3,6 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { postLogin, postLogout, postSignup } from '@/generated/auth/auth'
-import type { SignupRequestGender } from '@/generated/urekoiAPI.schemas'
 import {
   ACCESS_TOKEN_COOKIE_OPTIONS,
   COOKIE_ACCESS_TOKEN,
@@ -11,7 +10,9 @@ import {
   REFRESH_TOKEN_COOKIE_OPTIONS,
 } from '@/lib/cookie'
 
-export type SignupResult = { success: false; error: string } // 成功時はredirect('/recs')するので返却されない
+export type SignupResult =
+  | { success: true } // 成功後はプロフィール入力ステップへ進むので、呼び出し側がstateを見て遷移する
+  | { success: false; error: string }
 
 export type LoginResult = { success: false; error: string } // 成功時はredirect('/recs')するので返却されない
 
@@ -21,31 +22,13 @@ export async function signup(
 ): Promise<SignupResult> {
   const email = formData.get('email')
   const password = formData.get('password')
-  const gender = formData.get('gender')
-  const birthdate = formData.get('birthdate')
-  const nickname = formData.get('nickname')
-  const prefectureCode = formData.get('prefecture_code')
 
   // 型ガード
-  if (
-    typeof email !== 'string' ||
-    typeof password !== 'string' ||
-    typeof gender !== 'string' ||
-    typeof birthdate !== 'string' ||
-    typeof nickname !== 'string' ||
-    typeof prefectureCode !== 'string'
-  ) {
+  if (typeof email !== 'string' || typeof password !== 'string') {
     return { success: false, error: '入力内容を確認してください' }
   }
 
-  const res = await postSignup({
-    email,
-    password,
-    gender: gender as SignupRequestGender,
-    birthdate,
-    nickname,
-    prefecture_code: Number(prefectureCode),
-  })
+  const res = await postSignup({ email, password })
 
   // 全ケース網羅
   switch (res.status) {
@@ -54,7 +37,7 @@ export async function signup(
         res.data.access_token ?? '',
         res.data.refresh_token ?? '',
       )
-      redirect('/recs')
+      return { success: true }
     }
     case 409:
       return {

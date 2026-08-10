@@ -20,8 +20,6 @@ import (
 // リフレッシュトークンの有効期限
 const refreshTokenTTL = 30 * 24 * time.Hour
 
-const birthdateLayout = "2006-01-02"
-
 var (
 	ErrEmailAlreadyExists  = errors.New("email already exists")
 	ErrInvalidCredentials  = errors.New("invalid email or password")
@@ -31,7 +29,7 @@ var (
 
 type IAuthUsecase interface {
 	// サインアップ成功時もログインと同様にaccessToken(JWT)とrefreshTokenを返す(自動ログイン)。
-	// signup時にUser・PasswordCredential・Profileをまとめて作成する
+	// signup時にUser・PasswordCredentialをまとめて作成する
 	SignUp(req dto.SignupRequest) (user *models.User, accessToken string, refreshToken string, err error)
 	// ログイン成功時はaccessToken(JWT)とrefreshTokenを返す
 	Login(email string, password string) (accessToken string, refreshToken string, err error)
@@ -44,14 +42,12 @@ type IAuthUsecase interface {
 }
 
 type AuthUsecase struct {
-	authRepo    repositories.IAuthRepository
-	profileRepo repositories.IProfileRepository
+	authRepo repositories.IAuthRepository
 }
 
-func NewAuthUsecase(authRepo repositories.IAuthRepository, profileRepo repositories.IProfileRepository) IAuthUsecase {
+func NewAuthUsecase(authRepo repositories.IAuthRepository) IAuthUsecase {
 	return &AuthUsecase{
-		authRepo:    authRepo,
-		profileRepo: profileRepo,
+		authRepo: authRepo,
 	}
 }
 
@@ -62,14 +58,11 @@ func (u *AuthUsecase) SignUp(req dto.SignupRequest) (*models.User, string, strin
 		return nil, "", "", err
 	}
 
-	// controllerでバリデーション済み
-	birthdate, _ := time.Parse(birthdateLayout, req.Birthdate)
-
 	user := models.User{
 		Email: req.Email,
 	}
 
-	// User・PasswordCredential・Profileの作成をひとつのトランザクションにまとめる
+	// 認証情報をひとつのトランザクションで作成する。プロフィール作成は別のリクエストで行う。
 	err = u.authRepo.Transaction(func(tx *gorm.DB) error {
 		// Userの作成
 		if err := u.authRepo.WithTx(tx).CreateUser(&user); err != nil {
@@ -84,15 +77,7 @@ func (u *AuthUsecase) SignUp(req dto.SignupRequest) (*models.User, string, strin
 			return err
 		}
 
-		// Profileの作成
-		profile := models.Profile{
-			UserID:         user.ID,
-			Nickname:       req.Nickname,
-			Gender:         req.Gender,
-			Birthdate:      birthdate,
-			PrefectureCode: req.PrefectureCode,
-		}
-		return u.profileRepo.WithTx(tx).CreateProfile(&profile)
+		return nil
 	})
 	if err != nil {
 		if errors.Is(err, repositories.ErrEmailAlreadyExists) {

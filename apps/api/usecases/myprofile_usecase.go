@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"errors"
+	"time"
 
 	"api/dto"
 	"api/models"
@@ -11,8 +12,37 @@ import (
 type IMyProfileUsecase interface {
 	// 自分のプロフィールを取得する
 	GetMyProfile(userID uint64) (dto.ProfileDetail, error)
+	// 初回プロフィールを作成する
+	CreateMyProfile(userID uint64, req dto.ProfileCreateRequest) (dto.ProfileDetail, error)
 	// 自分のプロフィールを更新する(タグも入れ替える)
 	UpdateMyProfile(userID uint64, req dto.ProfileUpdateRequest) (dto.ProfileDetail, error)
+}
+
+func (u *MyProfileUsecase) CreateMyProfile(userID uint64, req dto.ProfileCreateRequest) (dto.ProfileDetail, error) {
+	if _, err := u.profileRepo.GetProfileByUserID(userID); err == nil {
+		return dto.ProfileDetail{}, ErrProfileAlreadyExists
+	} else if !errors.Is(err, repositories.ErrProfileNotFound) {
+		return dto.ProfileDetail{}, err
+	}
+
+	birthdate, err := time.Parse("2006-01-02", req.Birthdate)
+	if err != nil {
+		return dto.ProfileDetail{}, err
+	}
+
+	profile := models.Profile{
+		UserID:         userID,
+		Nickname:       req.Nickname,
+		Gender:         req.Gender,
+		Birthdate:      birthdate,
+		PrefectureCode: req.PrefectureCode,
+	}
+
+	if err := u.profileRepo.CreateProfile(&profile); err != nil {
+		return dto.ProfileDetail{}, err
+	}
+
+	return u.GetMyProfile(userID)
 }
 
 type MyProfileUsecase struct {

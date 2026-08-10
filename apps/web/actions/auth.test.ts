@@ -141,9 +141,9 @@ describe('Auth Server Actions', () => {
     })
   })
 
-  // signup アクションのテスト
+  // signup アクションのテスト(認証情報の作成のみ。プロフィール作成は別APIに分離)
   describe('signup', () => {
-    it('【201 成功】ユーザー登録が成功し、クッキー保存後にリダイレクトすること', async () => {
+    it('【201 成功】ユーザー登録が成功し、クッキーを保存して成功を返すこと', async () => {
       // Goバックエンドの成功レスポンスをモック化
       vi.mocked(postSignup).mockResolvedValue({
         status: 201,
@@ -154,13 +154,11 @@ describe('Auth Server Actions', () => {
       const formData = new FormData()
       formData.append('email', 'new@example.com')
       formData.append('password', 'password123')
-      formData.append('gender', 'female')
-      formData.append('birthdate', '1990-01-01')
-      formData.append('nickname', 'テスト')
-      formData.append('prefecture_code', '13')
 
-      // テスト実行＋検証
-      await expect(signup(null, formData)).rejects.toThrow('NEXT_REDIRECT')
+      // テスト実行＋検証(プロフィール未作成のままログイン状態にするため、ここではredirectしない)
+      const result = await signup(null, formData)
+
+      expect(result).toEqual({ success: true })
 
       expect(mockCookieStore.set).toHaveBeenCalledWith(
         COOKIE_ACCESS_TOKEN,
@@ -180,7 +178,7 @@ describe('Auth Server Actions', () => {
           maxAge: 60 * 60 * 24 * 30, // 30日
         }),
       )
-      expect(redirect).toHaveBeenCalledWith('/recs')
+      expect(redirect).not.toHaveBeenCalled()
     })
 
     it('【409 エラー】既に登録済みのメールアドレスの場合、エラーを返すこと', async () => {
@@ -192,10 +190,6 @@ describe('Auth Server Actions', () => {
       const formData = new FormData()
       formData.append('email', 'duplicate@example.com')
       formData.append('password', 'password123')
-      formData.append('gender', 'female')
-      formData.append('birthdate', '1990-01-01')
-      formData.append('nickname', 'テスト')
-      formData.append('prefecture_code', '13')
 
       const result = await signup(null, formData)
 
@@ -215,10 +209,6 @@ describe('Auth Server Actions', () => {
       const formData = new FormData()
       formData.append('email', 'new@example.com')
       formData.append('password', 'short')
-      formData.append('gender', 'female')
-      formData.append('birthdate', '1990-01-01')
-      formData.append('nickname', 'テスト')
-      formData.append('prefecture_code', '13')
 
       const result = await signup(null, formData)
 

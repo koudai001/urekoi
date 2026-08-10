@@ -17,9 +17,9 @@ import (
 func TestGetUnmessagedMatches_Success(t *testing.T) {
 	router, db, _ := setup(t)
 
-	a := signUpOnlyEmail(t, router, "match-a@example.com")
-	messaged := signUpOnlyEmail(t, router, "match-messaged@example.com")
-	notMessaged := signUpOnlyEmail(t, router, "match-not-messaged@example.com")
+	a := signUpWithProfile(t, router, "match-a@example.com")
+	messaged := signUpWithProfile(t, router, "match-messaged@example.com")
+	notMessaged := signUpWithProfile(t, router, "match-not-messaged@example.com")
 
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: messaged.ID}, a.AccessToken).Code)
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: a.ID}, messaged.AccessToken).Code)
@@ -73,10 +73,10 @@ func TestGetUnmessagedMatches_Unauthorized(t *testing.T) {
 func TestGetMessagedMatches_Success(t *testing.T) {
 	router, db, _ := setup(t)
 
-	a := signUpOnlyEmail(t, router, "match-hm-a@example.com")
-	messaged := signUpOnlyEmail(t, router, "match-hm-messaged@example.com")
-	messagedLatest := signUpOnlyEmail(t, router, "match-hm-messaged-latest@example.com")
-	notMessaged := signUpOnlyEmail(t, router, "match-hm-not-messaged@example.com")
+	a := signUpWithProfile(t, router, "match-hm-a@example.com")
+	messaged := signUpWithProfile(t, router, "match-hm-messaged@example.com")
+	messagedLatest := signUpWithProfile(t, router, "match-hm-messaged-latest@example.com")
+	notMessaged := signUpWithProfile(t, router, "match-hm-not-messaged@example.com")
 
 	// aをmessaged/messagedLatest/notMessagedそれぞれと相互いいねでマッチさせる
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: messaged.ID}, a.AccessToken).Code)
@@ -136,8 +136,8 @@ func TestGetMessagedMatches_Unauthorized(t *testing.T) {
 func TestGetMatch_Success(t *testing.T) {
 	router, db, _ := setup(t)
 
-	a := signUpOnlyEmail(t, router, "match-detail-a@example.com")
-	b := signUpOnlyEmail(t, router, "match-detail-b@example.com")
+	a := signUpWithProfile(t, router, "match-detail-a@example.com")
+	b := signUpWithProfile(t, router, "match-detail-b@example.com")
 
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: b.ID}, a.AccessToken).Code)
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: a.ID}, b.AccessToken).Code)
