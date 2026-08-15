@@ -7,7 +7,11 @@ import type {
   MyProfileRequest,
   ProfileDetail,
 } from '@/generated/urekoiAPI.schemas'
-import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
+import {
+  COOKIE_ACCESS_TOKEN,
+  COOKIE_HAS_PROFILE,
+  HAS_PROFILE_COOKIE_OPTIONS,
+} from '@/lib/cookie'
 
 export type UpdateMyProfileResult =
   { success: true; profile: ProfileDetail } | { success: false; error: string }
@@ -19,15 +23,17 @@ export type CreateMyProfileResult =
 export async function createMyProfile(
   req: MyProfileCreateRequest,
 ): Promise<CreateMyProfileResult> {
-  const accessToken = (await cookies()).get(COOKIE_ACCESS_TOKEN)?.value ?? ''
+  const cookieStore = await cookies()
+  const accessToken = cookieStore.get(COOKIE_ACCESS_TOKEN)?.value ?? ''
 
   const res = await postMyprofile(req, {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
-  console.log(res)
 
   switch (res.status) {
     case 201:
+      // 作成完了したので、Cookieを更新
+      cookieStore.set(COOKIE_HAS_PROFILE, 'true', HAS_PROFILE_COOKIE_OPTIONS)
       return { success: true, profile: res.data }
     case 400:
       return {

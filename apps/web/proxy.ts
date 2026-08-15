@@ -3,7 +3,9 @@ import { postRefresh } from '@/generated/auth/auth'
 import {
   ACCESS_TOKEN_COOKIE_OPTIONS,
   COOKIE_ACCESS_TOKEN,
+  COOKIE_HAS_PROFILE,
   COOKIE_REFRESH_TOKEN,
+  HAS_PROFILE_COOKIE_OPTIONS,
   REFRESH_TOKEN_COOKIE_OPTIONS,
 } from '@/lib/cookie'
 
@@ -16,15 +18,18 @@ export async function proxy(request: NextRequest) {
 
   // ログイン済みかどうかの判定はaccess_tokenの有無で行う
   let isAuthenticated = request.cookies.has(COOKIE_ACCESS_TOKEN)
-  let refreshedTokens: { accessToken: string; refreshToken: string } | null =
-    null
+  let authCookies: {
+    accessToken: string
+    refreshToken: string
+    hasProfile: boolean
+  } | null = null
 
   // access_tokenが無い(切れている)場合はrefresh_tokenで裏更新を試みる
   if (!isAuthenticated) {
     const refreshToken = request.cookies.get(COOKIE_REFRESH_TOKEN)?.value
     if (refreshToken) {
-      refreshedTokens = await refresh(refreshToken)
-      isAuthenticated = refreshedTokens !== null
+      authCookies = await refresh(refreshToken)
+      isAuthenticated = authCookies !== null
     }
   }
 
@@ -33,47 +38,65 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // 認証済みかつログインページやサインアップページへのアクセスはスワイプ画面にリダイレクト
+  // 認証済みかつログインページやサインアップページへのアクセスは、プロフィール作成済みならスワイプ画面へ、
+  // 未作成ならプロフィール作成画面へリダイレクト
   if (isAuthenticated && isPublicPath) {
-    const response = NextResponse.redirect(new URL('/recs', request.url))
-    if (refreshedTokens) setAuthCookies(response, refreshedTokens)
+    const hasProfile =
+      authCookies?.hasProfile ??
+      request.cookies.get(COOKIE_HAS_PROFILE)?.value === 'true'
+    const response = NextResponse.redirect(
+      new URL(hasProfile ? '/recs' : '/signup/profile', request.url),
+    )
+    if (authCookies) setAuthCookies(response, authCookies)
     return response
   }
 
   // 認証済みかつ保護されたパスへのアクセスはそのまま通す
   const response = NextResponse.next()
   // アクセストークンを裏更新した場合はレスポンスにセットする
-  if (refreshedTokens) setAuthCookies(response, refreshedTokens)
+  if (authCookies) setAuthCookies(response, authCookies)
   return response
 }
 
-// refresh_tokenでBEの/refreshを呼び、新しいトークンを取得する。失敗時はnull
-async function refresh(
-  refreshToken: string,
-): Promise<{ accessToken: string; refreshToken: string } | null> {
+// refresh_tokenでBEの/refreshを呼び、新しいトークンとプロフィール作成済みかどうかを取得する。失敗時はnull
+async function refresh(refreshToken: string): Promise<{
+  accessToken: string
+  refreshToken: string
+  hasProfile: boolean
+} | null> {
   const res = await postRefresh({ refresh_token: refreshToken })
   if (res.status !== 200) return null
 
   return {
     accessToken: res.data.access_token ?? '',
     refreshToken: res.data.refresh_token ?? '',
+    hasProfile: res.data.has_profile ?? false,
   }
 }
 
-// 裏更新したaccess_token/refresh_tokenをレスポンスのhttpOnly cookieにセットする
+// 裏更新したaccess_token/refresh_token/has_profileをレスポンスのhttpOnly cookieにセットする
 function setAuthCookies(
   response: NextResponse,
-  tokens: { accessToken: string; refreshToken: string },
+  authCookies: {
+    accessToken: string
+    refreshToken: string
+    hasProfile: boolean
+  },
 ) {
   response.cookies.set(
     COOKIE_ACCESS_TOKEN,
-    tokens.accessToken,
+    authCookies.accessToken,
     ACCESS_TOKEN_COOKIE_OPTIONS,
   )
   response.cookies.set(
     COOKIE_REFRESH_TOKEN,
-    tokens.refreshToken,
+    authCookies.refreshToken,
     REFRESH_TOKEN_COOKIE_OPTIONS,
+  )
+  response.cookies.set(
+    COOKIE_HAS_PROFILE,
+    String(authCookies.hasProfile),
+    HAS_PROFILE_COOKIE_OPTIONS,
   )
 }
 

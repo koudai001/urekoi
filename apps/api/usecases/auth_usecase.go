@@ -20,21 +20,27 @@ import (
 // リフレッシュトークンの有効期限
 const refreshTokenTTL = 30 * 24 * time.Hour
 
+// auth_identitiesのprovider列に入れる値
+const googleProvider = "google"
+
 var (
 	ErrEmailAlreadyExists  = errors.New("email already exists")
 	ErrInvalidCredentials  = errors.New("invalid email or password")
 	ErrInvalidToken        = errors.New("invalid token")
 	ErrInvalidRefreshToken = errors.New("invalid or expired refresh token")
+	ErrGoogleAuthFailed    = errors.New("google authentication failed")
 )
 
 type IAuthUsecase interface {
 	// サインアップ成功時もログインと同様にaccessToken(JWT)とrefreshTokenを返す(自動ログイン)。
 	// signup時にUser・PasswordCredentialをまとめて作成する
 	SignUp(req dto.SignupRequest) (user *models.User, accessToken string, refreshToken string, err error)
-	// ログイン成功時はaccessToken(JWT)とrefreshTokenを返す
-	Login(email string, password string) (accessToken string, refreshToken string, err error)
-	// refresh_tokenをローテーションし、新しいaccessTokenとrefreshTokenを返す
-	Refresh(rawRefreshToken string) (accessToken string, refreshToken string, err error)
+	// ログイン成功時はaccessToken(JWT)とrefreshTokenとプロフィール作成済みかどうかを返す
+	Login(email string, password string) (accessToken string, refreshToken string, hasProfile bool, err error)
+	// id_tokenを検証し、auth_identityが無ければユーザーを新規作成(同一emailの既存ユーザーがいればそれに紐付け)してログインする
+	GoogleLogin(idToken string) (user *models.User, accessToken string, refreshToken string, hasProfile bool, err error)
+	// refresh_tokenをローテーションし、新しいaccessToken・refreshToken・プロフィール作成済みかどうかを返す
+	Refresh(rawRefreshToken string) (accessToken string, refreshToken string, hasProfile bool, err error)
 	// refresh_tokenを失効させる
 	Logout(rawRefreshToken string) error
 	// アクセストークン(JWT)からユーザー情報を取得する
@@ -42,12 +48,16 @@ type IAuthUsecase interface {
 }
 
 type AuthUsecase struct {
-	authRepo repositories.IAuthRepository
+	authRepo       repositories.IAuthRepository
+	googleAuthRepo repositories.IGoogleAuthRepository
+	profileRepo    repositories.IProfileRepository
 }
 
-func NewAuthUsecase(authRepo repositories.IAuthRepository) IAuthUsecase {
+func NewAuthUsecase(authRepo repositories.IAuthRepository, googleAuthRepo repositories.IGoogleAuthRepository, profileRepo repositories.IProfileRepository) IAuthUsecase {
 	return &AuthUsecase{
-		authRepo: authRepo,
+		authRepo:       authRepo,
+		googleAuthRepo: googleAuthRepo,
+		profileRepo:    profileRepo,
 	}
 }
 
@@ -94,25 +104,96 @@ func (u *AuthUsecase) SignUp(req dto.SignupRequest) (*models.User, string, strin
 	return &user, accessToken, refreshToken, nil
 }
 
-func (u *AuthUsecase) Login(email string, password string) (string, string, error) {
+func (u *AuthUsecase) Login(email string, password string) (string, string, bool, error) {
 	// ユーザーを取得
 	user, err := u.authRepo.GetUserByEmail(email)
 	if err != nil {
-		return "", "", ErrInvalidCredentials
+		return "", "", false, ErrInvalidCredentials
 	}
 
 	// ユーザーIDからパスワード認証情報を取得
 	credential, err := u.authRepo.GetPasswordCredentialByUserID(user.ID)
 	if err != nil {
-		return "", "", ErrInvalidCredentials
+		return "", "", false, ErrInvalidCredentials
 	}
 
 	// パスワードを比較
 	if err := bcrypt.CompareHashAndPassword([]byte(credential.PasswordHash), []byte(password)); err != nil {
-		return "", "", ErrInvalidCredentials
+		return "", "", false, ErrInvalidCredentials
 	}
 
-	return u.issueTokens(user)
+	accessToken, refreshToken, err := u.issueTokens(user)
+	if err != nil {
+		return "", "", false, err
+	}
+
+	hasProfile, err := u.hasProfile(user.ID)
+	if err != nil {
+		return "", "", false, err
+	}
+
+	return accessToken, refreshToken, hasProfile, nil
+}
+
+func (u *AuthUsecase) GoogleLogin(idToken string) (*models.User, string, string, bool, error) {
+	info, err := u.googleAuthRepo.VerifyIDToken(idToken)
+	if err != nil {
+		return nil, "", "", false, ErrGoogleAuthFailed
+	}
+
+	// auth_identityから既存ユーザーを解決する。無ければ同一emailの既存ユーザーに紐付け、それも無ければ新規作成する
+	user, err := u.resolveGoogleUser(info)
+	if err != nil {
+		return nil, "", "", false, err
+	}
+
+	accessToken, refreshToken, err := u.issueTokens(user)
+	if err != nil {
+		return nil, "", "", false, err
+	}
+
+	hasProfile, err := u.hasProfile(user.ID)
+	if err != nil {
+		return nil, "", "", false, err
+	}
+
+	return user, accessToken, refreshToken, hasProfile, nil
+}
+
+// auth_identityから既存ユーザーを解決する。無ければ同一emailの既存ユーザーに紐付け、それも無ければ新規作成する
+func (u *AuthUsecase) resolveGoogleUser(info *repositories.GoogleUserInfo) (*models.User, error) {
+	identity, err := u.authRepo.GetAuthIdentity(googleProvider, info.Sub)
+	// 既存のauth_identityがあればそれに紐付くユーザーを返す
+	if err == nil {
+		return u.authRepo.GetUserByID(identity.UserID)
+	}
+	// NotFound以外のエラーはそのまま返す
+	if !errors.Is(err, repositories.ErrAuthIdentityNotFound) {
+		return nil, err
+	}
+
+	user, err := u.authRepo.GetUserByEmail(info.Email)
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
+		// 同一emailの既存ユーザーがいなければ新規作成する
+		newUser := models.User{Email: info.Email}
+		if err := u.authRepo.CreateUser(&newUser); err != nil {
+			return nil, err
+		}
+		user = &newUser
+	}
+
+	if err := u.authRepo.CreateAuthIdentity(&models.AuthIdentity{
+		UserID:         user.ID,
+		Provider:       googleProvider,
+		ProviderUserID: info.Sub,
+	}); err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 // アクセストークン(JWT)とリフレッシュトークンを発行し、リフレッシュトークンのハッシュをDBに保存する
@@ -142,29 +223,29 @@ func (u *AuthUsecase) issueTokens(user *models.User) (string, string, error) {
 	return accessToken, rawRefreshToken, nil
 }
 
-// refresh_tokenをローテーションし、新しいaccessTokenとrefreshTokenを返す
-func (u *AuthUsecase) Refresh(rawRefreshToken string) (string, string, error) {
+// refresh_tokenをローテーションし、新しいaccessToken・refreshToken・プロフィール作成済みかどうかを返す
+func (u *AuthUsecase) Refresh(rawRefreshToken string) (string, string, bool, error) {
 	// 受け取った生トークンをハッシュ化してDBを検索
 	storedToken, err := u.authRepo.GetRefreshTokenByHash(hashRefreshToken(rawRefreshToken))
 	if err != nil {
-		return "", "", ErrInvalidRefreshToken
+		return "", "", false, ErrInvalidRefreshToken
 	}
 
 	// リフレッシュトークンの有効期限をチェック
 	if storedToken.ExpiresAt.Before(time.Now()) {
-		return "", "", ErrInvalidRefreshToken
+		return "", "", false, ErrInvalidRefreshToken
 	}
 
 	// アクセストークン(JWT)を生成
 	accessToken, err := generateAccessToken(uint(storedToken.User.ID), storedToken.User.Email)
 	if err != nil {
-		return "", "", err
+		return "", "", false, err
 	}
 
 	// 新しいリフレッシュトークンを生成
 	newRawRefreshToken, newHashedRefreshToken, err := generateRefreshToken()
 	if err != nil {
-		return "", "", err
+		return "", "", false, err
 	}
 
 	// 新しいリフレッシュトークンをDBに保存
@@ -174,15 +255,33 @@ func (u *AuthUsecase) Refresh(rawRefreshToken string) (string, string, error) {
 		ExpiresAt: time.Now().Add(refreshTokenTTL),
 	}
 	if err := u.authRepo.CreateRefreshToken(&newRefreshToken); err != nil {
-		return "", "", err
+		return "", "", false, err
 	}
 
 	// 古いリフレッシュトークンを失効(ローテーション)
 	if err := u.authRepo.DeleteRefreshToken(storedToken.ID); err != nil {
-		return "", "", err
+		return "", "", false, err
 	}
 
-	return accessToken, newRawRefreshToken, nil
+	// リフレッシュの度に最新のプロフィール作成状況を返す(Cookieの追従用)
+	hasProfile, err := u.hasProfile(storedToken.UserID)
+	if err != nil {
+		return "", "", false, err
+	}
+
+	return accessToken, newRawRefreshToken, hasProfile, nil
+}
+
+// user_idのプロフィールが作成済みかどうかを返す
+func (u *AuthUsecase) hasProfile(userID uint64) (bool, error) {
+	_, err := u.profileRepo.GetProfileByUserID(userID)
+	if err == nil {
+		return true, nil
+	}
+	if errors.Is(err, repositories.ErrProfileNotFound) {
+		return false, nil
+	}
+	return false, err
 }
 
 func (u *AuthUsecase) Logout(rawRefreshToken string) error {

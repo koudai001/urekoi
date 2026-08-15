@@ -1,6 +1,8 @@
 // cookieの設定値
 export const COOKIE_ACCESS_TOKEN = 'access_token'
 export const COOKIE_REFRESH_TOKEN = 'refresh_token'
+// プロフィール作成済みかどうか(ミドルウェアがAPIを叩かずに判定するためのフラグ)
+export const COOKIE_HAS_PROFILE = 'has_profile'
 
 // BEのaccess_token/refresh_tokenの有効期限と合わせる(apps/api/usecases/auth_usecase.go)
 const ACCESS_TOKEN_MAX_AGE = 60 * 60
@@ -20,6 +22,12 @@ export const ACCESS_TOKEN_COOKIE_OPTIONS = {
 }
 
 export const REFRESH_TOKEN_COOKIE_OPTIONS = {
+  ...COMMON_COOKIE_OPTIONS,
+  maxAge: REFRESH_TOKEN_MAX_AGE,
+}
+
+// refresh_tokenと同じ期間だけ保持する(それが切れれば再ログインが必要)
+export const HAS_PROFILE_COOKIE_OPTIONS = {
   ...COMMON_COOKIE_OPTIONS,
   maxAge: REFRESH_TOKEN_MAX_AGE,
 }

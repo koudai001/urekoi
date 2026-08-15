@@ -2,7 +2,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { postLogin, postLogout, postSignup } from '@/generated/auth/auth'
-import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN } from '@/lib/cookie'
+import {
+  COOKIE_ACCESS_TOKEN,
+  COOKIE_HAS_PROFILE,
+  COOKIE_REFRESH_TOKEN,
+} from '@/lib/cookie'
 import { login, logout, signup } from './auth'
 
 // Next.js のナビゲーションをモック化
@@ -23,6 +27,7 @@ vi.mock('@/generated/auth/auth', () => ({
   postLogin: vi.fn(),
   postLogout: vi.fn(),
   postSignup: vi.fn(),
+  postGoogleLogin: vi.fn(),
 }))
 
 describe('Auth Server Actions', () => {
@@ -49,11 +54,15 @@ describe('Auth Server Actions', () => {
 
   // login アクションのテスト
   describe('login', () => {
-    it('【200 成功】クッキーがセットされ、トップページにリダイレクトすること', async () => {
+    it('【200 成功・プロフィール作成済み】クッキーがセットされ、/recsにリダイレクトすること', async () => {
       // Go バックエンドの成功レスポンスをシミュレート
       vi.mocked(postLogin).mockResolvedValue({
         status: 200,
-        data: { access_token: 'mock_access', refresh_token: 'mock_refresh' },
+        data: {
+          access_token: 'mock_access',
+          refresh_token: 'mock_refresh',
+          has_profile: true,
+        },
       } as Awaited<ReturnType<typeof postLogin>>)
 
       const formData = new FormData()
@@ -83,9 +92,33 @@ describe('Auth Server Actions', () => {
           maxAge: 60 * 60 * 24 * 30, // 30日
         }),
       )
+      expect(mockCookieStore.set).toHaveBeenCalledWith(
+        COOKIE_HAS_PROFILE,
+        'true',
+        expect.objectContaining({ httpOnly: true, sameSite: 'strict' }),
+      )
 
       // リダイレクト先を確認
       expect(redirect).toHaveBeenCalledWith('/recs')
+    })
+
+    it('【200 成功・プロフィール未作成】/signup/profileにリダイレクトすること', async () => {
+      vi.mocked(postLogin).mockResolvedValue({
+        status: 200,
+        data: {
+          access_token: 'mock_access',
+          refresh_token: 'mock_refresh',
+          has_profile: false,
+        },
+      } as Awaited<ReturnType<typeof postLogin>>)
+
+      const formData = new FormData()
+      formData.append('email', 'no-profile@example.com')
+      formData.append('password', 'password123')
+
+      await expect(login(null, formData)).rejects.toThrow('NEXT_REDIRECT')
+
+      expect(redirect).toHaveBeenCalledWith('/signup/profile')
     })
 
     it('【401 エラー】認証失敗時は適切なエラーメッセージを返すこと', async () => {

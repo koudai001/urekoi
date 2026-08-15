@@ -2,11 +2,18 @@
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { postLogin, postLogout, postSignup } from '@/generated/auth/auth'
+import {
+  postGoogleLogin,
+  postLogin,
+  postLogout,
+  postSignup,
+} from '@/generated/auth/auth'
 import {
   ACCESS_TOKEN_COOKIE_OPTIONS,
   COOKIE_ACCESS_TOKEN,
+  COOKIE_HAS_PROFILE,
   COOKIE_REFRESH_TOKEN,
+  HAS_PROFILE_COOKIE_OPTIONS,
   REFRESH_TOKEN_COOKIE_OPTIONS,
 } from '@/lib/cookie'
 
@@ -14,7 +21,7 @@ export type SignupResult =
   | { success: true } // 成功後はプロフィール入力ステップへ進むので、呼び出し側がstateを見て遷移する
   | { success: false; error: string }
 
-export type LoginResult = { success: false; error: string } // 成功時はredirect('/recs')するので返却されない
+export type LoginResult = { success: false; error: string } // 成功時はhasProfileに応じてredirectするので返却されない
 
 export async function signup(
   _prevState: SignupResult | null,
@@ -33,9 +40,11 @@ export async function signup(
   // 全ケース網羅
   switch (res.status) {
     case 201: {
+      // signup直後は必ずプロフィール未作成
       await setAuthCookies(
         res.data.access_token ?? '',
         res.data.refresh_token ?? '',
+        false,
       )
       return { success: true }
     }
@@ -48,6 +57,37 @@ export async function signup(
       return {
         success: false,
         error: res.data.error ?? '入力内容を確認してください',
+      }
+    default: {
+      const _exhaustive: never = res
+      return _exhaustive
+    }
+  }
+}
+
+export type GoogleLoginResult =
+  // hasProfileを見て、呼び出し側が/recsか/signup/profileかを振り分ける
+  { success: true; hasProfile: boolean } | { success: false; error: string }
+
+// Google Identity Servicesが発行したid_tokenをAPIに渡し、ログイン/初回登録を行う
+export async function googleLogin(idToken: string): Promise<GoogleLoginResult> {
+  const res = await postGoogleLogin({ id_token: idToken })
+
+  // 全ケース網羅
+  switch (res.status) {
+    case 200: {
+      const hasProfile = res.data.has_profile ?? false
+      await setAuthCookies(
+        res.data.access_token ?? '',
+        res.data.refresh_token ?? '',
+        hasProfile,
+      )
+      return { success: true, hasProfile }
+    }
+    case 400:
+      return {
+        success: false,
+        error: res.data.error ?? 'Googleログインに失敗しました',
       }
     default: {
       const _exhaustive: never = res
@@ -73,11 +113,13 @@ export async function login(
   // 全ケース網羅
   switch (res.status) {
     case 200: {
+      const hasProfile = res.data.has_profile ?? false
       await setAuthCookies(
         res.data.access_token ?? '',
         res.data.refresh_token ?? '',
+        hasProfile,
       )
-      redirect('/recs')
+      redirect(hasProfile ? '/recs' : '/signup/profile')
     }
     case 401:
       return {
@@ -110,13 +152,22 @@ export async function logout() {
   redirect('/login')
 }
 
-// access_token/refresh_tokenをhttpOnlycookieにセットする
-async function setAuthCookies(accessToken: string, refreshToken: string) {
+// access_token/refresh_token/has_profileをhttpOnlycookieにセットする
+async function setAuthCookies(
+  accessToken: string,
+  refreshToken: string,
+  hasProfile: boolean,
+) {
   const cookieStore = await cookies()
   cookieStore.set(COOKIE_ACCESS_TOKEN, accessToken, ACCESS_TOKEN_COOKIE_OPTIONS)
   cookieStore.set(
     COOKIE_REFRESH_TOKEN,
     refreshToken,
     REFRESH_TOKEN_COOKIE_OPTIONS,
+  )
+  cookieStore.set(
+    COOKIE_HAS_PROFILE,
+    String(hasProfile),
+    HAS_PROFILE_COOKIE_OPTIONS,
   )
 }

@@ -9,8 +9,9 @@ import (
 )
 
 var (
-	ErrEmailAlreadyExists = errors.New("email already exists")
-	ErrUserNotFound       = errors.New("user not found")
+	ErrEmailAlreadyExists   = errors.New("email already exists")
+	ErrUserNotFound         = errors.New("user not found")
+	ErrAuthIdentityNotFound = errors.New("auth identity not found")
 )
 
 type IAuthRepository interface {
@@ -19,6 +20,9 @@ type IAuthRepository interface {
 	CreateUser(user *models.User) error
 	CreatePasswordCredential(credential *models.PasswordCredential) error
 	GetPasswordCredentialByUserID(userID uint64) (*models.PasswordCredential, error)
+	// providerとprovider側のユーザーIDでauth_identityを検索する(未登録ならErrAuthIdentityNotFound)
+	GetAuthIdentity(provider string, providerUserID string) (*models.AuthIdentity, error)
+	CreateAuthIdentity(identity *models.AuthIdentity) error
 	CreateRefreshToken(refreshToken *models.RefreshToken) error
 	GetRefreshTokenByHash(tokenHash string) (*models.RefreshToken, error)
 	DeleteRefreshToken(id uint64) error
@@ -90,6 +94,22 @@ func (r *AuthRepository) GetPasswordCredentialByUserID(userID uint64) (*models.P
 	}
 
 	return &credential, nil
+}
+
+func (r *AuthRepository) GetAuthIdentity(provider string, providerUserID string) (*models.AuthIdentity, error) {
+	var identity models.AuthIdentity
+	if err := r.db.Where("provider = ? AND provider_user_id = ?", provider, providerUserID).First(&identity).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrAuthIdentityNotFound
+		}
+		return nil, err
+	}
+
+	return &identity, nil
+}
+
+func (r *AuthRepository) CreateAuthIdentity(identity *models.AuthIdentity) error {
+	return r.db.Create(identity).Error
 }
 
 func (r *AuthRepository) CreateRefreshToken(refreshToken *models.RefreshToken) error {

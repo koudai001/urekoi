@@ -54,6 +54,33 @@ func (ctrl *AuthController) SignUp(c *gin.Context) {
 	})
 }
 
+func (ctrl *AuthController) GoogleLogin(c *gin.Context) {
+	var req dto.GoogleLoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": errInvalidRequestFormat})
+		return
+	}
+
+	if err := validators.ValidateGoogleLoginRequest(req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, accessToken, refreshToken, hasProfile, err := ctrl.authUsecase.GoogleLogin(req.IDToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.SignupResponse{
+		ID:           user.ID,
+		Email:        user.Email,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		HasProfile:   hasProfile,
+	})
+}
+
 func (ctrl *AuthController) Login(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -66,7 +93,7 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	accessToken, refreshToken, err := ctrl.authUsecase.Login(req.Email, req.Password)
+	accessToken, refreshToken, hasProfile, err := ctrl.authUsecase.Login(req.Email, req.Password)
 	if err != nil {
 		if errors.Is(err, usecases.ErrInvalidCredentials) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -79,6 +106,7 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, dto.LoginResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
+		HasProfile:   hasProfile,
 	})
 }
 
@@ -94,7 +122,7 @@ func (ctrl *AuthController) Refresh(c *gin.Context) {
 		return
 	}
 
-	accessToken, refreshToken, err := ctrl.authUsecase.Refresh(req.RefreshToken)
+	accessToken, refreshToken, hasProfile, err := ctrl.authUsecase.Refresh(req.RefreshToken)
 	if err != nil {
 		if errors.Is(err, usecases.ErrInvalidRefreshToken) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -107,6 +135,7 @@ func (ctrl *AuthController) Refresh(c *gin.Context) {
 	c.JSON(http.StatusOK, dto.RefreshResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
+		HasProfile:   hasProfile,
 	})
 }
 
