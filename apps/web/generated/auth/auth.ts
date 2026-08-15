@@ -7,6 +7,7 @@
  */
 import type {
   Error,
+  GoogleLoginRequest,
   LoginRequest,
   LoginResponse,
   LogoutRequest,
@@ -109,6 +110,49 @@ export const postLogin = async (loginRequest: LoginRequest, options?: RequestIni
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(loginRequest)
+  }
+);}
+
+
+export type postGoogleLoginResponse200 = {
+  data: SignupResponse
+  status: 200
+}
+
+export type postGoogleLoginResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type postGoogleLoginResponseSuccess = (postGoogleLoginResponse200) & {
+  headers: Headers;
+};
+export type postGoogleLoginResponseError = (postGoogleLoginResponse400) & {
+  headers: Headers;
+};
+
+export type postGoogleLoginResponse = (postGoogleLoginResponseSuccess | postGoogleLoginResponseError)
+
+export const getPostGoogleLoginUrl = () => {
+
+
+
+
+  return `/google-login`
+}
+
+/**
+ * クライアント側(Google Identity Services)が発行したid_tokenをそのまま渡す。APIが署名を検証し、ユーザー作成またはログインを行う
+ * @summary Googleログイン(初回は自動でユーザー作成、2回目以降はログイン)
+ */
+export const postGoogleLogin = async (googleLoginRequest: GoogleLoginRequest, options?: RequestInit): Promise<postGoogleLoginResponse> => {
+
+  return customFetch<postGoogleLoginResponse>(getPostGoogleLoginUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(googleLoginRequest)
   }
 );}
 

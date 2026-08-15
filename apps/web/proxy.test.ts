@@ -1,7 +1,11 @@
 import { NextRequest } from 'next/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { postRefresh } from '@/generated/auth/auth'
-import { COOKIE_ACCESS_TOKEN, COOKIE_REFRESH_TOKEN } from '@/lib/cookie'
+import {
+  COOKIE_ACCESS_TOKEN,
+  COOKIE_HAS_PROFILE,
+  COOKIE_REFRESH_TOKEN,
+} from '@/lib/cookie'
 import { proxy } from './proxy'
 
 // Orval で自動生成された API クライアントをモック化
@@ -15,12 +19,16 @@ function buildRequest(path: string, cookie?: string): NextRequest {
   })
 }
 
-function mockRefresh(success: boolean) {
+function mockRefresh(success: boolean, hasProfile = true) {
   vi.mocked(postRefresh).mockResolvedValue(
     (success
       ? {
           status: 200,
-          data: { access_token: 'new_access', refresh_token: 'new_refresh' },
+          data: {
+            access_token: 'new_access',
+            refresh_token: 'new_refresh',
+            has_profile: hasProfile,
+          },
         }
       : { status: 401, data: {} }) as Awaited<ReturnType<typeof postRefresh>>,
   )
@@ -80,14 +88,28 @@ describe('proxy', () => {
   })
 
   describe('公開パス(/login)', () => {
-    it('access_tokenあり → /recsにリダイレクトすること', async () => {
+    it('access_tokenあり・プロフィール作成済み → /recsにリダイレクトすること', async () => {
+      const response = await proxy(
+        buildRequest(
+          '/login',
+          `${COOKIE_ACCESS_TOKEN}=valid; ${COOKIE_HAS_PROFILE}=true`,
+        ),
+      )
+
+      expect(response.status).toBe(307)
+      expect(response.headers.get('location')).toBe(
+        `${process.env.APP_URL}/recs`,
+      )
+    })
+
+    it('access_tokenあり・プロフィール未作成 → /signup/profileにリダイレクトすること', async () => {
       const response = await proxy(
         buildRequest('/login', `${COOKIE_ACCESS_TOKEN}=valid`),
       )
 
       expect(response.status).toBe(307)
       expect(response.headers.get('location')).toBe(
-        `${process.env.APP_URL}/recs`,
+        `${process.env.APP_URL}/signup/profile`,
       )
     })
 
@@ -108,6 +130,7 @@ describe('proxy', () => {
       expect(response.cookies.get(COOKIE_REFRESH_TOKEN)?.value).toBe(
         'new_refresh',
       )
+      expect(response.cookies.get(COOKIE_HAS_PROFILE)?.value).toBe('true')
     })
 
     it('access_tokenなし・refresh失敗 → そのまま通し、cookieはセットしないこと', async () => {

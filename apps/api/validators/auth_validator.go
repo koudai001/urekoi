@@ -25,6 +25,12 @@ func ValidateSignupRequest(req dto.SignupRequest) error {
 	return nil
 }
 
+func ValidateGoogleLoginRequest(req dto.GoogleLoginRequest) error {
+	return validation.Validate(req.IDToken,
+		validation.Required.Error("IDトークンが必要です"),
+	)
+}
+
 func ValidateLoginRequest(req dto.LoginRequest) error {
 	if err := validation.Validate(req.Email,
 		validation.Required.Error("メールアドレスを入力してください"),

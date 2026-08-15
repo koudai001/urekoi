@@ -1,6 +1,6 @@
 # ADR
 
-機能ごとの設計判断とその理由をまとめる。
+機能ごとの設計判断など。
 
 ## メッセージ関連のキャッシュ
 
@@ -78,3 +78,14 @@ Recs Provider
 - サインアップ(認証)と初回プロフィール作成を別APIに分離
 - 認証用・プロフィール用でページとフォーム(FormProvider)をそれぞれ分ける
 - 認証が完了&Cookie保存→プロフィール作成画面へリダイレクト
+
+## Googleログイン
+
+- GIS(Google Identity Services)でクライアントがid_tokenを直接取得し、APIは検証するだけ(認可コード交換・client_secretは不要)
+- 署名検証はGoogle公式ライブラリに任せる
+- auth_identityが無ければ同一emailの既存ユーザーに紐付け、それも無ければ新規作成
+
+## プロフィール作成状況の伝播(has_profile)
+
+- signup/login/google-login/refreshのレスポンスに`has_profile`を含め、Cookieに保存
+- ミドルウェアはCookieだけを見て、未作成ユーザーをプロフィール作成画面へ誘導する

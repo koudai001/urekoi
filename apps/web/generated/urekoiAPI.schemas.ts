@@ -16,6 +16,13 @@ export interface SignupResponse {
   email?: string;
   access_token?: string;
   refresh_token?: string;
+  /** プロフィール作成済みかどうか。falseならプロフィール作成画面へ誘導する */
+  has_profile?: boolean;
+}
+
+export interface GoogleLoginRequest {
+  /** Google Identity Servicesが発行したid_token(JWT)。クライアント側でそのまま渡す */
+  id_token: string;
 }
 
 export interface LoginRequest {
@@ -26,6 +33,8 @@ export interface LoginRequest {
 export interface LoginResponse {
   access_token?: string;
   refresh_token?: string;
+  /** プロフィール作成済みかどうか。falseならプロフィール作成画面へ誘導する */
+  has_profile?: boolean;
 }
 
 export interface RefreshRequest {
@@ -35,6 +44,8 @@ export interface RefreshRequest {
 export interface RefreshResponse {
   access_token?: string;
   refresh_token?: string;
+  /** プロフィール作成済みかどうか。falseならプロフィール作成画面へ誘導する */
+  has_profile?: boolean;
 }
 
 export interface LogoutRequest {

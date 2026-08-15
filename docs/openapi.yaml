@@ -109,6 +109,35 @@ paths:
               example:
                 error: invalid email or password
 
+  /google-login:
+    post:
+      tags: [auth]
+      operationId: postGoogleLogin
+      summary: Googleログイン(初回は自動でユーザー作成、2回目以降はログイン)
+      description: クライアント側(Google Identity Services)が発行したid_tokenをそのまま渡す。APIが署名を検証し、ユーザー作成またはログインを行う
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GoogleLoginRequest"
+      responses:
+        "200":
+          description: 認証成功(新規作成・既存ログインいずれも200)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignupResponse"
+        "400":
+          description: id_tokenが不正、または検証に失敗
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: Googleとの認証に失敗しました
+
   /refresh:
     post:
       tags: [auth]
@@ -893,6 +922,18 @@ components:
         refresh_token:
           type: string
           example: <refresh token>
+        has_profile:
+          type: boolean
+          description: プロフィール作成済みかどうか。falseならプロフィール作成画面へ誘導する
+          example: false
+    GoogleLoginRequest:
+      type: object
+      required: [id_token]
+      properties:
+        id_token:
+          type: string
+          description: Google Identity Servicesが発行したid_token(JWT)。クライアント側でそのまま渡す
+          example: <id_token(JWT)>
     LoginRequest:
       type: object
       required: [email, password]
@@ -913,6 +954,10 @@ components:
         refresh_token:
           type: string
           example: <refresh token>
+        has_profile:
+          type: boolean
+          description: プロフィール作成済みかどうか。falseならプロフィール作成画面へ誘導する
+          example: true
     RefreshRequest:
       type: object
       required: [refresh_token]
@@ -929,6 +974,10 @@ components:
         refresh_token:
           type: string
           example: <new refresh token>
+        has_profile:
+          type: boolean
+          description: プロフィール作成済みかどうか。falseならプロフィール作成画面へ誘導する
+          example: true
     LogoutRequest:
       type: object
       required: [refresh_token]

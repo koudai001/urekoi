@@ -10,6 +10,11 @@ type SignupResponse struct {
 	Email        string `json:"email"`
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
+	HasProfile   bool   `json:"has_profile"`
+}
+
+type GoogleLoginRequest struct {
+	IDToken string `json:"id_token"`
 }
 
 type LoginRequest struct {
@@ -20,6 +25,7 @@ type LoginRequest struct {
 type LoginResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
+	HasProfile   bool   `json:"has_profile"`
 }
 
 type RefreshRequest struct {
@@ -29,6 +35,7 @@ type RefreshRequest struct {
 type RefreshResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
+	HasProfile   bool   `json:"has_profile"`
 }
 
 type LogoutRequest struct {

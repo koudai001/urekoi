@@ -21,7 +21,8 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client, s3Client *s3.Client) *g
 	profileRepo := repositories.NewProfileRepository(db)
 
 	authRepo := repositories.NewAuthRepository(db)
-	authUsecase := usecases.NewAuthUsecase(authRepo)
+	googleAuthRepo := repositories.NewGoogleAuthRepository()
+	authUsecase := usecases.NewAuthUsecase(authRepo, googleAuthRepo, profileRepo)
 	authController := controllers.NewAuthController(authUsecase)
 
 	likeRepo := repositories.NewLikeRepository(db)
@@ -71,6 +72,7 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client, s3Client *s3.Client) *g
 	})
 
 	router.POST("/signup", authController.SignUp)
+	router.POST("/google-login", authController.GoogleLogin)
 	router.POST("/login", authController.Login)
 	router.POST("/refresh", authController.Refresh)
 	router.POST("/logout", authController.Logout)
