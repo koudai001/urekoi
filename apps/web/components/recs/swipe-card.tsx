@@ -5,9 +5,12 @@ import type { ProfileDetail } from '@/generated/urekoiAPI.schemas'
 // スワイプカードの静的な表示部分(写真送り+名前・年齢・自己紹介)。ドラッグなどの操作は持たない
 export function SwipeCard({
   profile,
+  priority,
   children,
 }: {
   profile: ProfileDetail
+  // 一番上に表示されるカードなど、LCP対象になり得る場合はtrueにする
+  priority?: boolean
   // ラベルを表示するなど、カードの上に重ねて表示する要素があればchildrenで渡す
   children?: React.ReactNode
 }) {
@@ -17,6 +20,7 @@ export function SwipeCard({
         images={profile.images ?? []}
         alt={`${profile.nickname}さんの写真`}
         full
+        priority={priority}
       />
 
       {/* 下部の名前・自己紹介*/}

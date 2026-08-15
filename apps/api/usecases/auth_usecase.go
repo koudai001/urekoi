@@ -316,7 +316,17 @@ func (u *AuthUsecase) GetUserFromToken(tokenString string) (*models.User, error)
 		return nil, ErrInvalidToken
 	}
 
-	return u.authRepo.GetUserByEmail(email)
+	user, err := u.authRepo.GetUserByEmail(email)
+	if err != nil {
+		// トークンに含まれるユーザーが存在しない(退会済み等)場合もトークン不正として扱う
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrInvalidToken
+		}
+		// それ以外(DB接続エラー等)はトークンの問題ではないため、そのまま呼び出し元に返す
+		return nil, err
+	}
+
+	return user, nil
 }
 
 // アクセストークン(JWT)を生成する

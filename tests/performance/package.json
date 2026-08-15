@@ -1,0 +1,12 @@
+{
+  "name": "urekoi-tests-performance",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "generate": "openapi-to-k6 ../../docs/openapi.yaml generated --include-sample-script"
+  },
+  "devDependencies": {
+    "@grafana/openapi-to-k6": "^0.4.1",
+    "k6": "^0.0.0"
+  }
+}

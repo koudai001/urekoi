@@ -5,7 +5,15 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    dangerouslyAllowLocalIP: true,
+    remotePatterns: [
+      // ローカル(MinIO)
+      { protocol: 'http', hostname: 'localhost', port: '9000' },
+      // 検証環境(Cloudflare R2)
+      { protocol: 'https', hostname: 'img.mamakatu-boy.com' },
+      // 本番(CloudFront)
+      { protocol: 'https', hostname: 'img.mamakatu-boy.com' },
+    ],
   },
 }
 
