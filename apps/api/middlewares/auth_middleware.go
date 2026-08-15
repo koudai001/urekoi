@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"errors"
+	"log"
 	"net/http"
 	"strings"
 
@@ -23,7 +25,13 @@ func AuthRequired(authUsecase usecases.IAuthUsecase) gin.HandlerFunc {
 
 		user, err := authUsecase.GetUserFromToken(token)
 		if err != nil {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			if errors.Is(err, usecases.ErrInvalidToken) {
+				c.AbortWithStatus(http.StatusUnauthorized)
+				return
+			}
+			// DB接続エラー等、トークン自体の問題ではない場合は500(詳細はレスポンスに含めずログにだけ残す)
+			log.Printf("failed to get user from token: %v", err)
+			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 

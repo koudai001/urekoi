@@ -89,3 +89,14 @@ Recs Provider
 
 - signup/login/google-login/refreshのレスポンスに`has_profile`を含め、Cookieに保存
 - ミドルウェアはCookieだけを見て、未作成ユーザーをプロフィール作成画面へ誘導する
+
+## k6負荷試験
+
+- 認証フロー・WebSocketに対応できるためk6を採用(Vegeta等はリクエスト間の値の受け渡し不可)
+- 発見: DBコネクションプールの上限未設定。負荷時にPostgres接続が枯渇
+
+## LCP最適化
+
+- 課題: LCP遅い
+- 工夫: next/image化、remotePatterns設定、priority/sizes付与
+- 効果: 改善

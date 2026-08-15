@@ -174,7 +174,7 @@ function SwipeCardDeckItem({
                 cursor: isDragging ? 'grabbing' : 'grab',
               }}
             >
-              <SwipeCard profile={profile}>
+              <SwipeCard profile={profile} priority>
                 <RecsProfileLink userId={profile.user_id} />
                 {/* スワイプ中のラベル */}
                 <span

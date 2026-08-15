@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import type { ProfileImageResponse } from '@/generated/urekoiAPI.schemas'
 
@@ -12,11 +13,14 @@ export function PhotoViewer({
   alt,
   full,
   className,
+  priority,
 }: {
   images: ProfileImageResponse[]
   alt: string
   full?: boolean
   className?: string
+  // LCP対象になり得る最上段のカードなどでtrueにする
+  priority?: boolean
 }) {
   const [index, setIndex] = useState(0)
   const photos = images.length > 0 ? images : [{ url: '' }]
@@ -49,12 +53,14 @@ export function PhotoViewer({
       </div>
 
       {photos[index].url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={photos[index].url}
           alt={alt}
-          className="h-full w-full object-cover"
+          fill
+          sizes="448px"
+          className="object-cover"
           draggable={false}
+          priority={priority}
         />
       )}
 

@@ -34,6 +34,11 @@ README.mdを参照
   - `usecases`の業務エラー(409 email重複, 401 認証失敗など): 英語のままでよい。フロントはステータスコードで判断し、表示用の日本語文言を自前で用意する
 - フロントの入力フォームには`required`/`minLength`等のHTML5バリデーション属性を付け、サーバーに送る前に弾けるものは弾く
 
+### エラーハンドリング・ログ方針
+- `usecases`・`repositories`はエラーを握りつぶさず、そのまま(区別が必要なら専用のsentinel errorに変換して)呼び出し元に返す。その場で`log.Printf`等を書かない
+- ログはHTTP境界(`controllers`・`middlewares`)でまとめて出す。特にレスポンスに詳細を含めず500として返すようなケースは、その場でログに残す
+- 例外: WebSocketのpublish失敗など、HTTPレスポンスとして返せない非同期処理はその場でログを出してよい(`usecases/message_usecase.go`, `controllers/ws_controller.go`)
+
 ## フロントエンドのコンポーネント設計
 - `components/ui/`: 業務ロジック・データ取得・業務的な状態を持たない汎用コンポーネント(shadcn由来かどうかは問わない)。表示/非表示の切り替えなど見た目だけのUI状態は持ってよい
 - `components/`直下: 機能コンポーネント。`ui/`のプリミティブを組み合わせて作る。データ取得・状態管理を持ってよい

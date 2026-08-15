@@ -77,15 +77,16 @@ export const WithNextProfile: Story = {
 
 export const ChangePhoto: Story = {
   play: async ({ canvas }) => {
+    // next/imageが最適化用のクエリパラメータ(?w=...&q=...)を付与するため部分一致で検証
     await expect(canvas.getByAltText('美咲さんの写真')).toHaveAttribute(
       'src',
-      '/profiles/woman-1.png',
+      expect.stringContaining('/profiles/woman-1.png'),
     )
 
     await userEvent.click(canvas.getByRole('button', { name: '次の写真' }))
     await expect(canvas.getByAltText('美咲さんの写真')).toHaveAttribute(
       'src',
-      '/profiles/woman-2.png',
+      expect.stringContaining('/profiles/woman-2.png'),
     )
   },
 }

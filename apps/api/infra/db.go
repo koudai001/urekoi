@@ -38,5 +38,15 @@ func SetupDB() *gorm.DB {
 		panic("Failed to connect database")
 	}
 
+	// 同時接続数に上限を設け、負荷時にPostgresへ新規接続が殺到するのを防ぐ(sqlite/testは対象外)
+	if env != "test" {
+		sqlDB, err := db.DB()
+		if err != nil {
+			panic("Failed to get generic database object")
+		}
+		sqlDB.SetMaxOpenConns(25)
+		sqlDB.SetMaxIdleConns(25)
+	}
+
 	return db
 }
