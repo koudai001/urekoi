@@ -1,5 +1,11 @@
--- modify "profiles" table
-ALTER TABLE "profiles" ADD CONSTRAINT "chk_profiles_gender" CHECK ((gender)::text = ANY ((ARRAY['male'::character varying, 'female'::character varying])::text[])), ADD COLUMN "gender" character varying(10) NOT NULL, ADD COLUMN "birthdate" date NOT NULL;
+-- modify "profiles" table: 一旦NULL許容で追加(既存行にはgender/birthdateが無いため)
+ALTER TABLE "profiles" ADD COLUMN "gender" character varying(10), ADD COLUMN "birthdate" date;
+-- gender/birthdateを持たない旧仕様のプロフィール(と、それに紐づくphotos/tags)を削除
+DELETE FROM "profile_images" WHERE "profile_id" IN (SELECT "id" FROM "profiles" WHERE "gender" IS NULL);
+DELETE FROM "profile_tags" WHERE "profile_id" IN (SELECT "id" FROM "profiles" WHERE "gender" IS NULL);
+DELETE FROM "profiles" WHERE "gender" IS NULL;
+-- 残った行に対してNOT NULL制約とgenderのチェック制約を付与
+ALTER TABLE "profiles" ALTER COLUMN "gender" SET NOT NULL, ALTER COLUMN "birthdate" SET NOT NULL, ADD CONSTRAINT "chk_profiles_gender" CHECK ((gender)::text = ANY ((ARRAY['male'::character varying, 'female'::character varying])::text[]));
 -- create "auth_identities" table
 CREATE TABLE "auth_identities" (
   "id" bigserial NOT NULL,
