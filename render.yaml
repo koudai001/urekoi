@@ -8,6 +8,7 @@ projects:
             name: api
             runtime: go
             repo: https://github.com/koudai001/urekoi
+            branch: dev
             plan: free
             envVars:
               - key: FE_URL
