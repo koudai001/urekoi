@@ -72,7 +72,7 @@ projects:
           - name: db
             databaseName: db_amjd
             user: db_amjd_user
-            plan: free
+            plan: basic-256mb
             region: singapore
             ipAllowList:
               - source: 0.0.0.0/0

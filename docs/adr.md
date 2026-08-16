@@ -100,3 +100,27 @@ Recs Provider
 - 課題: LCP遅い
 - 工夫: next/image化、remotePatterns設定、priority/sizes付与
 - 効果: 改善
+
+## websocketのハンドシェイク
+
+ブラウザ
+↓ チケット発行をリクエスト
+Go
+↓ IssueTicket()
+Redisに ticket → userID を保存
+↓
+Go
+↓ ticketをレスポンス
+ブラウザ
+↓ ticket付きでWebSocket接続
+Go
+↓ VerifyTicket()
+Redisからticketを取得・消費
+↓
+Go
+↓ userIDを特定
+WebSocket接続確立
+
+## websocketのチャット機能
+
+[websocket](./websocket.drawio.svg)
