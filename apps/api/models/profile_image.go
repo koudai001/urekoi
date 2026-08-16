@@ -4,7 +4,7 @@ import "time"
 
 type ProfileImage struct {
 	ID        uint64  `gorm:"primaryKey"`
-	ProfileID uint64  `gorm:"not null"`
+	ProfileID uint64  `gorm:"not null;index"`
 	Profile   Profile `gorm:"foreignKey:ProfileID"`
 	ImageKey  string  `gorm:"type:varchar(255);not null"`
 	SortOrder int16   `gorm:"not null"`

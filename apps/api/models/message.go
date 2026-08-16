@@ -4,7 +4,7 @@ import "time"
 
 type Message struct {
 	ID           uint64 `gorm:"primaryKey"`
-	MatchID      uint64 `gorm:"not null"`
+	MatchID      uint64 `gorm:"not null;index"`
 	Match        Match  `gorm:"foreignKey:MatchID;constraint:OnDelete:CASCADE"`
 	SenderUserID uint64 `gorm:"not null"`
 	SenderUser   User   `gorm:"foreignKey:SenderUserID"`
