@@ -1,4 +1,4 @@
-h1:ktdaqXZ9IOvRA3Jv30nM5alH3OMFL8Of8Ely0eOwqO0=
+h1:rVH6esiJt+9m9UWmhML0dCnp3owSAZt2G9eMUfSCkyY=
 20260707030904_init_schema.up.sql h1:4Mn9UWGZdh5EoktZdUwi76ZWOTXiGlqKG2RIR71d5Uc=
 20260713033610_add_user_gender_birthdate.up.sql h1:Cb4UAkQFBrYNP5U4Dma3EPUl6CO8qqZ2IX9ZIrDu94U=
 20260718140317_add_likes_no_self_like_check.up.sql h1:S+3SNNXOM8UurKP9qyJMIfOzazEHJD1ZjAZu4QBSN1k=
@@ -6,3 +6,5 @@ h1:ktdaqXZ9IOvRA3Jv30nM5alH3OMFL8Of8Ely0eOwqO0=
 20260727032521_add_profile_image_key.up.sql h1:By0ZA1r8qQAVG4yoL8TnyLDwBy4C639pQtFemS2UBlc=
 20260807032556_add_authentication_models.up.sql h1:N7wuRABkZ1cLzul3T6pn0xC4oWCVj++tEMfcBjFHm3U=
 20260807033450_remove_legacy_user_auth_columns.up.sql h1:ECMVh3ZL++Iob6MIvY7vFM52RpDOW6XjoDoxDVUwnRE=
+20260816065241_add_message_match_id_index.up.sql h1:VQIuzA4ljQemrz5RzD6alPwxk1LxW+t4z0sgj/srV3c=
+20260816070528_add_remaining_indexes.up.sql h1:CbSXcExdy4XgfgFrzAXYz1sQN9lQTUT7LxJ13XLSZKo=

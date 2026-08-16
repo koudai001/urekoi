@@ -46,7 +46,7 @@ erDiagram
     }
     PROFILE_IMAGE {
         bigint id PK
-        bigint profile_id FK "NOT NULL Profile.ID"
+        bigint profile_id FK "NOT NULL Profile.ID INDEX"
         varchar url "NOT NULL"
         smallint sort_order "NOT NULL 表示順 長押しで入れ替え可能にする想定"
         timestamptz created_at "NOT NULL DEFAULT now()"
@@ -64,14 +64,14 @@ erDiagram
     }
     PROFILE_TAG {
         bigint id PK
-        bigint profile_id FK "NOT NULL Profile.ID"
+        bigint profile_id FK "NOT NULL Profile.ID INDEX"
         bigint tag_id FK "NOT NULL Tag.ID"
         timestamptz created_at "NOT NULL DEFAULT now()"
     }
     LIKE {
         bigint id PK
         bigint from_user_id FK "NOT NULL User.ID UNIQUE(from_user_id, to_user_id) 重複いいね防止"
-        bigint to_user_id FK "NOT NULL User.ID UNIQUE(from_user_id, to_user_id) 重複いいね防止"
+        bigint to_user_id FK "NOT NULL User.ID UNIQUE(from_user_id, to_user_id) 重複いいね防止 INDEX"
         timestamptz created_at "NOT NULL DEFAULT now()"
     }
     SKIP {
@@ -83,12 +83,12 @@ erDiagram
     MATCH {
         bigint id PK
         bigint user1_id FK "NOT NULL User.ID UNIQUE(user1_id, user2_id) CHECK(user1_id < user2_id) 重複防止のため常に小さい方"
-        bigint user2_id FK "NOT NULL User.ID UNIQUE(user1_id, user2_id)"
+        bigint user2_id FK "NOT NULL User.ID UNIQUE(user1_id, user2_id) INDEX"
         timestamptz matched_at "NOT NULL DEFAULT now()"
     }
     MESSAGE {
         bigint id PK
-        bigint match_id FK "NOT NULL Match.ID ON DELETE CASCADE アンマッチで会話を削除"
+        bigint match_id FK "NOT NULL Match.ID ON DELETE CASCADE アンマッチで会話を削除 INDEX"
         bigint sender_user_id FK "NOT NULL User.ID"
         text body "NOT NULL"
         timestamptz created_at "NOT NULL DEFAULT now()"

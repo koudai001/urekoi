@@ -1,0 +1,86 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="ページ-1" id="KuS8mk6hgyXpqjX5T5p6">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="EKMi8S3sZrdssbmAWrEU-3" edge="1" parent="1" source="EKMi8S3sZrdssbmAWrEU-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="EKMi8S3sZrdssbmAWrEU-2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EKMi8S3sZrdssbmAWrEU-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="ユーザーAの&lt;br&gt;ブラウザ" vertex="1">
+          <mxGeometry height="60" width="120" x="80" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="EKMi8S3sZrdssbmAWrEU-2" parent="1" style="whiteSpace=wrap;html=1;rounded=0;" value="GOサーバー１&lt;div&gt;HUB：{}&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="80" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="EKMi8S3sZrdssbmAWrEU-4" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="HTTP&amp;nbsp;&lt;div&gt;POST&amp;nbsp; /messages&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="160" x="130" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="EKMi8S3sZrdssbmAWrEU-5" edge="1" parent="1" source="EKMi8S3sZrdssbmAWrEU-2" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="jpvHELsodKb8zRBRGOyc-1" value="">
+          <mxGeometry relative="1" width="100" as="geometry">
+            <Array as="points" />
+            <mxPoint x="120" y="320" as="sourcePoint" />
+            <mxPoint x="180" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="EKMi8S3sZrdssbmAWrEU-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="PUBLISH ws:messages" vertex="1">
+          <mxGeometry height="30" width="60" x="220" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-1" parent="1" style="whiteSpace=wrap;html=1;rounded=0;" value="REDIS&lt;br&gt;&lt;div&gt;ws:messages&lt;/div&gt;" vertex="1">
+          <mxGeometry height="90" width="200" x="270" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-2" edge="1" parent="1" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;" value="">
+          <mxGeometry relative="1" width="100" as="geometry">
+            <Array as="points" />
+            <mxPoint x="300" y="470" as="sourcePoint" />
+            <mxPoint x="300" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="SUBSCRIBE" vertex="1">
+          <mxGeometry height="30" width="60" x="310" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-4" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="インスタンス１が受信&lt;br&gt;HUBにBない→なにもしない" vertex="1">
+          <mxGeometry height="30" width="180" x="210" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-5" edge="1" parent="1" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;" value="">
+          <mxGeometry relative="1" width="100" as="geometry">
+            <Array as="points" />
+            <mxPoint x="440" y="470" as="sourcePoint" />
+            <mxPoint x="440" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="SUBSCRIBE" vertex="1">
+          <mxGeometry height="30" width="60" x="460" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="インスタンス２が受信&lt;br&gt;HUBにBある→接続bに書き込む" vertex="1">
+          <mxGeometry height="30" width="180" x="414" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-13" edge="1" parent="1" source="jpvHELsodKb8zRBRGOyc-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="jpvHELsodKb8zRBRGOyc-12" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-9" parent="1" style="whiteSpace=wrap;html=1;" value="GOサーバー　&lt;br&gt;インスタンス２&lt;br&gt;Hub：{B: [接続b]}" vertex="1">
+          <mxGeometry height="70" width="130" x="510" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-10" edge="1" parent="1" source="jpvHELsodKb8zRBRGOyc-1" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="jpvHELsodKb8zRBRGOyc-9" value="">
+          <mxGeometry relative="1" width="100" as="geometry">
+            <Array as="points" />
+            <mxPoint x="480" y="430" as="sourcePoint" />
+            <mxPoint x="590" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-11" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="WriteMessage" vertex="1">
+          <mxGeometry height="40" width="80" x="530" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="ユーザーBの&lt;br&gt;ブラウザ" vertex="1">
+          <mxGeometry height="60" width="120" x="515" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-14" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="WebSocket接続" vertex="1">
+          <mxGeometry height="30" width="160" x="594" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="jpvHELsodKb8zRBRGOyc-16" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="全インスタンスが&lt;br&gt;同じチャンネルをSUBSCRIBE" vertex="1">
+          <mxGeometry height="40" width="180" x="70" y="470" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
