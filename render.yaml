@@ -61,7 +61,7 @@ projects:
             buildCommand: go build -tags netgo -ldflags '-s -w' -o app && go run ./migrations/migration.go
             startCommand: ./app
             healthCheckPath: /health
-            autoDeployTrigger: checksPass
+            autoDeployTrigger: commit
             rootDir: apps/api
           - type: keyvalue
             name: redis
