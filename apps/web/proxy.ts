@@ -58,19 +58,29 @@ export async function proxy(request: NextRequest) {
   return response
 }
 
-// refresh_tokenでBEの/refreshを呼び、新しいトークンとプロフィール作成済みかどうかを取得する。失敗時はnull
+// BEのコールドスタート等で応答が遅い場合に、ミドルウェア全体が長時間ブロックされないための上限
+const REFRESH_TIMEOUT_MS = 5000
+
+// refresh_tokenでBEの/refreshを呼び、新しいトークンとプロフィール作成済みかどうかを取得する。失敗時(タイムアウト含む)はnull
 async function refresh(refreshToken: string): Promise<{
   accessToken: string
   refreshToken: string
   hasProfile: boolean
 } | null> {
-  const res = await postRefresh({ refresh_token: refreshToken })
-  if (res.status !== 200) return null
+  try {
+    const res = await postRefresh(
+      { refresh_token: refreshToken },
+      { signal: AbortSignal.timeout(REFRESH_TIMEOUT_MS) },
+    )
+    if (res.status !== 200) return null
 
-  return {
-    accessToken: res.data.access_token ?? '',
-    refreshToken: res.data.refresh_token ?? '',
-    hasProfile: res.data.has_profile ?? false,
+    return {
+      accessToken: res.data.access_token ?? '',
+      refreshToken: res.data.refresh_token ?? '',
+      hasProfile: res.data.has_profile ?? false,
+    }
+  } catch {
+    return null
   }
 }
 

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { Heart } from 'lucide-react'
 import {
@@ -97,11 +98,12 @@ function MatchingGrid() {
           className="relative aspect-square overflow-hidden rounded-2xl bg-swipe-surface"
         >
           {m.image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={m.image}
-              alt={m.nickname}
-              className="h-full w-full object-cover"
+            <Image
+              src={m.image!}
+              alt={m.nickname ?? 'プロフィール画像'}
+              fill
+              sizes="166px"
+              className="object-cover"
             />
           )}
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-2">
@@ -143,13 +145,14 @@ function MsgList() {
             m.match_id === activeMatchId && 'bg-swipe-accent/15',
           )}
         >
-          <span className="h-16 w-16 shrink-0 overflow-hidden rounded-full bg-swipe-surface">
+          <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-swipe-surface">
             {m.image && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={m.image}
-                alt={m.nickname}
-                className="h-full w-full object-cover"
+              <Image
+                src={m.image!}
+                alt={m.nickname ?? 'プロフィール画像'}
+                fill
+                sizes="64px"
+                className="object-cover"
               />
             )}
           </span>

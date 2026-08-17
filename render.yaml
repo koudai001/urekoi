@@ -9,7 +9,7 @@ projects:
             runtime: go
             repo: https://github.com/koudai001/urekoi
             branch: dev
-            plan: free
+            plan: starter
             envVars:
               - key: FE_URL
                 sync: false
@@ -18,6 +18,8 @@ projects:
               - key: GO_ENV
                 sync: false
               - key: SECRET
+                sync: false
+              - key: GOOGLE_CLIENT_ID
                 sync: false
               - key: S3_ENDPOINT
                 sync: false

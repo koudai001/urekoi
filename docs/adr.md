@@ -98,8 +98,16 @@ Recs Provider
 ## LCP最適化
 
 - 課題: LCP遅い
-- 工夫: next/image化、remotePatterns設定、priority/sizes付与
-- 効果: 改善
+- 工夫:
+  - next/imageへ変更
+  - sizes指定で表示幅に合う画像を配信し、転送量を削減
+  - 画面外画像は遅延読み込み
+  - 画像領域を先に確保し、CLSを防止
+
+## ボトムバーのprefetch最適化
+
+- 課題: 常設Linkの自動prefetchによる不要なRSC・APIリクエスト
+- 対策: `prefetch={false}`で事前取得を止め、クリック時のみ取得
 
 ## websocketのハンドシェイク
 
@@ -124,3 +132,15 @@ WebSocket接続確立
 ## websocketのチャット機能
 
 [websocket](./websocket.drawio.svg)
+
+## 初回ロード遅延対策（検証環境）
+
+- 課題：初回レスポンス遅延（検証環境）
+- 原因：
+  - Render Freeプランのcold start
+  - MiddlewareのRefresh Token API待機
+  - Vercel / Renderのリージョン不一致
+- 対策：
+  - Render有料化（常時起動）
+  - APIタイムアウト設定
+  - Vercel FunctionをSingapore（sin1）へ変更
