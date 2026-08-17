@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useMessagedMatches } from '@/hooks/use-match-profiles'
 
 // SPの会話一覧。会話済みマッチを最新メッセージとともに表示する。
@@ -20,13 +21,14 @@ export function SpConversationList() {
             href={`/messages/${match.match_id}`}
             className="flex items-center gap-4 px-5 py-4 transition-colors active:bg-swipe-surface"
           >
-            <span className="h-16 w-16 shrink-0 overflow-hidden rounded-full bg-swipe-surface">
+            <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-swipe-surface">
               {match.image && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={match.image}
-                  alt={match.nickname}
-                  className="h-full w-full object-cover"
+                <Image
+                  src={match.image!}
+                  alt={match.nickname ?? 'プロフィール画像'}
+                  fill
+                  sizes="64px"
+                  className="object-cover"
                 />
               )}
             </span>

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Heart } from 'lucide-react'
 import { useReceivedLikes } from '@/hooks/use-received-likes'
 import { useUnmessagedMatches } from '@/hooks/use-match-profiles'
@@ -36,13 +37,14 @@ export function SpNewMatches() {
             href={`/messages/${match.match_id}`}
             className="flex w-20 shrink-0 flex-col items-center gap-2"
           >
-            <span className="h-24 w-20 overflow-hidden rounded-2xl bg-swipe-surface">
+            <span className="relative h-24 w-20 overflow-hidden rounded-2xl bg-swipe-surface">
               {match.image && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={match.image}
-                  alt={match.nickname}
-                  className="h-full w-full object-cover"
+                <Image
+                  src={match.image!}
+                  alt={match.nickname ?? 'プロフィール画像'}
+                  fill
+                  sizes="80px"
+                  className="object-cover"
                 />
               )}
             </span>
