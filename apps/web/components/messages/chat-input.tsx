@@ -36,7 +36,7 @@ export function ChatInput({
             if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSubmit()
           }}
           placeholder="メッセージを入力"
-          className="flex-1 bg-transparent py-2 text-sm text-swipe-foreground outline-none placeholder:text-swipe-muted-foreground"
+          className="min-w-0 flex-1 bg-transparent py-2 text-base text-swipe-foreground outline-none placeholder:text-swipe-muted-foreground"
         />
         <button
           onClick={handleSubmit}

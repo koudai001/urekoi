@@ -1,0 +1,20 @@
+import { Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
+
+export function RouteLoading({ className }: { className?: string }) {
+  return (
+    <div
+      role="status"
+      aria-label="読み込み中"
+      className={cn(
+        'flex min-h-0 flex-1 items-center justify-center bg-swipe-background',
+        className,
+      )}
+    >
+      <Loader2
+        className="size-10 animate-spin text-swipe-accent motion-reduce:animate-none"
+        aria-hidden="true"
+      />
+    </div>
+  )
+}

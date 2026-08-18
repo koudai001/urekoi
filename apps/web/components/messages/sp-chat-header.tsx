@@ -25,6 +25,7 @@ export function SpChatHeader({
             alt={`${conversation.name}さん`}
             width={44}
             height={44}
+            loading="eager"
             className="h-full w-full object-cover"
           />
         </span>

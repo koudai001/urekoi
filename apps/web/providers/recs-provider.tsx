@@ -2,14 +2,13 @@
 
 import { useQueryClient } from '@tanstack/react-query'
 import { createContext, useContext, useState } from 'react'
-import { useSWRConfig } from 'swr'
 import { toast } from 'sonner'
 import { sendLike } from '@/actions/likes'
 import { sendSkip } from '@/actions/skips'
 import { showLikeToast } from '@/components/likes/like-toast'
 import { showMatchToast } from '@/components/likes/match-toast'
 import { showSkipToast } from '@/components/likes/skip-toast'
-import { UNMESSAGED_MATCHES_KEY } from '@/hooks/use-match-profiles'
+import { UNMESSAGED_MATCHES_QUERY_KEY } from '@/hooks/use-match-profiles'
 import type { ProfileDetail } from '@/generated/urekoiAPI.schemas'
 import { RECS_QUERY_KEY, useRecs } from '@/hooks/use-recs'
 
@@ -41,7 +40,6 @@ export function RecsProvider({
 }) {
   const { data: recs = [] } = useRecs(initialRecs)
   const queryClient = useQueryClient()
-  const { mutate: mutateSWR } = useSWRConfig()
   const [swipeRequest, setSwipeRequest] = useState<SwipeRequest | null>(null)
   const current = recs[0]
   const next = recs[1]
@@ -58,8 +56,9 @@ export function RecsProvider({
         }
 
         if (result.matched) {
-          // TODO:あとでtanstackのmutateを使うようにする
-          await mutateSWR(UNMESSAGED_MATCHES_KEY)
+          await queryClient.invalidateQueries({
+            queryKey: UNMESSAGED_MATCHES_QUERY_KEY,
+          })
           showMatchToast(current.nickname ?? '', current.age ?? 0)
         } else {
           showLikeToast(current.nickname ?? '')
