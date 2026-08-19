@@ -1,19 +1,72 @@
-# ADR
+# 設計書
 
-機能ごとの設計判断など。
+機能ごとの構成と主な設計方針をまとめる。
 
-## メッセージ関連のキャッシュ
+## メッセージ・マッチ関連のキャッシュ
 
-- WebSocket受信/送信メッセージのSWRキャッシュ直接反映（再フェッチなし）で即時反映。合わせて対象の相手を一覧の先頭へ移動
-- bound mutate(自キー専用)とグローバルmutate(任意キー指定可)を使い分け
-  - `/api/matches/{matchId}/messages`(トーク画面): bound mutateで自キーのみ再検証
-  - `/api/matches/unmessaged` / `/api/matches/messaged`(サイドバー一覧): グローバルmutateで別キーをローカル更新
+### キャッシュ一覧
 
-## いいね成立時の一覧更新
+- matches.{matchId}.messages
+  - エンドポイント：`/api/matches/{matchId}/messages`
+  - 内容: 該当トークのメッセージ履歴
+- matches.messaged
+  - エンドポイント：`/api/matches/messaged`
+  - 内容: メッセージ済みの相手と最新メッセージ
+- matches.unmessaged
+  - エンドポイント：`/api/matches/unmessaged`
+  - 内容: マッチ後、まだメッセージしていない相手
+  - 定期取得: 15秒
+  - 利用箇所: 新しいマッチ
+- likes.pending
+  - エンドポイント：`/api/likes/pending`
+  - 内容: 受信Like
+  - 定期取得: 15秒
+  - 利用箇所: 受信Like画面・新しいマッチ
 
-- いいね成立時は `/api/matches/unmessaged` だけを即再検証し、左サイドバーの「マッチした相手」一覧から該当ユーザーを即時に消す
-- `/api/matches/messaged` はこの時点では再検証しない。メッセージ送信後の更新や通常ポーリングに委ねる
-- マッチ成立の判定だけで `match_id` を返さず、一覧側は再取得で最新状態を揃える。即時性よりも実装の単純さと整合性を優先する
+### WebSocket接続
+
+- 認証後の共通`WebSocketProvider`で、ユーザー単位の接続を1本維持する
+- 現在WebSocketで受信するイベントは新着メッセージのみ
+- Like受信とマッチ成立はWebSocketイベントに含まれていない
+
+### メッセージ受信時
+
+1. WebSocketで新着メッセージを受信
+   → `matches.{matchId}.messages`にメッセージを追加（再取得なし）
+   → `matches.messaged`の対象を更新して一覧の先頭へ移動（再取得なし）
+
+2. 初回メッセージの場合
+   → `matches.unmessaged`から対象を削除
+   → その対象＋新着メッセージを`matches.messaged`の先頭へ追加
+
+3. （例外）`matches.messaged`が未取得、または対象がキャッシュにいない
+   → `matches.messaged`だけ再取得
+
+### メッセージ送信時
+
+1. POSTでメッセージ送信
+2. POSTのレスポンスで、送信したメッセージを受け取る
+3. メッセージ履歴キャッシュへ送信メッセージを追加
+4. matches.unmessagedキャッシュから対象を削除
+5. 対象と送信メッセージをmatches.messagedキャッシュの先頭へ追加
+
+### Likeによるマッチ成立時
+
+```text
+候補へLikeを送信
+→ APIレスポンスでマッチ成立を確認
+→ /api/matches/unmessaged を再取得
+→ TanStack Queryの候補キャッシュから対象を削除
+```
+
+マッチ一覧とスワイプ候補はどちらもTanStack Queryで管理し、マッチ成立時はそれぞれのQuery Keyを更新する。
+
+### 現在の役割分担
+
+- WebSocket: 新着メッセージを即時反映する
+- TanStack Queryキャッシュ直接更新: トーク履歴とメッセージ済み・未メッセージ一覧の表示を更新する
+- Queryの再検証: キャッシュに存在しない相手と、マッチ成立後の未メッセージ一覧をAPIと同期する
+- 15秒ポーリング: 未メッセージ・受信Likeの取りこぼしを補完する
 
 ## スワイプ候補の状態管理
 
@@ -35,24 +88,20 @@ Recs Provider
 
 ### 通常のスワイプ
 
-```text
 デッキ操作
-  → アニメーション
-  → Provider
-  → サーバー送信
-  → 成功: 候補キャッシュを更新 → 次のカード
-  → 失敗: キャッシュを維持 → カードを戻す
-```
+→ アニメーション
+→ Provider
+→ サーバー送信
+→ 成功: 候補キャッシュを更新 → 次のカード
+→ 失敗: キャッシュを維持 → カードを戻す
 
 ### 詳細画面からのスワイプ
 
-```text
 詳細でLike / Skip
-  → Providerへスワイプ指示を渡す
-  → 一覧へ戻る
-  → 一覧カードがアニメーション
-  → 通常操作と同じ送信・キャッシュ更新処理
-```
+→ Providerへスワイプ指示を渡す
+→ 一覧へ戻る
+→ 一覧カードがアニメーション
+→ 通常操作と同じ送信・キャッシュ更新処理
 
 ## コンポーネント配置
 
@@ -90,25 +139,6 @@ Recs Provider
 - signup/login/google-login/refreshのレスポンスに`has_profile`を含め、Cookieに保存
 - ミドルウェアはCookieだけを見て、未作成ユーザーをプロフィール作成画面へ誘導する
 
-## k6負荷試験
-
-- 認証フロー・WebSocketに対応できるためk6を採用(Vegeta等はリクエスト間の値の受け渡し不可)
-- 発見: DBコネクションプールの上限未設定。負荷時にPostgres接続が枯渇
-
-## LCP最適化
-
-- 課題: LCP遅い
-- 工夫:
-  - next/imageへ変更
-  - sizes指定で表示幅に合う画像を配信し、転送量を削減
-  - 画面外画像は遅延読み込み
-  - 画像領域を先に確保し、CLSを防止
-
-## ボトムバーのprefetch最適化
-
-- 課題: 常設Linkの自動prefetchによる不要なRSC・APIリクエスト
-- 対策: `prefetch={false}`で事前取得を止め、クリック時のみ取得
-
 ## websocketのハンドシェイク
 
 ブラウザ
@@ -132,15 +162,3 @@ WebSocket接続確立
 ## websocketのチャット機能
 
 [websocket](./websocket.drawio.svg)
-
-## 初回ロード遅延対策（検証環境）
-
-- 課題：初回レスポンス遅延（検証環境）
-- 原因：
-  - Render Freeプランのcold start
-  - MiddlewareのRefresh Token API待機
-  - Vercel / Renderのリージョン不一致
-- 対策：
-  - Render有料化（常時起動）
-  - APIタイムアウト設定
-  - Vercel FunctionをSingapore（sin1）へ変更

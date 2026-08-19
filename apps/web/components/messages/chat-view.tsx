@@ -1,14 +1,15 @@
 'use client'
 
 import { Fragment } from 'react'
-import { useSWRConfig } from 'swr'
+import { useQueryClient } from '@tanstack/react-query'
 import { sendMessage } from '@/actions/messages'
-import { useMessages } from '@/hooks/use-messages'
+import { getMessagesQueryKey, useMessages } from '@/hooks/use-messages'
 import { applyNewMessageToMatchesCache } from '@/hooks/use-match-profiles'
 import { ChatMessageBubble } from './chat-message-bubble'
 import { ChatDateDivider, isDifferentDay } from './chat-date-divider'
 import { ChatInput } from './chat-input'
 import { SpChatHeader } from './sp-chat-header'
+import type { MessageResponse } from '@/generated/urekoiAPI.schemas'
 
 type ChatMatch = {
   match_id?: number
@@ -25,8 +26,8 @@ function formatMatchedDate(matchedAt?: string) {
 
 export function ChatView({ match }: { match: ChatMatch }) {
   const matchId = match.match_id ?? 0
-  const { data, mutate } = useMessages(matchId)
-  const { mutate: globalMutate, cache } = useSWRConfig()
+  const { data } = useMessages(matchId)
+  const queryClient = useQueryClient()
   // BEは新しい順で返すので、表示用に古い順へ並べ替える
   const messages = [...(data ?? [])].reverse()
   const matchedDate = formatMatchedDate(match.matched_at)
@@ -34,10 +35,27 @@ export function ChatView({ match }: { match: ChatMatch }) {
   const handleSend = async (body: string) => {
     const result = await sendMessage(matchId, body)
     if (result.success) {
-      // メッセージ画面のキャッシュに反映する
-      await mutate()
+      const messagesQueryKey = getMessagesQueryKey(matchId)
+      const messagesCache =
+        queryClient.getQueryData<MessageResponse[]>(messagesQueryKey)
+      // トーク履歴のキャッシュを更新
+      if (messagesCache !== undefined) {
+        queryClient.setQueryData<MessageResponse[]>(messagesQueryKey, [
+          result.message,
+          ...messagesCache,
+        ])
+      } else {
+        // （例外）履歴の取得完了前や取得失敗時に送信された場合は、履歴全体を再取得する。
+        console.warn(
+          '（例外）メッセージ送信後にトーク履歴キャッシュがありません',
+          {
+            matchId,
+          },
+        )
+        await queryClient.invalidateQueries({ queryKey: messagesQueryKey })
+      }
       // 新着メッセージをマッチ一覧のキャッシュにも反映する
-      applyNewMessageToMatchesCache(globalMutate, cache, {
+      applyNewMessageToMatchesCache(queryClient, {
         matchId,
         body: result.message.body ?? '',
         createdAt: result.message.created_at ?? '',

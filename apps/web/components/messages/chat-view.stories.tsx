@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { expect, mocked, userEvent, waitFor } from 'storybook/test'
 import * as useMessagesModule from '@/hooks/use-messages'
 import * as messagesActions from '@/actions/messages'
+import { QueryProvider } from '@/providers/query-provider'
 
 import { ChatView } from './chat-view'
 import type {
@@ -40,6 +41,13 @@ const meta = {
   args: {
     match: dummyMatch,
   },
+  decorators: [
+    (Story) => (
+      <QueryProvider>
+        <Story />
+      </QueryProvider>
+    ),
+  ],
   // 各storyでの上書きが無い場合は、ダミーのメッセージ履歴を返す
   beforeEach: () => {
     mocked(useMessagesModule.useMessages).mockReturnValue({
