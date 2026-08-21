@@ -20,7 +20,7 @@ export function SpNewMatches() {
 
       <div className="flex gap-3 overflow-x-auto px-5 pb-5">
         <Link
-          href="/likes/from-partner-card"
+          href="/likes/pending"
           className="flex w-20 shrink-0 flex-col items-center gap-2"
         >
           <span className="flex h-24 w-20 items-center justify-center rounded-2xl border-2 border-swipe-accent bg-swipe-accent/15">
