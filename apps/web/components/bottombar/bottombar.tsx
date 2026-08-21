@@ -13,7 +13,7 @@ const navigationItems = [
     matches: (path: string) => path.startsWith('/recs'),
   },
   {
-    href: '/likes/from-partner-card',
+    href: '/likes/pending',
     label: 'いいね',
     icon: Heart,
     matches: (path: string) => path.startsWith('/likes'),

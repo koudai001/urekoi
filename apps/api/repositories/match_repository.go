@@ -36,6 +36,7 @@ type IMatchRepository interface {
 	// メッセージが1通以上あるマッチの相手プロフィール一覧を、最新メッセージ付きで取得する
 	GetMessagedProfiles(userID uint64) ([]MessagedProfile, error)
 	GetMatchByID(matchID uint64) (*models.Match, error)
+	GetMatchByUserIDs(user1ID uint64, user2ID uint64) (*models.Match, error)
 }
 
 type MatchRepository struct {
@@ -65,6 +66,20 @@ func (r *MatchRepository) CreateMatch(match *models.Match) error {
 func (r *MatchRepository) GetMatchByID(matchID uint64) (*models.Match, error) {
 	var match models.Match
 	if err := r.db.First(&match, matchID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrMatchNotFound
+		}
+		return nil, err
+	}
+
+	return &match, nil
+}
+
+// ユーザーの組み合わせからマッチを1件取得する。user1IDには小さい方のIDを渡す。
+func (r *MatchRepository) GetMatchByUserIDs(user1ID uint64, user2ID uint64) (*models.Match, error) {
+	var match models.Match
+	if err := r.db.Where("user1_id = ? AND user2_id = ?", user1ID, user2ID).
+		First(&match).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrMatchNotFound
 		}

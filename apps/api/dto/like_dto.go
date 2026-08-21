@@ -5,7 +5,8 @@ type LikeRequest struct {
 }
 
 type LikeResponse struct {
-	Matched bool `json:"matched"`
+	Matched bool   `json:"matched"`
+	MatchID uint64 `json:"match_id,omitempty"`
 }
 
 type LikeProfile struct {

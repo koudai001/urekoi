@@ -1122,13 +1122,22 @@ components:
           example: 1
     LikeResponse:
       type: object
+      required: [matched]
       properties:
         matched:
           type: boolean
           description: 相互いいねによりマッチが成立したか
           example: false
+        match_id:
+          type: integer
+          format: int64
+          description: 成立したマッチのID。matchedがtrueの場合のみ返す
+          example: 1
     PendingLikesResponse:
       type: object
+      required:
+        - total
+        - profiles
       properties:
         total:
           type: integer

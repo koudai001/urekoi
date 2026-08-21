@@ -29,7 +29,8 @@
 
 ### データ取得・フォーム
 
-- SWR(クライアント側のポーリング・キャッシュ付きデータ取得)
+- TanStack Query(サーバー状態管理・キャッシュの部分更新)
+- SWR(プロフィールのキャッシュ管理)
 - react-use-websocket(WebSocket接続・再接続ロジック)
 - orval(OpenAPI仕様からAPIクライアントを自動生成)
 - React Hook Form + Zod(フォーム状態管理・バリデーション)
@@ -52,14 +53,14 @@
 
 ### 言語・FW
 
-- Go 1.26
-- Gin v1.12(Webフレームワーク)
+- Go
+- Gin v1(Webフレームワーク)
 - クリーンアーキテクチャ(controllers / usecases / repositories / models)
 
 ### DB
 
 - PostgreSQL
-- GORM v1.31(ORM, PostgreSQLドライバ使用)
+- GORM v1(ORM, PostgreSQLドライバ使用)
 - Atlas(GORMモデルからマイグレーションSQLを自動生成)
 - golang-migrate v4(マイグレーションの適用)
 
@@ -130,4 +131,3 @@
 
 - `main`: 本番(AWS)
 - `dev`: 検証環境(Render + Vercel)
-  にする予定...今はmainが検証環境

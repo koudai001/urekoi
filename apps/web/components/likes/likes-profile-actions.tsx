@@ -2,12 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 import { Heart, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { sendLike } from '@/actions/likes'
 import { sendSkip } from '@/actions/skips'
 import { showLikeToast } from '@/components/likes/like-toast'
 import { showMatchToast } from '@/components/likes/match-toast'
+import { PENDING_LIKES_QUERY_KEY } from '@/hooks/use-received-likes'
+import type { PendingLikesResponse } from '@/generated/urekoiAPI.schemas'
 
 // いいね一覧から開いた詳細では、一覧側のデッキ状態を持たないため直接送信する
 export function LikesProfileActions({
@@ -22,6 +25,7 @@ export function LikesProfileActions({
   returnHref: string
 }) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [isPending, setIsPending] = useState(false)
 
   const handleAction = async (action: 'like' | 'skip') => {
@@ -46,6 +50,22 @@ export function LikesProfileActions({
       }
     }
 
+    // キャッシュ更新
+    queryClient.setQueryData<PendingLikesResponse>(
+      PENDING_LIKES_QUERY_KEY,
+      (pendingLikesCache) => {
+        if (!pendingLikesCache) return pendingLikesCache
+
+        return {
+          ...pendingLikesCache,
+          profiles: pendingLikesCache.profiles.filter(
+            (profile) => profile.user_id !== userId,
+          ),
+          total: Math.max(0, pendingLikesCache.total - 1),
+        }
+      },
+    )
+
     router.replace(returnHref)
   }
 
@@ -57,7 +77,7 @@ export function LikesProfileActions({
           aria-label="スキップ"
           disabled={isPending}
           onClick={() => handleAction('skip')}
-          className="flex h-16 w-16 items-center justify-center rounded-full bg-swipe-surface text-swipe-foreground shadow-xl ring-1 ring-swipe-border transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-swipe-surface text-swipe-foreground shadow-xl ring-1 ring-swipe-border transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <X className="h-7 w-7" />
         </button>
@@ -66,7 +86,7 @@ export function LikesProfileActions({
           aria-label="いいね！を送る"
           disabled={isPending}
           onClick={() => handleAction('like')}
-          className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-swipe-accent to-primary text-swipe-foreground shadow-xl transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-swipe-accent to-primary text-swipe-foreground shadow-xl transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Heart className="h-7 w-7" />
         </button>

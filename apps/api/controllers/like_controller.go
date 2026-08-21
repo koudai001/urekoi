@@ -37,7 +37,7 @@ func (ctrl *LikeController) SendLike(c *gin.Context) {
 
 	user := c.MustGet(middlewares.ContextUserKey).(*models.User)
 
-	matched, err := ctrl.likeUsecase.SendLike(user.ID, req.ToUserID)
+	res, err := ctrl.likeUsecase.SendLike(user.ID, req.ToUserID)
 	if err != nil {
 		switch {
 		case errors.Is(err, usecases.ErrCannotLikeSelf):
@@ -52,7 +52,7 @@ func (ctrl *LikeController) SendLike(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, dto.LikeResponse{Matched: matched})
+	c.JSON(http.StatusCreated, res)
 }
 
 func (ctrl *LikeController) GetPendingLikes(c *gin.Context) {

@@ -30,7 +30,7 @@ export const Recs: Story = {
 export const Likes: Story = {
   parameters: {
     nextjs: {
-      navigation: { pathname: '/likes/from-partner-card' },
+      navigation: { pathname: '/likes/pending' },
     },
   },
 }

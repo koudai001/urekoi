@@ -27,6 +27,7 @@ func TestSendLike_Success(t *testing.T) {
 	var res dto.LikeResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.False(t, res.Matched)
+	assert.Zero(t, res.MatchID)
 }
 
 // 既に相手からいいねをもらっている相手にいいねを送ると、マッチが成立してmatched: trueが返ることを検証
@@ -47,6 +48,7 @@ func TestSendLike_ResultsInMatch(t *testing.T) {
 	var res dto.LikeResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.True(t, res.Matched)
+	assert.NotZero(t, res.MatchID)
 }
 
 // 自分自身にいいねすると400を返すことを検証

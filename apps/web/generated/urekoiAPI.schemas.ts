@@ -114,12 +114,14 @@ export interface LikeRequest {
 
 export interface LikeResponse {
   /** 相互いいねによりマッチが成立したか */
-  matched?: boolean;
+  matched: boolean;
+  /** 成立したマッチのID。matchedがtrueの場合のみ返す */
+  match_id?: number;
 }
 
 export interface PendingLikesResponse {
-  total?: number;
-  profiles?: LikeProfile[];
+  total: number;
+  profiles: LikeProfile[];
 }
 
 export interface SkipRequest {

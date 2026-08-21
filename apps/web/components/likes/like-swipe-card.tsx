@@ -1,9 +1,10 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import Link from 'next/link'
+import { ArrowUp } from 'lucide-react'
 import { LikeActions } from './like-actions'
 import { LikeProfileCard } from './like-profile-card'
-import { RecsProfileLink } from '@/components/recs/recs-profile-link'
 import type { LikeProfile } from '@/generated/urekoiAPI.schemas'
 
 type Direction = 'like' | 'skip'
@@ -102,7 +103,15 @@ export function LikeSwipeCard({
           }}
         >
           <LikeProfileCard profile={profile} priority>
-            <RecsProfileLink userId={profile.user_id} from="likes" />
+            <Link
+              href={`/likes/pending/${profile.user_id}`}
+              aria-label="プロフィール詳細を見る"
+              className="absolute bottom-5 right-5 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/45 text-white shadow-lg backdrop-blur transition hover:bg-black/65"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <ArrowUp className="h-6 w-6" strokeWidth={3} />
+            </Link>
             {/* スワイプ中のラベル */}
             <span
               className="pointer-events-none absolute left-5 top-5 rotate-[-12deg] rounded-lg border-4 border-swipe-accent px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-accent"
