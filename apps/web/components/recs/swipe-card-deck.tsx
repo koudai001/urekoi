@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { SwipeActions } from './swipe-actions'
 import { SwipeCard } from './swipe-card'
 import { CardContainer } from '@/components/ui/card-container'
-import { RecsProfileLink } from './recs-profile-link'
+import { ProfileLink } from './profile-link'
 import {
   type RecsContextValue,
   useRecsContext,
@@ -175,7 +175,7 @@ function SwipeCardDeckItem({
               }}
             >
               <SwipeCard profile={profile} priority>
-                <RecsProfileLink userId={profile.user_id} />
+                <ProfileLink href={`/recs/${profile.user_id}`} />
                 {/* スワイプ中のラベル */}
                 <span
                   className="pointer-events-none absolute left-5 top-5 rotate-[-12deg] rounded-lg border-4 border-swipe-accent px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-accent"
