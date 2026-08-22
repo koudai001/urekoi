@@ -1,13 +1,12 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import Image from 'next/image'
 import Link from 'next/link'
+import { Pencil, Settings } from 'lucide-react'
 import { getMyprofile } from '@/generated/myprofile/myprofile'
 import { COOKIE_ACCESS_TOKEN } from '@/lib/cookie'
-import { CardContainer } from '@/components/ui/card-container'
-import { ProfileViewer } from '@/components/myprofile/profile-viewer'
 
-// サーバーコンポーネントで自分のプロフィールを取得し、閲覧専用のProfileViewerを表示する
-export default async function ProfilePage() {
+export default async function MyProfilePage() {
   const accessToken = (await cookies()).get(COOKIE_ACCESS_TOKEN)?.value ?? ''
 
   const profileRes = await getMyprofile({
@@ -19,29 +18,57 @@ export default async function ProfilePage() {
     throw new Error('プロフィールの取得に失敗しました')
   }
 
-  return (
-    <main className="flex flex-1 justify-center p-2">
-      <div className="relative h-full w-full">
-        <CardContainer className="!h-full !max-w-none !aspect-auto">
-          <ProfileViewer profile={profileRes.data} />
-        </CardContainer>
+  const profile = profileRes.data
+  const profileImage = profile.images?.[0]?.url || '/placeholder.svg'
 
-        <div className="fixed bottom-20 left-1/2 z-10 -translate-x-1/2">
-          <EditButton />
-        </div>
+  return (
+    <main className="flex min-h-0 flex-1 flex-col items-center bg-swipe-background px-6 pt-10 text-swipe-foreground">
+      <div className="relative size-44 overflow-hidden rounded-full bg-swipe-surface ring-4 ring-swipe-accent">
+        <Image
+          src={profileImage}
+          alt={`${profile.nickname ?? ''}さんのプロフィール画像`}
+          fill
+          sizes="176px"
+          loading="eager"
+          className="object-cover"
+        />
+      </div>
+
+      <div className="mt-6 flex items-baseline gap-2 text-3xl font-bold">
+        <span>{profile.nickname}</span>
+        <span>{profile.age}</span>
+      </div>
+
+      <div className="mt-10 flex w-full max-w-xs items-start justify-around">
+        <ProfileAction href="/settings" label="設定">
+          <Settings className="size-7" />
+        </ProfileAction>
+        <ProfileAction href="/myprofile/edit" label="プロフィールを編集">
+          <Pencil className="size-7" />
+        </ProfileAction>
       </div>
     </main>
   )
 }
 
-// プロフィール編集画面への遷移ボタン
-function EditButton() {
+function ProfileAction({
+  href,
+  label,
+  children,
+}: {
+  href: string
+  label: string
+  children: React.ReactNode
+}) {
   return (
     <Link
-      href="/myprofile/edit"
-      className="whitespace-nowrap rounded-full bg-swipe-foreground px-12 py-3.5 text-lg font-bold text-swipe-background shadow-lg"
+      href={href}
+      className="flex w-32 flex-col items-center gap-3 text-center font-bold text-swipe-foreground"
     >
-      プロフィールの編集
+      <span className="flex size-16 items-center justify-center rounded-full bg-swipe-surface shadow-lg ring-1 ring-swipe-border transition hover:scale-105">
+        {children}
+      </span>
+      <span>{label}</span>
     </Link>
   )
 }

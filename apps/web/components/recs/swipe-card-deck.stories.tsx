@@ -42,7 +42,7 @@ function WithProviders({
   return (
     <QueryProvider>
       <RecsProvider initialRecs={recs}>
-        <div style={{ width: 300 }}>{children}</div>
+        <div style={{ width: 340, height: 600 }}>{children}</div>
       </RecsProvider>
     </QueryProvider>
   )

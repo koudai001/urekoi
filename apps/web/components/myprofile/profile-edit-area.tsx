@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { CardContainer } from '@/components/ui/card-container'
 import { ScrollContainer } from '@/components/ui/scroll-container'
+import { ProfileEditNav } from '@/components/myprofile/profile-edit-nav'
 import { ProfilePhotos } from '@/components/myprofile/profile-photos'
 import {
   SectionTitle,
@@ -122,7 +123,7 @@ export function ProfileEditArea({
     <CardContainer className="!h-full !max-w-none !aspect-auto">
       <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-swipe-sidebar">
         {/* 編集タブ: 固定、スクロールしない */}
-        <Header />
+        <ProfileEditNav active="edit" />
 
         {/* 各セクション: 残り領域内でスクロール可能 */}
         <ScrollContainer className="px-7">
@@ -154,20 +155,6 @@ export function ProfileEditArea({
         <SaveButton onClick={handleSave} saving={saving} />
       </div>
     </CardContainer>
-  )
-}
-
-// 編集/プレビュー タブ
-function Header() {
-  return (
-    <div className="flex h-[8%] shrink-0 border-b border-swipe-border">
-      <span className="flex flex-1 items-center justify-center border-b-2 border-swipe-accent text-xl font-bold text-swipe-accent">
-        編集
-      </span>
-      <span className="flex flex-1 items-center justify-center text-xl font-semibold text-swipe-muted-foreground">
-        プレビュー
-      </span>
-    </div>
   )
 }
 
@@ -380,7 +367,7 @@ function SaveButton({
         type="button"
         onClick={onClick}
         disabled={saving}
-        className="whitespace-nowrap rounded-full bg-swipe-foreground px-12 py-3.5 text-[15px] font-bold text-swipe-background disabled:opacity-60"
+        className="cursor-pointer whitespace-nowrap rounded-full bg-swipe-foreground px-12 py-3.5 text-[15px] font-bold text-swipe-background disabled:cursor-not-allowed disabled:opacity-60"
       >
         {saving ? '保存中...' : '保存'}
       </button>
