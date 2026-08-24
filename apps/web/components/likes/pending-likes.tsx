@@ -16,11 +16,11 @@ export function PendingLikes({
     <main className="flex min-h-0 flex-1 flex-col bg-swipe-background">
       <div className="flex shrink-0 items-center justify-center gap-7 px-5 pb-4 pt-4">
         <span className="border-b-2 border-swipe-accent pb-2 text-base font-extrabold text-swipe-foreground">
-          {pendingLikes.total}個のLike
+          {pendingLikes.total}個のいいね
         </span>
         <span className="h-4 w-px bg-swipe-border" />
         <span className="pb-2 text-base font-semibold text-swipe-muted-foreground">
-          Likeした人
+          いいねした人
         </span>
       </div>
 

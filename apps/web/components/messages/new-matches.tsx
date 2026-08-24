@@ -37,7 +37,7 @@ export function NewMatches({
             <Heart className="h-7 w-7 fill-swipe-accent text-swipe-accent" />
           </span>
           <span className="text-center text-xs font-semibold text-swipe-foreground">
-            {likeCount}件のLike
+            {likeCount}件のいいね
           </span>
         </Link>
 

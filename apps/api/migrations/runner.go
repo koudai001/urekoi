@@ -1,4 +1,4 @@
-package main
+package migrations
 
 import (
 	"database/sql"
@@ -17,7 +17,7 @@ import (
 //go:embed sql
 var migrationFiles embed.FS // sqlディレクトリ(Atlasが生成したマイグレーションファイル一式)をビルド時にバイナリの中へ埋め込む
 
-func main() {
+func Run() {
 	infra.Initialize()
 	db := infra.SetupDB()
 	s3Client := infra.SetupS3()

@@ -7,9 +7,9 @@ RUN go mod download
 
 COPY . .
 # APIサーバー本体
-RUN CGO_ENABLED=0 go build -tags netgo -ldflags '-s -w' -o /app .
+RUN CGO_ENABLED=0 go build -tags netgo -ldflags '-s -w' -o /api ./cmd/api
 # マイグレーション+シード用(別バイナリ)
-RUN CGO_ENABLED=0 go build -tags netgo -ldflags '-s -w' -o /migrate ./migrations
+RUN CGO_ENABLED=0 go build -tags netgo -ldflags '-s -w' -o /migrate ./cmd/migrate
 
 
 # 実行用ステージ(ビルド成果物のバイナリだけをコピーして軽量化)
@@ -18,8 +18,8 @@ FROM alpine:3.20
 # tzdataはPostgres接続時のTimeZone=Asia/Tokyo指定に必要
 RUN apk add --no-cache ca-certificates tzdata
 
-COPY --from=build /app /app
+COPY --from=build /api /api
 COPY --from=build /migrate /migrate
 
 EXPOSE 8080
-CMD ["/app"]
+CMD ["/api"]
