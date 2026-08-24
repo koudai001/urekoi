@@ -60,8 +60,8 @@ projects:
                   type: keyvalue
                   property: port
             region: singapore
-            buildCommand: go build -tags netgo -ldflags '-s -w' -o app && go run ./migrations/migration.go
-            startCommand: ./app
+            buildCommand: go build -tags netgo -ldflags '-s -w' -o api ./cmd/api && go run ./cmd/migrate
+            startCommand: ./api
             healthCheckPath: /health
             autoDeployTrigger: commit
             rootDir: apps/api
