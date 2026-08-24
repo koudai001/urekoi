@@ -3,10 +3,15 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useMessagedMatches } from '@/hooks/use-match-profiles'
+import type { MatchProfileWithLastMessage } from '@/generated/urekoiAPI.schemas'
 
-// SPの会話一覧。会話済みマッチを最新メッセージとともに表示する。
-export function SpConversationList() {
-  const { data: matches } = useMessagedMatches()
+// 会話一覧。会話済みマッチを最新メッセージとともに表示する。
+export function ConversationList({
+  initialMatches,
+}: {
+  initialMatches?: MatchProfileWithLastMessage[]
+}) {
+  const { data: matches } = useMessagedMatches(initialMatches)
 
   return (
     <section>
@@ -24,7 +29,7 @@ export function SpConversationList() {
             <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-swipe-surface">
               {match.image && (
                 <Image
-                  src={match.image!}
+                  src={match.image}
                   alt={match.nickname ?? 'プロフィール画像'}
                   fill
                   sizes="64px"

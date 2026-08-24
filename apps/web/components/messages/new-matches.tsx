@@ -5,11 +5,21 @@ import Image from 'next/image'
 import { Heart } from 'lucide-react'
 import { useReceivedLikes } from '@/hooks/use-received-likes'
 import { useUnmessagedMatches } from '@/hooks/use-match-profiles'
+import type {
+  MatchProfile,
+  PendingLikesResponse,
+} from '@/generated/urekoiAPI.schemas'
 
-// SPの新しいマッチ一覧。Like件数と未会話のマッチを横スクロールで表示する。
-export function SpNewMatches() {
-  const { data: receivedLikes } = useReceivedLikes()
-  const { data: matches } = useUnmessagedMatches()
+// 新しいマッチ一覧。Like件数と未会話のマッチを横スクロールで表示する。
+export function NewMatches({
+  initialLikes,
+  initialMatches,
+}: {
+  initialLikes?: PendingLikesResponse
+  initialMatches?: MatchProfile[]
+}) {
+  const { data: receivedLikes } = useReceivedLikes(initialLikes)
+  const { data: matches } = useUnmessagedMatches(initialMatches)
   const likeCount = receivedLikes?.total ?? 0
 
   return (
@@ -40,7 +50,7 @@ export function SpNewMatches() {
             <span className="relative h-24 w-20 overflow-hidden rounded-2xl bg-swipe-surface">
               {match.image && (
                 <Image
-                  src={match.image!}
+                  src={match.image}
                   alt={match.nickname ?? 'プロフィール画像'}
                   fill
                   sizes="80px"

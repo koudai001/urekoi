@@ -24,20 +24,24 @@ async function fetchMessagedMatches(): Promise<MatchProfileWithLastMessage[]> {
 }
 
 // メッセージ未送信のマッチ一覧をポーリングで取得する
-export function useUnmessagedMatches() {
+export function useUnmessagedMatches(initialMatches?: MatchProfile[]) {
   return useQuery({
     queryKey: UNMESSAGED_MATCHES_QUERY_KEY,
     queryFn: fetchUnmessagedMatches,
+    initialData: initialMatches,
     refetchInterval: POLLING_INTERVAL_MS,
   })
 }
 
 // メッセージ送信済みのマッチ一覧(最新メッセージ付き)を取得する。
 // 新着メッセージはWebSocket受信時にキャッシュへ反映
-export function useMessagedMatches() {
+export function useMessagedMatches(
+  initialMatches?: MatchProfileWithLastMessage[],
+) {
   return useQuery({
     queryKey: MESSAGED_MATCHES_QUERY_KEY,
     queryFn: fetchMessagedMatches,
+    initialData: initialMatches,
   })
 }
 
