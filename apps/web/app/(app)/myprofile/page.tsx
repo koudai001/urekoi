@@ -43,7 +43,7 @@ export default async function MyProfilePage() {
         <ProfileAction href="/settings" label="設定">
           <Settings className="size-7" />
         </ProfileAction>
-        <ProfileAction href="/myprofile/edit" label="プロフィールを編集">
+        <ProfileAction href="/myprofile/edit" label="プロフィール編集">
           <Pencil className="size-7" />
         </ProfileAction>
       </div>

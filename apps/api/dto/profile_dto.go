@@ -27,6 +27,20 @@ type ProfileDetail struct {
 	AlreadyLiked   bool                   `json:"already_liked"`
 }
 
+// 検索候補1ページ分と、次ページ取得に使うカーソルを返す。
+// 最終ページではNextCursorをnilにし、JSONではnullとして返す。
+type PartnerSearchResponse struct {
+	Profiles   []ProfileDetail `json:"profiles"`
+	NextCursor *uint64         `json:"next_cursor"`
+}
+
+// 相手検索の条件
+type PartnerSearchRequest struct {
+	Sort   string `form:"sort"`
+	Cursor uint64 `form:"cursor"`
+	Limit  int    `form:"limit"`
+}
+
 type ProfileUpdateRequest struct {
 	Nickname       string   `json:"nickname"`
 	PrefectureCode int16    `json:"prefecture_code"`

@@ -82,7 +82,7 @@ func SetupRouter(db *gorm.DB, redisClient *redis.Client, s3Client *s3.Client) *g
 	authRequired.Use(middlewares.AuthRequired(authUsecase))
 
 	partnerRouter := authRequired.Group("/partner")
-	partnerRouter.GET("/recs", partnerController.GetRecs)
+	partnerRouter.GET("/search", partnerController.Search)
 	partnerRouter.GET("/:userId", partnerController.GetByUserId)
 
 	authRequired.GET("/tags", tagController.ListTags)

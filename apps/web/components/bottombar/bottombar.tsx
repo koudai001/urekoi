@@ -2,15 +2,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Flame, Heart, MessageCircle, UserRound } from 'lucide-react'
+import { Heart, MessageCircle, Search, UserRound } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navigationItems = [
   {
-    href: '/recs',
+    href: '/search',
     label: '探す',
-    icon: Flame,
-    matches: (path: string) => path.startsWith('/recs'),
+    icon: Search,
+    matches: (path: string) => path.startsWith('/search'),
   },
   {
     href: '/likes/pending',

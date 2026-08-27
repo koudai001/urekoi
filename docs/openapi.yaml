@@ -458,23 +458,52 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  /partner/recs:
+  /partner/search:
     get:
       tags: [partner]
-      operationId: getPartnerRecs
-      summary: スワイプ候補一覧取得
-      description: 認証済みユーザー自身・いいね済み・スキップ済み・マッチ済みの相手は結果から除外される
+      operationId: searchPartners
+      summary: 相手検索
+      description: 認証済みユーザー自身・いいね済み・スキップ済み・マッチ済みの相手を除外し、カーソル方式で取得する
       security:
         - bearerAuth: []
+      parameters:
+        - name: sort
+          in: query
+          required: false
+          description: 未指定時は通常順、newest指定時は新着順
+          schema:
+            type: string
+            enum: [newest]
+        - name: cursor
+          in: query
+          required: false
+          description: 前ページのnext_cursor。最初のページでは指定しない
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          description: 1ページに取得する件数
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
       responses:
         "200":
-          description: 取得成功(候補が1件もない場合は空配列)
+          description: 取得成功
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ProfileDetail"
+                $ref: "#/components/schemas/PartnerSearchResponse"
+        "400":
+          description: クエリパラメータが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "500":
@@ -1009,8 +1038,46 @@ components:
           items:
             type: string
           example: [/placeholder.svg]
+    PartnerSearchResponse:
+      type: object
+      required: [profiles, next_cursor]
+      properties:
+        profiles:
+          type: array
+          description: 検索条件に一致する相手プロフィール。候補がない場合は空配列
+          items:
+            $ref: "#/components/schemas/ProfileDetail"
+        next_cursor:
+          type: integer
+          format: int64
+          nullable: true
+          description: 次ページ取得に使うカーソル。最終ページではnull
+          example: 20
     ProfileDetail:
       type: object
+      required:
+        - user_id
+        - nickname
+        - age
+        - prefecture_code
+        - prefecture
+        - bio
+        - occupation
+        - hometown
+        - blood_type
+        - mbti
+        - body_type
+        - education
+        - holiday
+        - alcohol
+        - smoking
+        - height_cm
+        - tag_ids
+        - tags
+        - images
+        - is_new
+        - online
+        - already_liked
       properties:
         user_id:
           type: integer
