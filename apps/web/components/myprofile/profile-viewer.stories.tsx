@@ -4,10 +4,23 @@ import type { ProfileDetail } from '@/generated/urekoiAPI.schemas'
 import { ProfileViewer } from './profile-viewer'
 
 const sampleProfile: ProfileDetail = {
+  user_id: 1,
   nickname: '美咲',
   age: 42,
+  prefecture_code: 13,
   prefecture: '東京都',
   bio: 'よろしくお願いします。落ち着いた時間を一緒に過ごせる方を探しています。',
+  occupation: '会社員',
+  hometown: '東京都',
+  blood_type: 'A型',
+  mbti: 'ENFP',
+  body_type: '普通',
+  education: '大学卒',
+  holiday: '土日',
+  alcohol: '時々飲む',
+  smoking: '吸わない',
+  height_cm: 160,
+  tag_ids: [],
   images: [
     { id: 1, url: '/profiles/woman-1.png', sort_order: 0 },
     { id: 2, url: '/profiles/woman-2.png', sort_order: 1 },
@@ -16,6 +29,9 @@ const sampleProfile: ProfileDetail = {
     { label: '平日夕方', category: '会える時間' },
     { label: 'ワイン', category: '好きなグルメやお酒' },
   ],
+  is_new: true,
+  online: 'online',
+  already_liked: false,
 }
 
 const meta = {
@@ -51,9 +67,12 @@ export const NoPhotos: Story = {
 export const Minimal: Story = {
   args: {
     profile: {
+      ...sampleProfile,
       nickname: '花子',
       age: 30,
+      prefecture_code: 27,
       prefecture: '大阪府',
+      bio: '',
       images: [],
       tags: [],
     },
