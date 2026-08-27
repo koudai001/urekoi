@@ -14,8 +14,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// 複数人登録されている場合に、自分以外の全員分のプロフィール詳細一覧を取得できることを検証
-func TestGetRecs_Success(t *testing.T) {
+// 新着順・取得件数・カーソルを指定し、候補を重複なくページングできることを検証
+func TestSearchPartners_Success(t *testing.T) {
 	router, db, _ := setup(t)
 
 	profile1 := createProfile(t, db, "recs1@example.com", "テスト太郎", 30, seed.PrefectureTokyo)
@@ -23,21 +23,48 @@ func TestGetRecs_Success(t *testing.T) {
 
 	viewerRes := signUpOnlyEmail(t, router, "recs-viewer@example.com")
 
-	w := getJSONWithAuth(t, router, "/partner/recs", viewerRes.AccessToken)
+	// 新着順の1ページ目を1件だけ取得する。
+	w := getJSONWithAuth(t, router, "/partner/search?sort=newest&limit=1", viewerRes.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.ProfileDetail
+	var res dto.PartnerSearchResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	require.Len(t, res, 2)
-	assert.ElementsMatch(t, []dto.ProfileDetail{
-		{UserID: profile1.UserID, Nickname: "テスト太郎", Age: 30, Prefecture: "東京都", Images: []dto.ProfileImageResponse{}, IsNew: true, Online: "online", TagIDs: []uint64{}, Tags: []dto.TagSummary{}, AlreadyLiked: false},
-		{UserID: profile2.UserID, Nickname: "テスト花子", Age: 25, Prefecture: "大阪府", Images: []dto.ProfileImageResponse{}, IsNew: true, Online: "online", TagIDs: []uint64{}, Tags: []dto.TagSummary{}, AlreadyLiked: false},
-	}, res)
+	require.Len(t, res.Profiles, 1)
+	assert.Equal(t, profile2.UserID, res.Profiles[0].UserID)
+	require.NotNil(t, res.NextCursor)
+	assert.Equal(t, profile2.UserID, *res.NextCursor)
+
+	// 返されたカーソルから次ページを取得し、残りの候補と最終ページ判定を確認する。
+	nextURL := fmt.Sprintf("/partner/search?sort=newest&limit=1&cursor=%d", *res.NextCursor)
+	w = getJSONWithAuth(t, router, nextURL, viewerRes.AccessToken)
+	require.Equal(t, http.StatusOK, w.Code)
+
+	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
+	require.Len(t, res.Profiles, 1)
+	assert.Equal(t, profile1.UserID, res.Profiles[0].UserID)
+	assert.Nil(t, res.NextCursor)
+}
+
+// 不正な検索クエリをUsecaseへ渡さず、400として返すことを検証
+func TestSearchPartners_InvalidQuery(t *testing.T) {
+	router, _, _ := setup(t)
+	viewer := signUpOnlyEmail(t, router, "recs-invalid-query@example.com")
+
+	tests := []string{
+		"/partner/search?sort=unknown",
+		"/partner/search?cursor=invalid",
+		"/partner/search?limit=51",
+	}
+
+	for _, path := range tests {
+		w := getJSONWithAuth(t, router, path, viewer.AccessToken)
+		assert.Equal(t, http.StatusBadRequest, w.Code, path)
+	}
 }
 
 // 既にいいね済みの相手は候補から除外されることを検証
-func TestGetRecs_ExcludesAlreadyLiked(t *testing.T) {
+func TestSearchPartners_ExcludesAlreadyLiked(t *testing.T) {
 	router, db, _ := setup(t)
 
 	liked := createProfile(t, db, "recs-liked@example.com", "いいね済み", 30, seed.PrefectureTokyo)
@@ -47,18 +74,18 @@ func TestGetRecs_ExcludesAlreadyLiked(t *testing.T) {
 
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: liked.UserID}, viewer.AccessToken).Code)
 
-	w := getJSONWithAuth(t, router, "/partner/recs", viewer.AccessToken)
+	w := getJSONWithAuth(t, router, "/partner/search", viewer.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.ProfileDetail
+	var res dto.PartnerSearchResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	require.Len(t, res, 1)
-	assert.Equal(t, other.UserID, res[0].UserID)
+	require.Len(t, res.Profiles, 1)
+	assert.Equal(t, other.UserID, res.Profiles[0].UserID)
 }
 
 // 既にスキップ済みの相手は候補から除外されることを検証
-func TestGetRecs_ExcludesSkipped(t *testing.T) {
+func TestSearchPartners_ExcludesSkipped(t *testing.T) {
 	router, db, _ := setup(t)
 
 	skipped := createProfile(t, db, "recs-skipped@example.com", "スキップ済み", 30, seed.PrefectureTokyo)
@@ -68,18 +95,18 @@ func TestGetRecs_ExcludesSkipped(t *testing.T) {
 
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/skips", dto.SkipRequest{ToUserID: skipped.UserID}, viewer.AccessToken).Code)
 
-	w := getJSONWithAuth(t, router, "/partner/recs", viewer.AccessToken)
+	w := getJSONWithAuth(t, router, "/partner/search", viewer.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.ProfileDetail
+	var res dto.PartnerSearchResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	require.Len(t, res, 1)
-	assert.Equal(t, other.UserID, res[0].UserID)
+	require.Len(t, res.Profiles, 1)
+	assert.Equal(t, other.UserID, res.Profiles[0].UserID)
 }
 
 // マッチ済みの相手は候補から除外されることを検証
-func TestGetRecs_ExcludesMatched(t *testing.T) {
+func TestSearchPartners_ExcludesMatched(t *testing.T) {
 	router, db, _ := setup(t)
 
 	// 相互いいねを送る側なのでaccess_tokenが要るためsignupで作る(signupは自動でプロフィールも作る)
@@ -92,37 +119,38 @@ func TestGetRecs_ExcludesMatched(t *testing.T) {
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: matched.ID}, viewer.AccessToken).Code)
 	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: viewer.ID}, matched.AccessToken).Code)
 
-	w := getJSONWithAuth(t, router, "/partner/recs", viewer.AccessToken)
+	w := getJSONWithAuth(t, router, "/partner/search", viewer.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.ProfileDetail
+	var res dto.PartnerSearchResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	require.Len(t, res, 1)
-	assert.Equal(t, other.UserID, res[0].UserID)
+	require.Len(t, res.Profiles, 1)
+	assert.Equal(t, other.UserID, res.Profiles[0].UserID)
 }
 
 // 候補となるプロフィールが1件もない場合に空配列(200)を返すことを検証
-func TestGetRecs_Empty(t *testing.T) {
+func TestSearchPartners_Empty(t *testing.T) {
 	router, db, _ := setup(t)
 
 	viewerRes := signUpOnlyEmail(t, router, "recs-viewer-empty@example.com")
 	require.NoError(t, db.Where("user_id = ?", viewerRes.ID).Delete(&models.Profile{}).Error)
 
-	w := getJSONWithAuth(t, router, "/partner/recs", viewerRes.AccessToken)
+	w := getJSONWithAuth(t, router, "/partner/search", viewerRes.AccessToken)
 
 	require.Equal(t, http.StatusOK, w.Code)
 
-	var res []dto.ProfileDetail
+	var res dto.PartnerSearchResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	assert.Empty(t, res)
+	assert.Empty(t, res.Profiles)
+	assert.Nil(t, res.NextCursor)
 }
 
 // access_tokenがない場合は401を返すことを検証
-func TestGetRecs_Unauthorized(t *testing.T) {
+func TestSearchPartners_Unauthorized(t *testing.T) {
 	router, _, _ := setup(t)
 
-	w := getJSON(t, router, "/partner/recs")
+	w := getJSON(t, router, "/partner/search")
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }

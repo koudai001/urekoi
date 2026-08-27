@@ -13,8 +13,8 @@ var ErrProfileNotFound = errors.New("profile not found")
 type IProfileRepository interface {
 	// excludeUserIDのプロフィールは結果から除外する(自分自身を一覧に出さないため)
 	GetAllProfiles(excludeUserID uint64) ([]models.Profile, error)
-	// requestingUserID自身・いいね済み・スキップ済みの相手を除いたプロフィール一覧を取得する
-	GetRecsProfiles(requestingUserID uint64) ([]models.Profile, error)
+	// requestingUserID自身・対応済みの相手を除き、cursorより後ろのプロフィールをlimit件取得する
+	SearchProfiles(requestingUserID uint64, sort string, cursor uint64, limit int) ([]models.Profile, error)
 	GetProfileTags(profileID uint64) ([]models.ProfileTag, error)
 	GetProfileByUserID(userID uint64) (*models.Profile, error)
 	CreateProfile(profile *models.Profile) error
@@ -52,9 +52,9 @@ func (r *ProfileRepository) GetAllProfiles(excludeUserID uint64) ([]models.Profi
 	return profiles, nil
 }
 
-func (r *ProfileRepository) GetRecsProfiles(requestingUserID uint64) ([]models.Profile, error) {
+func (r *ProfileRepository) SearchProfiles(requestingUserID uint64, sort string, cursor uint64, limit int) ([]models.Profile, error) {
 	var profiles []models.Profile
-	if err := r.db.Preload("Prefecture").Preload("User").
+	query := r.db.Preload("Prefecture").Preload("User").
 		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
 		Where("user_id != ?", requestingUserID).
 		Where(`NOT EXISTS (
@@ -69,8 +69,21 @@ func (r *ProfileRepository) GetRecsProfiles(requestingUserID uint64) ([]models.P
 			SELECT 1 FROM matches
 			WHERE (matches.user1_id = ? AND matches.user2_id = profiles.user_id)
 			   OR (matches.user2_id = ? AND matches.user1_id = profiles.user_id)
-		)`, requestingUserID, requestingUserID).
-		Find(&profiles).Error; err != nil {
+		)`, requestingUserID, requestingUserID)
+
+	// user_idを安定した並び順とカーソルに使い、前ページとの重複を避ける。
+	order := "profiles.user_id ASC"
+	if sort == "newest" {
+		order = "profiles.user_id DESC"
+		if cursor > 0 {
+			// 新着順の場合、cursorより小さいIDを取得することで、前ページの最後のIDより新しいものを取得する
+			query = query.Where("profiles.user_id < ?", cursor)
+		}
+	} else if cursor > 0 {
+		query = query.Where("profiles.user_id > ?", cursor)
+	}
+
+	if err := query.Order(order).Limit(limit).Find(&profiles).Error; err != nil {
 		return nil, err
 	}
 

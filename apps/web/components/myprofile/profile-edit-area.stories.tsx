@@ -6,6 +6,7 @@ import type { ProfileDetail, TagOption } from '@/generated/urekoiAPI.schemas'
 import { ProfileEditArea } from './profile-edit-area'
 
 const sampleProfile: ProfileDetail = {
+  user_id: 1,
   nickname: 'たろう',
   age: 42,
   prefecture_code: 13,
@@ -22,7 +23,11 @@ const sampleProfile: ProfileDetail = {
   smoking: '吸わない',
   height_cm: 175,
   tag_ids: [1],
+  tags: [],
   images: [],
+  is_new: false,
+  online: 'offline',
+  already_liked: false,
 }
 
 const sampleTags: TagOption[] = [

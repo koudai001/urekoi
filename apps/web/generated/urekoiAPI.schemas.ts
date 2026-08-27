@@ -74,32 +74,42 @@ export interface ProfileImageResponse {
 }
 
 export interface ProfileDetail {
-  user_id?: number;
-  nickname?: string;
-  age?: number;
-  prefecture_code?: number;
-  prefecture?: string;
-  bio?: string;
-  occupation?: string;
-  hometown?: string;
-  blood_type?: string;
-  mbti?: string;
-  body_type?: string;
-  education?: string;
-  holiday?: string;
-  alcohol?: string;
-  smoking?: string;
-  height_cm?: number;
-  tag_ids?: number[];
-  tags?: TagSummary[];
+  user_id: number;
+  nickname: string;
+  age: number;
+  prefecture_code: number;
+  prefecture: string;
+  bio: string;
+  occupation: string;
+  hometown: string;
+  blood_type: string;
+  mbti: string;
+  body_type: string;
+  education: string;
+  holiday: string;
+  alcohol: string;
+  smoking: string;
+  height_cm: number;
+  tag_ids: number[];
+  tags: TagSummary[];
   /** sort_order順に並んだ登録済みのプロフィール画像 */
-  images?: ProfileImageResponse[];
+  images: ProfileImageResponse[];
   /** 相手プロフィール表示時のみ使用 */
-  is_new?: boolean;
+  is_new: boolean;
   /** 相手プロフィール表示時のみ使用 */
-  online?: string;
+  online: string;
   /** 相手プロフィール表示時のみ使用。閲覧者が既にこの相手にいいね済みか */
-  already_liked?: boolean;
+  already_liked: boolean;
+}
+
+export interface PartnerSearchResponse {
+  /** 検索条件に一致する相手プロフィール。候補がない場合は空配列 */
+  profiles: ProfileDetail[];
+  /**
+     * 次ページ取得に使うカーソル。最終ページではnull
+     * @nullable
+     */
+  next_cursor: number | null;
 }
 
 export interface TagOption {
@@ -235,6 +245,31 @@ export type UnauthorizedResponse = void;
  * サーバー内部エラー
  */
 export type InternalServerErrorResponse = Error;
+
+export type SearchPartnersParams = {
+/**
+ * 未指定時は通常順、newest指定時は新着順
+ */
+sort?: SearchPartnersSort;
+/**
+ * 前ページのnext_cursor。最初のページでは指定しない
+ * @minimum 1
+ */
+cursor?: number;
+/**
+ * 1ページに取得する件数
+ * @minimum 1
+ * @maximum 50
+ */
+limit?: number;
+};
+
+export type SearchPartnersSort = typeof SearchPartnersSort[keyof typeof SearchPartnersSort];
+
+
+export const SearchPartnersSort = {
+  newest: 'newest',
+} as const;
 
 export type GetMatchesMatchIdMessagesParams = {
 /**

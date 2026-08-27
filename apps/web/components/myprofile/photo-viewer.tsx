@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import type { ProfileImageResponse } from '@/generated/urekoiAPI.schemas'
 
-// バー型インジケーター付きの写真カルーセル。デフォルトはaspect-[3/4]、
+// 枚数カウンター付きの写真カルーセル。デフォルトはaspect-[3/4]、
 // full指定時は親の高さいっぱいに広がる(スワイプカードなど親がサイズを決める場合用)。
 // 画像の左1/3・右1/3をクリックすると前後の写真に切り替わる(端では止まり循環しない)
 export function PhotoViewer({
@@ -43,14 +43,12 @@ export function PhotoViewer({
         className,
       )}
     >
-      <div className="absolute inset-x-3 top-3 flex gap-1.5">
-        {photos.map((_, i) => (
-          <span
-            key={i}
-            className={`h-[3px] flex-1 rounded-full ${i === index ? 'bg-swipe-foreground' : 'bg-swipe-foreground/35'}`}
-          />
-        ))}
-      </div>
+      {/* 複数枚ある場合だけ、現在位置と総数を右上へ表示する */}
+      {photos.length > 1 && (
+        <span className="absolute right-3 top-3 z-10 rounded-full bg-swipe-background/70 px-3 py-1 text-sm font-semibold text-swipe-foreground">
+          {index + 1} / {photos.length}
+        </span>
+      )}
 
       {photos[index].url && (
         <Image

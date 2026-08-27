@@ -8,51 +8,65 @@
 import type {
   Error,
   InternalServerErrorResponse,
+  PartnerSearchResponse,
   ProfileDetail,
+  SearchPartnersParams,
   UnauthorizedResponse
 } from '../urekoiAPI.schemas';
 
 import { customFetch } from '../../lib/api/custom-fetch';
 
-export type getPartnerRecsResponse200 = {
-  data: ProfileDetail[]
+export type searchPartnersResponse200 = {
+  data: PartnerSearchResponse
   status: 200
 }
 
-export type getPartnerRecsResponse401 = {
+export type searchPartnersResponse400 = {
+  data: Error
+  status: 400
+}
+
+export type searchPartnersResponse401 = {
   data: UnauthorizedResponse
   status: 401
 }
 
-export type getPartnerRecsResponse500 = {
+export type searchPartnersResponse500 = {
   data: InternalServerErrorResponse
   status: 500
 }
 
-export type getPartnerRecsResponseSuccess = (getPartnerRecsResponse200) & {
+export type searchPartnersResponseSuccess = (searchPartnersResponse200) & {
   headers: Headers;
 };
-export type getPartnerRecsResponseError = (getPartnerRecsResponse401 | getPartnerRecsResponse500) & {
+export type searchPartnersResponseError = (searchPartnersResponse400 | searchPartnersResponse401 | searchPartnersResponse500) & {
   headers: Headers;
 };
 
-export type getPartnerRecsResponse = (getPartnerRecsResponseSuccess | getPartnerRecsResponseError)
+export type searchPartnersResponse = (searchPartnersResponseSuccess | searchPartnersResponseError)
 
-export const getGetPartnerRecsUrl = () => {
+export const getSearchPartnersUrl = (params?: SearchPartnersParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/partner/recs`
+  return stringifiedParams.length > 0 ? `/partner/search?${stringifiedParams}` : `/partner/search`
 }
 
 /**
- * 認証済みユーザー自身・いいね済み・スキップ済み・マッチ済みの相手は結果から除外される
- * @summary スワイプ候補一覧取得
+ * 認証済みユーザー自身・いいね済み・スキップ済み・マッチ済みの相手を除外し、カーソル方式で取得する
+ * @summary 相手検索
  */
-export const getPartnerRecs = async ( options?: RequestInit): Promise<getPartnerRecsResponse> => {
+export const searchPartners = async (params?: SearchPartnersParams, options?: RequestInit): Promise<searchPartnersResponse> => {
 
-  return customFetch<getPartnerRecsResponse>(getGetPartnerRecsUrl(),
+  return customFetch<searchPartnersResponse>(getSearchPartnersUrl(params),
   {
     ...options,
     method: 'GET'
