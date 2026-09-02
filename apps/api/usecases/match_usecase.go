@@ -83,15 +83,10 @@ func (u *MatchUsecase) GetMatch(userID uint64, matchID uint64) (dto.MatchProfile
 		return dto.MatchProfileDetail{}, err
 	}
 
-	profileTags, err := u.profileRepo.GetProfileTags(profile.ID)
-	if err != nil {
-		return dto.MatchProfileDetail{}, err
-	}
-
 	return dto.MatchProfileDetail{
 		MatchID:       match.ID,
 		MatchedAt:     match.MatchedAt,
-		ProfileDetail: toProfileDetail(*profile, profileTags, true),
+		ProfileDetail: buildProfileDetail(*profile, true),
 	}, nil
 }
 

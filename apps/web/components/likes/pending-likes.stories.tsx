@@ -1,5 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { mocked } from 'storybook/test'
+import * as useReceivedLikesModule from '@/hooks/use-received-likes'
 import { PendingLikes } from './pending-likes'
+
+const profiles = [
+  createProfile(1, '美咲', 42, '東京都', '/profiles/woman-1.png'),
+  createProfile(2, '由香里', 38, '神奈川県', '/profiles/woman-2.png'),
+  createProfile(3, '恵', 45, '千葉県', '/profiles/woman-3.png'),
+  createProfile(4, '智子', 40, '埼玉県', '/profiles/woman-4.png'),
+]
+const queryClient = new QueryClient()
 
 const meta = {
   title: 'likes/PendingLikes',
@@ -9,49 +20,16 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="mx-auto flex h-screen w-full max-w-md flex-col bg-swipe-background">
-        <Story />
-      </div>
+      <QueryClientProvider client={queryClient}>
+        <div className="mx-auto flex h-screen w-full max-w-md flex-col bg-swipe-background">
+          <Story />
+        </div>
+      </QueryClientProvider>
     ),
   ],
-  args: {
-    pendingLikes: {
-      total: 4,
-      profiles: [
-        {
-          user_id: 1,
-          nickname: '美咲',
-          age: 42,
-          prefecture: '東京都',
-          online: 'online',
-          photos: ['/profiles/woman-1.png'],
-        },
-        {
-          user_id: 2,
-          nickname: '由香里',
-          age: 38,
-          prefecture: '神奈川県',
-          online: 'offline',
-          photos: ['/profiles/woman-2.png'],
-        },
-        {
-          user_id: 3,
-          nickname: '恵',
-          age: 45,
-          prefecture: '千葉県',
-          online: 'online',
-          photos: ['/profiles/woman-3.png'],
-        },
-        {
-          user_id: 4,
-          nickname: '智子',
-          age: 40,
-          prefecture: '埼玉県',
-          online: 'offline',
-          photos: ['/profiles/woman-4.png'],
-        },
-      ],
-    },
+  beforeEach: () => {
+    // 受信したいいね一覧を返し、ユーザーがいる状態を表示する
+    mockReceivedLikes(profiles)
   },
 } satisfies Meta<typeof PendingLikes>
 
@@ -61,10 +39,48 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {}
 
 export const Empty: Story = {
-  args: {
-    pendingLikes: {
-      total: 0,
-      profiles: [],
-    },
+  beforeEach: () => {
+    // 空の一覧を返し、いいねがない状態を表示する
+    mockReceivedLikes([])
   },
+}
+
+// 一覧表示に必要なプロフィール情報を生成する
+function createProfile(
+  userId: number,
+  nickname: string,
+  age: number,
+  prefecture: string,
+  imageUrl: string,
+) {
+  return {
+    user_id: userId,
+    nickname,
+    age,
+    prefecture_code: userId,
+    prefecture,
+    bio: 'よろしくお願いします',
+    occupation: '会社員',
+    hometown: prefecture,
+    blood_type: 'A型',
+    mbti: 'ENFP',
+    body_type: '普通',
+    education: '大学卒',
+    holiday: '土日',
+    alcohol: 'ときどき飲む',
+    smoking: '吸わない',
+    height_cm: 160,
+    tag_ids: [],
+    tags: [],
+    images: [{ id: userId, url: imageUrl, sort_order: 0 }],
+    already_liked: false,
+  }
+}
+
+// フックの返却値をStoryごとの受信いいね一覧に差し替える
+function mockReceivedLikes(profiles: ReturnType<typeof createProfile>[]) {
+  mocked(useReceivedLikesModule.useReceivedLikes).mockReturnValue({
+    data: { total: profiles.length, profiles },
+    isPending: false,
+  } as unknown as ReturnType<typeof useReceivedLikesModule.useReceivedLikes>)
 }

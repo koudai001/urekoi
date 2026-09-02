@@ -1,7 +1,7 @@
 package dto
 
-// 自分/相手どちらのプロフィール表示にも使う共通レスポンス。is_new/online/already_likedは
-// 相手プロフィール表示時のみ使う
+// 自分/相手どちらのプロフィール表示にも使う共通レスポンス。
+// already_likedは相手プロフィール表示時のみ使う
 type ProfileDetail struct {
 	UserID         uint64                 `json:"user_id"`
 	Nickname       string                 `json:"nickname"`
@@ -22,8 +22,6 @@ type ProfileDetail struct {
 	TagIDs         []uint64               `json:"tag_ids"`
 	Tags           []TagSummary           `json:"tags"`
 	Images         []ProfileImageResponse `json:"images"`
-	IsNew          bool                   `json:"is_new"`
-	Online         string                 `json:"online"`
 	AlreadyLiked   bool                   `json:"already_liked"`
 }
 

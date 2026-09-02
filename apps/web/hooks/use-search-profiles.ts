@@ -15,19 +15,8 @@ export type SearchFeed = 'recommended' | 'newest'
 
 export const SEARCH_PROFILES_QUERY_KEY = ['partner', 'search'] as const
 
-// ユーザー詳細を一覧・詳細など複数画面から同じキーで参照する
-export function userProfileQueryKey(userId: number) {
-  return ['partner', 'profile', userId] as const
-}
-
 // おすすめ・新着ごとに検索候補を取得し、キャッシュするカスタムフック
-export function useSearchProfiles({
-  feed,
-  initialPage,
-}: {
-  feed: SearchFeed
-  initialPage: PartnerSearchResponse
-}) {
+export function useSearchProfiles({ feed }: { feed: SearchFeed }) {
   const queryClient = useQueryClient()
 
   // ページング対応
@@ -39,22 +28,24 @@ export function useSearchProfiles({
     initialPageParam: undefined as number | undefined,
     // 最後に取得したページのnext_cursorを次回リクエストに渡す
     getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
-    initialData: {
-      pages: [initialPage],
-      pageParams: [undefined],
-    },
+    staleTime: SEARCH_PROFILES_STALE_TIME_MS,
   })
 
   // １つの配列に結合
   const profiles = useMemo(
-    () => query.data.pages.flatMap((page) => page.profiles),
-    [query.data.pages],
+    () => query.data?.pages.flatMap((page) => page.profiles) ?? [],
+    [query.data?.pages],
   )
 
-  // 一覧レスポンスに含まれる詳細情報を、ユーザー単位の共通キャッシュにも登録する
+  // 一覧で取得したプロフィールを、詳細画面から使う個別キャッシュへ保存する
   useEffect(() => {
+    queryClient.setQueryDefaults(['partner', 'profile'], {
+      staleTime: Infinity,
+      gcTime: PROFILE_CACHE_GC_TIME_MS,
+    })
+
     for (const profile of profiles) {
-      queryClient.setQueryData(userProfileQueryKey(profile.user_id), profile)
+      queryClient.setQueryData(['partner', 'profile', profile.user_id], profile)
     }
   }, [profiles, queryClient])
 
@@ -62,17 +53,18 @@ export function useSearchProfiles({
   return { ...query, profiles }
 }
 
-// 詳細を取得するカスタムフック。キャッシュを優先し、未取得の場合だけAPIリクエストを発行する
-export function useSearchProfile(userId: number) {
+// 相手詳細を取得するカスタムフック。キャッシュを優先し、未取得の場合だけAPIリクエストを発行する
+export function usePartnerProfile(userId: number) {
   return useQuery({
-    queryKey: userProfileQueryKey(userId),
-    queryFn: () => fetchSearchProfile(userId),
-    // 一覧キャッシュが存在する場合は詳細画面で再取得しない
+    queryKey: ['partner', 'profile', userId],
+    queryFn: () => fetchPartnerProfile(userId),
+    // 一覧から保存した個別キャッシュを再取得せずに使い続ける
     staleTime: Infinity,
+    gcTime: PROFILE_CACHE_GC_TIME_MS,
   })
 }
 
-// BFF経由で候補を取得
+// APIから候補を取得
 async function fetchSearchProfiles(
   feed: SearchFeed,
   cursor?: number,
@@ -88,8 +80,11 @@ async function fetchSearchProfiles(
 }
 
 // 直接アクセスやリロード時のフォールバックとして相手のプロフィールを取得する
-async function fetchSearchProfile(userId: number): Promise<ProfileDetail> {
+async function fetchPartnerProfile(userId: number): Promise<ProfileDetail> {
   const response = await fetch(`/api/search/${userId}`)
   if (!response.ok) throw new Error('相手プロフィールの取得に失敗しました')
   return response.json()
 }
+
+const PROFILE_CACHE_GC_TIME_MS = 30 * 60 * 1000
+const SEARCH_PROFILES_STALE_TIME_MS = 5 * 60 * 1000

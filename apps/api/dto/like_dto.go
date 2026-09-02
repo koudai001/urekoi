@@ -9,16 +9,7 @@ type LikeResponse struct {
 	MatchID uint64 `json:"match_id,omitempty"`
 }
 
-type LikeProfile struct {
-	UserID     uint64   `json:"user_id"`
-	Nickname   string   `json:"nickname"`
-	Age        int16    `json:"age"`
-	Prefecture string   `json:"prefecture"`
-	Online     string   `json:"online"`
-	Photos     []string `json:"photos"`
-}
-
 type PendingLikesResponse struct {
-	Total    int           `json:"total"`
-	Profiles []LikeProfile `json:"profiles"`
+	Total    int             `json:"total"`
+	Profiles []ProfileDetail `json:"profiles"`
 }

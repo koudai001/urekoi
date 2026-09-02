@@ -52,15 +52,6 @@ export interface LogoutRequest {
   refresh_token: string;
 }
 
-export interface LikeProfile {
-  user_id?: number;
-  nickname?: string;
-  age?: number;
-  prefecture?: string;
-  online?: string;
-  photos?: string[];
-}
-
 export interface TagSummary {
   label?: string;
   category?: string;
@@ -94,10 +85,6 @@ export interface ProfileDetail {
   tags: TagSummary[];
   /** sort_order順に並んだ登録済みのプロフィール画像 */
   images: ProfileImageResponse[];
-  /** 相手プロフィール表示時のみ使用 */
-  is_new: boolean;
-  /** 相手プロフィール表示時のみ使用 */
-  online: string;
   /** 相手プロフィール表示時のみ使用。閲覧者が既にこの相手にいいね済みか */
   already_liked: boolean;
 }
@@ -131,7 +118,7 @@ export interface LikeResponse {
 
 export interface PendingLikesResponse {
   total: number;
-  profiles: LikeProfile[];
+  profiles: ProfileDetail[];
 }
 
 export interface SkipRequest {

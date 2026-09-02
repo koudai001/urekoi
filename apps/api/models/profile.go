@@ -10,6 +10,7 @@ type Profile struct {
 	Gender         string         `gorm:"type:varchar(10);not null;check:gender IN ('male','female')"`
 	Birthdate      time.Time      `gorm:"type:date;not null"`
 	Images         []ProfileImage `gorm:"foreignKey:ProfileID"`
+	ProfileTags    []ProfileTag   `gorm:"foreignKey:ProfileID"`
 	PrefectureCode int16          `gorm:"not null"`
 	Prefecture     Prefecture     `gorm:"foreignKey:PrefectureCode"`
 	Bio            string         `gorm:"type:text"`

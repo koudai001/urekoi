@@ -29,8 +29,6 @@ const sampleProfile: ProfileDetail = {
     { label: '平日夕方', category: '会える時間' },
     { label: 'ワイン', category: '好きなグルメやお酒' },
   ],
-  is_new: true,
-  online: 'online',
   already_liked: false,
 }
 

@@ -8,10 +8,10 @@
 import type {
   Error,
   InternalServerErrorResponse,
-  LikeProfile,
   LikeRequest,
   LikeResponse,
   PendingLikesResponse,
+  ProfileDetail,
   UnauthorizedResponse
 } from '../urekoiAPI.schemas';
 
@@ -127,7 +127,7 @@ export const getLikesPending = async ( options?: RequestInit): Promise<getLikesP
 
 
 export type getLikesSentResponse200 = {
-  data: LikeProfile[]
+  data: ProfileDetail[]
   status: 200
 }
 

@@ -206,7 +206,7 @@ func TestUpdateMyProfile_Success(t *testing.T) {
 	assert.Equal(t, []uint64{newTag.ID}, res.TagIDs)
 }
 
-// ニックネーム未入力の場合400を返すことを検証
+// 更新時にニックネーム未入力の場合400を返すことを検証
 func TestUpdateMyProfile_ValidationError(t *testing.T) {
 	router, _, _ := setup(t)
 	signupRes := signUpOnlyEmail(t, router, "myprofile-update-invalid@example.com")

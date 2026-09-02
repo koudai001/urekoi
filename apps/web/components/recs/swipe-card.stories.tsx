@@ -21,13 +21,11 @@ const sampleProfile: ProfileDetail = {
   smoking: '吸わない',
   height_cm: 160,
   tag_ids: [],
-  online: 'online',
   images: [
     { id: 1, url: '/profiles/woman-1.png', sort_order: 0 },
     { id: 2, url: '/profiles/woman-2.png', sort_order: 1 },
   ],
   tags: [],
-  is_new: true,
   already_liked: false,
 }
 

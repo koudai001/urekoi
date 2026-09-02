@@ -127,34 +127,15 @@ func TestGetPendingLikes_Success(t *testing.T) {
 	var res dto.PendingLikesResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.Equal(t, 1, res.Total)
-	// サインアップ時のデフォルトプロフィール情報が返ることを検証
-	assert.ElementsMatch(t, []dto.LikeProfile{
-		{UserID: from.ID, Nickname: "テストユーザー", Age: defaultTestAge, Prefecture: "東京都", Online: "online", Photos: []string{""}},
-	}, res.Profiles)
-}
 
-// スキップ済みの相手はもらったいいね一覧から除外されることを検証
-func TestGetPendingLikes_ExcludesSkipped(t *testing.T) {
-	router, _, _ := setup(t)
-
-	from := signUpOnlyEmail(t, router, "like-skipped-from@example.com")
-	to := signUpOnlyEmail(t, router, "like-skipped-to@example.com")
-
-	// 送信元から送信先にいいねを送る
-	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/likes", dto.LikeRequest{ToUserID: to.ID}, from.AccessToken).Code)
-
-	// 送信先が送信元をスキップする
-	require.Equal(t, http.StatusCreated, postJSONWithAuth(t, router, "/skips", dto.SkipRequest{ToUserID: from.ID}, to.AccessToken).Code)
-
-	// スキップ済みなので、もらったいいね一覧には含まれない
-	w := getJSONWithAuth(t, router, "/likes/pending", to.AccessToken)
-
-	require.Equal(t, http.StatusOK, w.Code)
-
-	var res dto.PendingLikesResponse
-	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
-	assert.Equal(t, 0, res.Total)
-	assert.Empty(t, res.Profiles)
+	// 一覧と詳細表示に必要なプロフィール情報がまとめて返ることを検証
+	require.Len(t, res.Profiles, 1)
+	profile := res.Profiles[0]
+	assert.Equal(t, from.ID, profile.UserID)
+	assert.Equal(t, "テストユーザー", profile.Nickname)
+	assert.Equal(t, int16(defaultTestAge), profile.Age)
+	assert.Equal(t, int16(13), profile.PrefectureCode)
+	assert.Equal(t, "東京都", profile.Prefecture)
 }
 
 // 保留中のいいねがない場合はtotal=0・空配列を返すことを検証

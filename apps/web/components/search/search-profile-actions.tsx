@@ -1,11 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { Heart } from 'lucide-react'
+import type { InfiniteData, QueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { sendLike } from '@/actions/likes'
+import { LikeButton } from '@/components/likes/like-button'
 import { showLikeToast } from '@/components/likes/like-toast'
 import { showMatchToast } from '@/components/likes/match-toast'
+import type {
+  PartnerSearchResponse,
+  ProfileDetail,
+} from '@/generated/urekoiAPI.schemas'
+import { SEARCH_PROFILES_QUERY_KEY } from '@/hooks/use-search-profiles'
 
 // 検索詳細から相手へいいねを送り、その場でいいね済み状態へ切り替える
 export function SearchProfileActions({
@@ -19,6 +26,7 @@ export function SearchProfileActions({
   age: number
   alreadyLiked?: boolean
 }) {
+  const queryClient = useQueryClient()
   const [isPending, setIsPending] = useState(false)
   const [isLiked, setIsLiked] = useState(alreadyLiked)
 
@@ -37,21 +45,50 @@ export function SearchProfileActions({
     // マッチ成立の有無に応じた既存トーストを表示し、その場でいいね済みに切り替える
     if (result.matched) showMatchToast(nickname, age)
     else showLikeToast(nickname)
+
+    // いいね済みの相手を検索一覧から除外し、詳細キャッシュも更新する
+    updateSearchProfileCaches(queryClient, userId)
     setIsLiked(true)
     setIsPending(false)
   }
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center bg-gradient-to-t from-swipe-background via-swipe-background/90 to-transparent px-6 pb-6 pt-14">
-      <button
-        type="button"
-        disabled={isPending || isLiked}
-        onClick={handleLike}
-        className="pointer-events-auto flex min-w-44 cursor-pointer items-center justify-center gap-2 rounded-full bg-swipe-accent px-8 py-4 text-lg font-bold text-swipe-foreground shadow-xl transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        <Heart className="size-6 fill-current" aria-hidden="true" />
-        {isLiked ? 'いいね済み' : isPending ? '送信中...' : 'いいね'}
-      </button>
-    </div>
+    <LikeButton
+      label={isLiked ? 'いいね済み' : 'いいね'}
+      isPending={isPending}
+      disabled={isLiked}
+      onClick={handleLike}
+    />
+  )
+}
+
+// 検索一覧と個別プロフィールのキャッシュを、いいね後の状態へ揃える
+function updateSearchProfileCaches(queryClient: QueryClient, userId: number) {
+  queryClient.setQueriesData<InfiniteData<PartnerSearchResponse>>(
+    { queryKey: SEARCH_PROFILES_QUERY_KEY },
+    (cache) => {
+      if (!cache) return cache
+
+      return {
+        ...cache,
+        pages: cache.pages.map((page) => ({
+          ...page,
+          profiles: page.profiles.filter(
+            (profile) => profile.user_id !== userId,
+          ),
+        })),
+      }
+    },
+  )
+
+  queryClient.setQueryData<ProfileDetail>(
+    ['partner', 'profile', userId],
+    (profile) =>
+      profile
+        ? {
+            ...profile,
+            already_liked: true,
+          }
+        : profile,
   )
 }

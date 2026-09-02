@@ -2,7 +2,6 @@ package usecases
 
 import (
 	"errors"
-	"time"
 
 	"api/dto"
 	"api/models"
@@ -10,12 +9,6 @@ import (
 )
 
 var ErrPartnerNotFound = errors.New("profile not found")
-
-// 登録からこの日数以内なら新着(NEW)扱いにする
-const newPartnerThresholdDays = 7
-
-// オンライン状態は未実装のため固定で返す値
-const mockPartnerOnlineStatus = "online"
 
 type IPartnerUsecase interface {
 	// 登録済みユーザーのプロフィールを、requestingUserID自身と対応済みの相手を除いて取得する
@@ -51,13 +44,8 @@ func (u *PartnerUsecase) Search(requestingUserID uint64, input dto.PartnerSearch
 
 	res := make([]dto.ProfileDetail, 0, len(profiles))
 	for _, p := range profiles {
-		profileTags, err := u.profileRepo.GetProfileTags(p.ID)
-		if err != nil {
-			return dto.PartnerSearchResponse{}, err
-		}
-
 		// SearchProfilesは既にいいね済みの相手を除外して返すため、常にfalse
-		res = append(res, toProfileDetail(p, profileTags, false))
+		res = append(res, buildProfileDetail(p, false))
 	}
 
 	var nextCursor *uint64
@@ -81,28 +69,19 @@ func (u *PartnerUsecase) GetDetail(viewerUserID uint64, userID uint64) (dto.Prof
 		return dto.ProfileDetail{}, err
 	}
 
-	profileTags, err := u.profileRepo.GetProfileTags(profile.ID)
-	if err != nil {
-		return dto.ProfileDetail{}, err
-	}
-
 	alreadyLiked, err := u.likeRepo.HasLiked(viewerUserID, userID)
 	if err != nil {
 		return dto.ProfileDetail{}, err
 	}
 
-	return toProfileDetail(*profile, profileTags, alreadyLiked), nil
+	return buildProfileDetail(*profile, alreadyLiked), nil
 }
 
-// 登録からnewPartnerThresholdDays以内なら新着(NEW)扱いにする
-func isNewPartner(createdAt time.Time) bool {
-	return time.Since(createdAt) < newPartnerThresholdDays*24*time.Hour
-}
-
-func toProfileDetail(profile models.Profile, profileTags []models.ProfileTag, alreadyLiked bool) dto.ProfileDetail {
-	tags := make([]dto.TagSummary, 0, len(profileTags))
-	tagIDs := make([]uint64, 0, len(profileTags))
-	for _, pt := range profileTags {
+// DBモデルからAPIレスポンス用のプロフィール詳細を組み立てる
+func buildProfileDetail(profile models.Profile, alreadyLiked bool) dto.ProfileDetail {
+	tags := make([]dto.TagSummary, 0, len(profile.ProfileTags))
+	tagIDs := make([]uint64, 0, len(profile.ProfileTags))
+	for _, pt := range profile.ProfileTags {
 		tagIDs = append(tagIDs, pt.TagID)
 		tags = append(tags, dto.TagSummary{
 			Label:    pt.Tag.Label,
@@ -121,16 +100,25 @@ func toProfileDetail(profile models.Profile, profileTags []models.ProfileTag, al
 	}
 
 	return dto.ProfileDetail{
-		UserID:       profile.UserID,
-		Nickname:     profile.Nickname,
-		Age:          profile.Age(),
-		Prefecture:   profile.Prefecture.Name,
-		Bio:          profile.Bio,
-		IsNew:        isNewPartner(profile.CreatedAt),
-		Online:       mockPartnerOnlineStatus,
-		Images:       images,
-		TagIDs:       tagIDs,
-		Tags:         tags,
-		AlreadyLiked: alreadyLiked,
+		UserID:         profile.UserID,
+		Nickname:       profile.Nickname,
+		Age:            profile.Age(),
+		PrefectureCode: profile.PrefectureCode,
+		Prefecture:     profile.Prefecture.Name,
+		Bio:            profile.Bio,
+		Occupation:     profile.Occupation,
+		Hometown:       profile.Hometown,
+		BloodType:      profile.BloodType,
+		MBTI:           profile.MBTI,
+		BodyType:       profile.BodyType,
+		Education:      profile.Education,
+		Holiday:        profile.Holiday,
+		Alcohol:        profile.Alcohol,
+		Smoking:        profile.Smoking,
+		HeightCm:       profile.HeightCm,
+		TagIDs:         tagIDs,
+		Tags:           tags,
+		Images:         images,
+		AlreadyLiked:   alreadyLiked,
 	}
 }
