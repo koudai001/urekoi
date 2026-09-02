@@ -155,7 +155,7 @@ func TestSearchPartners_Unauthorized(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 }
 
-// タグ付きプロフィールの詳細(nickname・タグ・NEWバッジ判定など)を取得できることを検証(未いいね)
+// パートナーのプロフィールを取得できることを検証(未いいね)
 func TestGetDetail_Success(t *testing.T) {
 	router, db, _ := setup(t)
 
@@ -173,15 +173,14 @@ func TestGetDetail_Success(t *testing.T) {
 	var res dto.ProfileDetail
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &res))
 	assert.Equal(t, dto.ProfileDetail{
-		UserID:       profile.UserID,
-		Nickname:     "テスト太郎",
-		Age:          30,
-		Prefecture:   "東京都",
-		IsNew:        true, // 作成直後なので新着
-		Online:       "online",
-		Images:       []dto.ProfileImageResponse{},
-		AlreadyLiked: false, // まだいいねしていない
-		TagIDs:       []uint64{tag.ID},
+		UserID:         profile.UserID,
+		Nickname:       "テスト太郎",
+		Age:            30,
+		PrefectureCode: 13,
+		Prefecture:     "東京都",
+		Images:         []dto.ProfileImageResponse{},
+		AlreadyLiked:   false, // まだいいねしていない
+		TagIDs:         []uint64{tag.ID},
 		Tags: []dto.TagSummary{
 			{Label: "旅行", Category: "好きなこと・挑戦してみたいこと", ImageURL: ""},
 		},

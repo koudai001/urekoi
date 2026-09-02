@@ -25,8 +25,6 @@ const sampleProfile: ProfileDetail = {
   tag_ids: [1],
   tags: [],
   images: [],
-  is_new: false,
-  online: 'offline',
   already_liked: false,
 }
 

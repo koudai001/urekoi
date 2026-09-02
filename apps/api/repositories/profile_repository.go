@@ -15,7 +15,6 @@ type IProfileRepository interface {
 	GetAllProfiles(excludeUserID uint64) ([]models.Profile, error)
 	// requestingUserID自身・対応済みの相手を除き、cursorより後ろのプロフィールをlimit件取得する
 	SearchProfiles(requestingUserID uint64, sort string, cursor uint64, limit int) ([]models.Profile, error)
-	GetProfileTags(profileID uint64) ([]models.ProfileTag, error)
 	GetProfileByUserID(userID uint64) (*models.Profile, error)
 	CreateProfile(profile *models.Profile) error
 	UpdateProfile(profile *models.Profile) error
@@ -56,6 +55,7 @@ func (r *ProfileRepository) SearchProfiles(requestingUserID uint64, sort string,
 	var profiles []models.Profile
 	query := r.db.Preload("Prefecture").Preload("User").
 		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
+		Preload("ProfileTags.Tag").
 		Where("user_id != ?", requestingUserID).
 		Where(`NOT EXISTS (
 			SELECT 1 FROM likes
@@ -90,21 +90,11 @@ func (r *ProfileRepository) SearchProfiles(requestingUserID uint64, sort string,
 	return profiles, nil
 }
 
-func (r *ProfileRepository) GetProfileTags(profileID uint64) ([]models.ProfileTag, error) {
-	var profileTags []models.ProfileTag
-	if err := r.db.Preload("Tag").
-		Where("profile_id = ?", profileID).
-		Find(&profileTags).Error; err != nil {
-		return nil, err
-	}
-
-	return profileTags, nil
-}
-
 func (r *ProfileRepository) GetProfileByUserID(userID uint64) (*models.Profile, error) {
 	var profile models.Profile
 	if err := r.db.Preload("Prefecture").Preload("User").
 		Preload("Images", func(db *gorm.DB) *gorm.DB { return db.Order("sort_order") }).
+		Preload("ProfileTags.Tag").
 		Where("user_id = ?", userID).First(&profile).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrProfileNotFound

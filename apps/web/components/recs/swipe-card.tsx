@@ -1,5 +1,4 @@
 import { PhotoViewer } from '@/components/myprofile/photo-viewer'
-import { cn } from '@/lib/utils'
 import type { ProfileDetail } from '@/generated/urekoiAPI.schemas'
 
 // スワイプカードの静的な表示部分(写真送り+名前・年齢・自己紹介)。ドラッグなどの操作は持たない
@@ -26,16 +25,6 @@ export function SwipeCard({
       {/* 下部の名前・自己紹介*/}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent p-5 pb-24 pt-12">
         <div className="flex items-baseline gap-2.5">
-          {profile.online && (
-            <span
-              className={cn(
-                'h-2.5 w-2.5 shrink-0 self-center rounded-full',
-                profile.online === 'online'
-                  ? 'bg-swipe-online'
-                  : 'bg-yellow-400',
-              )}
-            />
-          )}
           <span className="text-3xl font-bold text-swipe-foreground">
             {profile.nickname}
           </span>

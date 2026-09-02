@@ -624,7 +624,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/LikeProfile"
+                  $ref: "#/components/schemas/ProfileDetail"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "500":
@@ -1014,30 +1014,6 @@ components:
         refresh_token:
           type: string
           example: <refresh token>
-    LikeProfile:
-      type: object
-      properties:
-        user_id:
-          type: integer
-          format: int64
-          example: 1
-        nickname:
-          type: string
-          example: たろう
-        age:
-          type: integer
-          example: 42
-        prefecture:
-          type: string
-          example: 東京都
-        online:
-          type: string
-          example: online
-        photos:
-          type: array
-          items:
-            type: string
-          example: [/placeholder.svg]
     PartnerSearchResponse:
       type: object
       required: [profiles, next_cursor]
@@ -1075,8 +1051,6 @@ components:
         - tag_ids
         - tags
         - images
-        - is_new
-        - online
         - already_liked
       properties:
         user_id:
@@ -1142,14 +1116,6 @@ components:
           description: sort_order順に並んだ登録済みのプロフィール画像
           items:
             $ref: "#/components/schemas/ProfileImageResponse"
-        is_new:
-          type: boolean
-          description: 相手プロフィール表示時のみ使用
-          example: true
-        online:
-          type: string
-          description: 相手プロフィール表示時のみ使用
-          example: online
         already_liked:
           type: boolean
           description: 相手プロフィール表示時のみ使用。閲覧者が既にこの相手にいいね済みか
@@ -1212,7 +1178,7 @@ components:
         profiles:
           type: array
           items:
-            $ref: "#/components/schemas/LikeProfile"
+            $ref: "#/components/schemas/ProfileDetail"
     SkipRequest:
       type: object
       required: [to_user_id]

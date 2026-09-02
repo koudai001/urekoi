@@ -160,16 +160,15 @@ func TestGetMatch_Success(t *testing.T) {
 		MatchID:   match.ID,
 		MatchedAt: match.MatchedAt,
 		ProfileDetail: dto.ProfileDetail{
-			UserID:       b.ID,
-			Nickname:     "テストユーザー",
-			Age:          defaultTestAge,
-			Prefecture:   "東京都",
-			IsNew:        true,
-			Online:       "online",
-			Images:       []dto.ProfileImageResponse{},
-			TagIDs:       []uint64{},
-			Tags:         []dto.TagSummary{},
-			AlreadyLiked: true, // マッチしている時点で相互いいね済み
+			UserID:         b.ID,
+			Nickname:       "テストユーザー",
+			Age:            defaultTestAge,
+			PrefectureCode: 13,
+			Prefecture:     "東京都",
+			Images:         []dto.ProfileImageResponse{},
+			TagIDs:         []uint64{},
+			Tags:           []dto.TagSummary{},
+			AlreadyLiked:   true, // マッチしている時点で相互いいね済み
 		},
 	}, res)
 }

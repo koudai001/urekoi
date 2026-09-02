@@ -64,53 +64,7 @@ func (u *MyProfileUsecase) GetMyProfile(userID uint64) (dto.ProfileDetail, error
 		return dto.ProfileDetail{}, err
 	}
 
-	profileTags, err := u.profileRepo.GetProfileTags(profile.ID)
-	if err != nil {
-		return dto.ProfileDetail{}, err
-	}
-
-	tagIDs := make([]uint64, 0, len(profileTags))
-	tags := make([]dto.TagSummary, 0, len(profileTags))
-	for _, pt := range profileTags {
-		tagIDs = append(tagIDs, pt.TagID)
-		tags = append(tags, dto.TagSummary{
-			Label:    pt.Tag.Label,
-			Category: pt.Tag.Category,
-			ImageURL: pt.Tag.ImageURL,
-		})
-	}
-
-	// sort_order順にpreload済みのImagesをそのままレスポンスへ詰め替える
-	images := make([]dto.ProfileImageResponse, 0, len(profile.Images))
-	for _, image := range profile.Images {
-		images = append(images, dto.ProfileImageResponse{
-			ID:        image.ID,
-			URL:       buildImageURL(image.ImageKey),
-			SortOrder: image.SortOrder,
-		})
-	}
-
-	return dto.ProfileDetail{
-		UserID:         profile.UserID,
-		Nickname:       profile.Nickname,
-		Age:            profile.Age(),
-		PrefectureCode: profile.PrefectureCode,
-		Prefecture:     profile.Prefecture.Name,
-		Bio:            profile.Bio,
-		Occupation:     profile.Occupation,
-		Hometown:       profile.Hometown,
-		BloodType:      profile.BloodType,
-		MBTI:           profile.MBTI,
-		BodyType:       profile.BodyType,
-		Education:      profile.Education,
-		Holiday:        profile.Holiday,
-		Alcohol:        profile.Alcohol,
-		Smoking:        profile.Smoking,
-		HeightCm:       profile.HeightCm,
-		TagIDs:         tagIDs,
-		Tags:           tags,
-		Images:         images,
-	}, nil
+	return buildProfileDetail(*profile, false), nil
 }
 
 func (u *MyProfileUsecase) UpdateMyProfile(userID uint64, req dto.ProfileUpdateRequest) (dto.ProfileDetail, error) {

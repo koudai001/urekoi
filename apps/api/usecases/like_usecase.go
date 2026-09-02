@@ -87,23 +87,16 @@ func (u *LikeUsecase) SendLike(fromUserID uint64, toUserID uint64) (dto.LikeResp
 	return dto.LikeResponse{Matched: true, MatchID: match.ID}, nil
 }
 
-// userIDがもらったいいねのうち、マッチ済み・スキップ済みの相手を除いた一覧を取得する
+// userIDがもらったいいねのうち、マッチ済みの相手を除いた一覧を取得する
 func (u *LikeUsecase) GetPendingLikes(userID uint64) (dto.PendingLikesResponse, error) {
 	profiles, err := u.likeRepo.GetPendingLikes(userID)
 	if err != nil {
 		return dto.PendingLikesResponse{}, err
 	}
 
-	res := make([]dto.LikeProfile, 0, len(profiles))
+	res := make([]dto.ProfileDetail, 0, len(profiles))
 	for _, p := range profiles {
-		res = append(res, dto.LikeProfile{
-			UserID:     p.UserID,
-			Nickname:   p.Nickname,
-			Age:        p.Age(),
-			Prefecture: p.Prefecture.Name,
-			Online:     mockOnlineStatus,
-			Photos:     imageURLs(p.Images),
-		})
+		res = append(res, buildProfileDetail(p, false))
 	}
 
 	return dto.PendingLikesResponse{Total: len(res), Profiles: res}, nil

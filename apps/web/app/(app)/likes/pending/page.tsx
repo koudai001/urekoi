@@ -1,10 +1,6 @@
-'use client'
-
 import { PendingLikes } from '@/components/likes/pending-likes'
-import { usePendingLikesContext } from '@/providers/pending-likes-provider'
 
+// 受信Like一覧の取得とキャッシュ管理はクライアントへ委譲する
 export default function PendingLikesPage() {
-  const { pendingLikes } = usePendingLikesContext()
-
-  return <PendingLikes pendingLikes={pendingLikes} />
+  return <PendingLikes />
 }
