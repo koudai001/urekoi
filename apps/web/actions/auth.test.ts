@@ -99,7 +99,7 @@ describe('Auth Server Actions', () => {
       )
 
       // リダイレクト先を確認
-      expect(redirect).toHaveBeenCalledWith('/recs')
+      expect(redirect).toHaveBeenCalledWith('/search')
     })
 
     it('【200 成功・プロフィール未作成】/signup/profileにリダイレクトすること', async () => {

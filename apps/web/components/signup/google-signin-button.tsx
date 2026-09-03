@@ -67,7 +67,7 @@ export function GoogleSignInButton({
           toast.error(result.error)
           return
         }
-        router.push(result.hasProfile ? '/recs' : '/signup/profile')
+        router.push(result.hasProfile ? '/search' : '/signup/profile')
       },
     })
 

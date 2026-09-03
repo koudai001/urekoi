@@ -96,7 +96,7 @@ export const SendMessage: Story = {
       ),
     )
     await waitFor(() => expect(input).toHaveValue(''))
-    // 送信完了後、ボタンがdisabledのままになっていないことを確認
-    await waitFor(() => expect(sendButton).not.toBeDisabled())
+    // 送信完了後は入力欄が空になるため、空メッセージを送れないことを確認
+    await waitFor(() => expect(sendButton).toBeDisabled())
   },
 }

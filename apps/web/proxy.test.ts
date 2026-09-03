@@ -88,7 +88,7 @@ describe('proxy', () => {
   })
 
   describe('公開パス(/login)', () => {
-    it('access_tokenあり・プロフィール作成済み → /recsにリダイレクトすること', async () => {
+    it('access_tokenあり・プロフィール作成済み → /searchにリダイレクトすること', async () => {
       const response = await proxy(
         buildRequest(
           '/login',
@@ -98,7 +98,7 @@ describe('proxy', () => {
 
       expect(response.status).toBe(307)
       expect(response.headers.get('location')).toBe(
-        `${process.env.APP_URL}/recs`,
+        `${process.env.APP_URL}/search`,
       )
     })
 
@@ -113,7 +113,7 @@ describe('proxy', () => {
       )
     })
 
-    it('access_tokenなし・refresh成功 → /recsにリダイレクトし、cookieを更新すること', async () => {
+    it('access_tokenなし・refresh成功 → /searchにリダイレクトし、cookieを更新すること', async () => {
       mockRefresh(true)
 
       const response = await proxy(
@@ -122,7 +122,7 @@ describe('proxy', () => {
 
       expect(response.status).toBe(307)
       expect(response.headers.get('location')).toBe(
-        `${process.env.APP_URL}/recs`,
+        `${process.env.APP_URL}/search`,
       )
       expect(response.cookies.get(COOKIE_ACCESS_TOKEN)?.value).toBe(
         'new_access',

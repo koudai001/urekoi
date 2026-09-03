@@ -5,6 +5,13 @@ import { usePathname } from 'next/navigation'
 import { Heart, MessageCircle, Search, UserRound } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+const DISPLAY_PATHS = new Set([
+  '/search',
+  '/likes/pending',
+  '/messages',
+  '/myprofile',
+])
+
 const navigationItems = [
   {
     href: '/search',
@@ -35,12 +42,15 @@ const navigationItems = [
 export function BottomBar() {
   const pathname = usePathname()
 
+  // 一覧・ホーム画面だけにナビゲーションを表示し、詳細画面ではコンテンツへ集中させる
+  if (!DISPLAY_PATHS.has(pathname)) return null
+
   return (
     <nav
       aria-label="メインナビゲーション"
-      className="bg-swipe-background px-3 pb-[env(safe-area-inset-bottom)]"
+      className="bg-swipe-background px-3 pb-3 pt-2"
     >
-      <div className="mx-auto flex h-16 max-w-lg items-center justify-around">
+      <div className="mx-auto flex h-16 max-w-lg items-center justify-around rounded-2xl border border-swipe-border bg-swipe-sidebar shadow-lg">
         {navigationItems.map(({ href, label, icon: Icon, matches }) => {
           const active = matches(pathname)
 

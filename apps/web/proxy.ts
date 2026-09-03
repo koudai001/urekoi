@@ -38,14 +38,14 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // 認証済みかつログインページやサインアップページへのアクセスは、プロフィール作成済みならスワイプ画面へ、
+  // 認証済みかつログインページやサインアップページへのアクセスは、プロフィール作成済みなら検索画面へ、
   // 未作成ならプロフィール作成画面へリダイレクト
   if (isAuthenticated && isPublicPath) {
     const hasProfile =
       authCookies?.hasProfile ??
       request.cookies.get(COOKIE_HAS_PROFILE)?.value === 'true'
     const response = NextResponse.redirect(
-      new URL(hasProfile ? '/recs' : '/signup/profile', request.url),
+      new URL(hasProfile ? '/search' : '/signup/profile', request.url),
     )
     if (authCookies) setAuthCookies(response, authCookies)
     return response
