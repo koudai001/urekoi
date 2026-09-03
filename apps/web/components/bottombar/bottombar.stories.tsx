@@ -19,10 +19,10 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const Recs: Story = {
+export const Search: Story = {
   parameters: {
     nextjs: {
-      navigation: { pathname: '/recs' },
+      navigation: { pathname: '/search' },
     },
   },
 }
@@ -31,22 +31,6 @@ export const Likes: Story = {
   parameters: {
     nextjs: {
       navigation: { pathname: '/likes/pending' },
-    },
-  },
-}
-
-export const Messages: Story = {
-  parameters: {
-    nextjs: {
-      navigation: { pathname: '/messages' },
-    },
-  },
-}
-
-export const MyProfile: Story = {
-  parameters: {
-    nextjs: {
-      navigation: { pathname: '/myprofile' },
     },
   },
 }

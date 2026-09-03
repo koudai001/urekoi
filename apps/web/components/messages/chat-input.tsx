@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ImageIcon, Smile } from 'lucide-react'
+import { Send } from 'lucide-react'
 
 // メッセージ入力欄。送信成功時のみ入力内容をクリアする
 export function ChatInput({
@@ -24,9 +24,7 @@ export function ChatInput({
 
   return (
     <div className="border-t border-swipe-border px-4 py-3">
-      <div className="flex items-center gap-3">
-        <ImageIcon className="h-6 w-6 shrink-0 text-swipe-muted-foreground" />
-        <Smile className="h-6 w-6 shrink-0 text-swipe-muted-foreground" />
+      <div className="flex items-center gap-2">
         <input
           type="text"
           value={input}
@@ -36,14 +34,16 @@ export function ChatInput({
             if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSubmit()
           }}
           placeholder="メッセージを入力"
-          className="min-w-0 flex-1 bg-transparent py-2 text-base text-swipe-foreground outline-none placeholder:text-swipe-muted-foreground"
+          className="min-w-0 flex-1 rounded-md border border-swipe-border bg-swipe-surface px-4 py-2.5 text-base text-swipe-foreground outline-none placeholder:text-swipe-muted-foreground focus:border-swipe-accent"
         />
         <button
+          type="button"
+          aria-label="送信"
           onClick={handleSubmit}
-          disabled={sending}
-          className="shrink-0 rounded-full bg-gradient-to-br from-swipe-accent to-primary px-7 py-2.5 text-sm font-bold text-swipe-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+          disabled={sending || !input.trim()}
+          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-swipe-accent text-white transition-opacity hover:opacity-90 disabled:opacity-40"
         >
-          送信
+          <Send className="size-5" aria-hidden="true" />
         </button>
       </div>
     </div>

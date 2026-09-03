@@ -24,16 +24,12 @@ export function NewMatches({
 
   return (
     <section className="shrink-0">
-      <h2 className="px-5 pb-3 text-base font-bold text-swipe-foreground">
-        新しいマッチ
-      </h2>
-
       <div className="flex gap-3 overflow-x-auto px-5 pb-5">
         <Link
           href="/likes/pending"
           className="flex w-20 shrink-0 flex-col items-center gap-2"
         >
-          <span className="flex h-24 w-20 items-center justify-center rounded-2xl border-2 border-swipe-accent bg-swipe-accent/15">
+          <span className="flex size-20 items-center justify-center rounded-full border-2 border-swipe-accent bg-swipe-accent/15">
             <Heart className="h-7 w-7 fill-swipe-accent text-swipe-accent" />
           </span>
           <span className="text-center text-xs font-semibold text-swipe-foreground">
@@ -47,7 +43,7 @@ export function NewMatches({
             href={`/messages/${match.match_id}`}
             className="flex w-20 shrink-0 flex-col items-center gap-2"
           >
-            <span className="relative h-24 w-20 overflow-hidden rounded-2xl bg-swipe-surface">
+            <span className="relative size-20 overflow-hidden rounded-full bg-swipe-surface">
               {match.image && (
                 <Image
                   src={match.image}

@@ -15,10 +15,6 @@ export function ConversationList({
 
   return (
     <section>
-      <h2 className="px-5 py-3 text-base font-bold text-swipe-foreground">
-        メッセージ
-      </h2>
-
       <div className="divide-y divide-swipe-border">
         {(matches ?? []).map((match) => (
           <Link

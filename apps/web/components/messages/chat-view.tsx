@@ -75,7 +75,7 @@ export function ChatView({ match }: { match: ChatMatch }) {
       />
 
       {/* メッセージ部分 */}
-      <div className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
+      <div className="flex-1 space-y-1 overflow-y-auto px-6 py-6">
         {matchedDate && (
           <SpMatchBanner matchedDate={matchedDate} nickname={match.nickname} />
         )}
@@ -107,7 +107,7 @@ function SpMatchBanner({
   return (
     <div className="flex justify-center">
       <span className="text-xs text-swipe-muted-foreground">
-        {matchedDate}に{nickname}さんとマッチしました
+        {matchedDate}に{nickname}さんとマッチ
       </span>
     </div>
   )

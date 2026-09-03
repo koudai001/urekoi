@@ -119,7 +119,7 @@ export async function login(
         res.data.refresh_token ?? '',
         hasProfile,
       )
-      redirect(hasProfile ? '/recs' : '/signup/profile')
+      redirect(hasProfile ? '/search' : '/signup/profile')
     }
     case 401:
       return {
