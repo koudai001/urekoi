@@ -15,14 +15,14 @@ export function ConversationList({
 
   return (
     <section>
-      <div className="divide-y divide-swipe-border">
+      <div className="divide-y divide-border">
         {(matches ?? []).map((match) => (
           <Link
             key={match.user_id}
             href={`/messages/${match.match_id}`}
-            className="flex items-center gap-4 px-5 py-4 transition-colors active:bg-swipe-surface"
+            className="flex items-center gap-4 px-5 py-4 transition-colors active:bg-card"
           >
-            <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-swipe-surface">
+            <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-card">
               {match.image && (
                 <Image
                   src={match.image}
@@ -34,10 +34,10 @@ export function ConversationList({
               )}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-base font-bold text-swipe-foreground">
+              <span className="block truncate text-base font-bold text-foreground">
                 {match.nickname}
               </span>
-              <span className="mt-0.5 block truncate text-sm text-swipe-muted-foreground">
+              <span className="mt-0.5 block truncate text-sm text-muted-foreground">
                 {match.last_message_sender_user_id !== match.user_id && '↩ '}
                 {match.last_message}
               </span>

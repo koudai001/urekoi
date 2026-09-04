@@ -30,7 +30,7 @@ export function SignupGender({
       />
 
       {/* 見出し */}
-      <h1 className="mt-8 text-2xl font-bold text-balance text-swipe-foreground">
+      <h1 className="mt-8 text-2xl font-bold text-balance text-foreground">
         あなたの性別は？
       </h1>
 
@@ -46,11 +46,11 @@ export function SignupGender({
               aria-pressed={selected}
               className={`flex cursor-pointer flex-col items-center gap-3 rounded-full p-4 transition-all ${
                 selected
-                  ? 'bg-swipe-accent/15 ring-2 ring-swipe-accent'
-                  : 'bg-swipe-surface hover:bg-swipe-surface/70'
+                  ? 'bg-primary/15 ring-2 ring-primary'
+                  : 'bg-card hover:bg-card/70'
               }`}
             >
-              <span className="h-24 w-24 overflow-hidden rounded-full border-2 border-swipe-border shadow-sm">
+              <span className="h-24 w-24 overflow-hidden rounded-full border-2 border-border shadow-sm">
                 <Image
                   src={option.image || '/placeholder.svg'}
                   alt={option.label}
@@ -59,7 +59,7 @@ export function SignupGender({
                   className="h-full w-full object-cover"
                 />
               </span>
-              <span className="text-lg font-bold text-swipe-foreground">
+              <span className="text-lg font-bold text-foreground">
                 {option.label}
               </span>
             </button>

@@ -29,10 +29,10 @@ export function NewMatches({
           href="/likes/pending"
           className="flex w-20 shrink-0 flex-col items-center gap-2"
         >
-          <span className="flex size-20 items-center justify-center rounded-full border-2 border-swipe-accent bg-swipe-accent/15">
-            <Heart className="h-7 w-7 fill-swipe-accent text-swipe-accent" />
+          <span className="flex size-20 items-center justify-center rounded-full border-2 border-primary bg-primary/15">
+            <Heart className="h-7 w-7 fill-primary text-primary" />
           </span>
-          <span className="text-center text-xs font-semibold text-swipe-foreground">
+          <span className="text-center text-xs font-semibold text-foreground">
             {likeCount}件のいいね
           </span>
         </Link>
@@ -43,7 +43,7 @@ export function NewMatches({
             href={`/messages/${match.match_id}`}
             className="flex w-20 shrink-0 flex-col items-center gap-2"
           >
-            <span className="relative size-20 overflow-hidden rounded-full bg-swipe-surface">
+            <span className="relative size-20 overflow-hidden rounded-full bg-card">
               {match.image && (
                 <Image
                   src={match.image}
@@ -54,7 +54,7 @@ export function NewMatches({
                 />
               )}
             </span>
-            <span className="w-full truncate text-center text-xs font-semibold text-swipe-foreground">
+            <span className="w-full truncate text-center text-xs font-semibold text-foreground">
               {match.nickname}
             </span>
           </Link>

@@ -66,7 +66,7 @@ export function ChatView({ match }: { match: ChatMatch }) {
   }
 
   return (
-    <div className="flex h-full min-w-0 flex-1 flex-col bg-swipe-background">
+    <div className="flex h-full min-w-0 flex-1 flex-col bg-background">
       <SpChatHeader
         conversation={{
           name: match.nickname ?? '',
@@ -106,7 +106,7 @@ function SpMatchBanner({
 }) {
   return (
     <div className="flex justify-center">
-      <span className="text-xs text-swipe-muted-foreground">
+      <span className="text-xs text-muted-foreground">
         {matchedDate}に{nickname}さんとマッチ
       </span>
     </div>
@@ -115,11 +115,11 @@ function SpMatchBanner({
 
 export function EmptyChat() {
   return (
-    <div className="flex h-full flex-1 flex-col items-center justify-center bg-swipe-background">
-      <p className="text-xl font-bold text-swipe-foreground">
+    <div className="flex h-full flex-1 flex-col items-center justify-center bg-background">
+      <p className="text-xl font-bold text-foreground">
         選択中のやりとりはありません
       </p>
-      <p className="mt-2 text-sm text-swipe-muted-foreground">
+      <p className="mt-2 text-sm text-muted-foreground">
         選択したやりとりが表示されます
       </p>
     </div>

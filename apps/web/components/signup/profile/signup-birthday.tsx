@@ -54,10 +54,10 @@ export function SignupBirthday({
       />
 
       {/* 見出し */}
-      <h1 className="mt-8 text-2xl font-bold text-balance text-swipe-foreground">
+      <h1 className="mt-8 text-2xl font-bold text-balance text-foreground">
         あなたの誕生日は？
       </h1>
-      <p className="mt-2 text-sm text-swipe-muted-foreground">
+      <p className="mt-2 text-sm text-muted-foreground">
         女性は35歳以上、男性は35歳未満限定です。一度登録すると誕生日の変更はできません。
       </p>
 
@@ -71,11 +71,11 @@ export function SignupBirthday({
             placeholder="YYYY"
             value={year}
             onChange={handleYearChange}
-            className="w-[76px] border-none bg-transparent text-center text-[28px] font-bold text-swipe-foreground outline-none placeholder:text-swipe-border"
+            className="w-[76px] border-none bg-transparent text-center text-[28px] font-bold text-foreground outline-none placeholder:text-border"
           />
-          <span className="h-px w-[76px] bg-swipe-border" />
+          <span className="h-px w-[76px] bg-border" />
         </div>
-        <span className="pb-3.5 text-[22px] text-swipe-border">/</span>
+        <span className="pb-3.5 text-[22px] text-border">/</span>
         <div className="flex flex-col items-center gap-1.5">
           <input
             type="text"
@@ -84,11 +84,11 @@ export function SignupBirthday({
             placeholder="MM"
             value={month}
             onChange={handleMonthChange}
-            className="w-12 border-none bg-transparent text-center text-[28px] font-bold text-swipe-foreground outline-none placeholder:text-swipe-border"
+            className="w-12 border-none bg-transparent text-center text-[28px] font-bold text-foreground outline-none placeholder:text-border"
           />
-          <span className="h-px w-12 bg-swipe-border" />
+          <span className="h-px w-12 bg-border" />
         </div>
-        <span className="pb-3.5 text-[22px] text-swipe-border">/</span>
+        <span className="pb-3.5 text-[22px] text-border">/</span>
         <div className="flex flex-col items-center gap-1.5">
           <input
             type="text"
@@ -97,9 +97,9 @@ export function SignupBirthday({
             placeholder="DD"
             value={day}
             onChange={handleDayChange}
-            className="w-12 border-none bg-transparent text-center text-[28px] font-bold text-swipe-foreground outline-none placeholder:text-swipe-border"
+            className="w-12 border-none bg-transparent text-center text-[28px] font-bold text-foreground outline-none placeholder:text-border"
           />
-          <span className="h-px w-12 bg-swipe-border" />
+          <span className="h-px w-12 bg-border" />
         </div>
       </div>
 

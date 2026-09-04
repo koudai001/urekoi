@@ -48,9 +48,9 @@ export function BottomBar() {
   return (
     <nav
       aria-label="メインナビゲーション"
-      className="bg-swipe-background px-3 pb-3 pt-2"
+      className="bg-background px-3 pb-3 pt-2"
     >
-      <div className="mx-auto flex h-16 max-w-lg items-center justify-around rounded-2xl border border-swipe-border bg-swipe-sidebar shadow-lg">
+      <div className="mx-auto flex h-16 max-w-lg items-center justify-around rounded-2xl border border-border bg-background shadow-lg">
         {navigationItems.map(({ href, label, icon: Icon, matches }) => {
           const active = matches(pathname)
 
@@ -63,8 +63,8 @@ export function BottomBar() {
               className={cn(
                 'flex min-w-14 flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold transition-colors',
                 active
-                  ? 'text-swipe-accent'
-                  : 'text-swipe-muted-foreground hover:text-swipe-foreground',
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               <Icon className="size-6" aria-hidden="true" />

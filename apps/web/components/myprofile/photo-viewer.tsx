@@ -37,7 +37,7 @@ export function PhotoViewer({
   return (
     <div
       className={cn(
-        'relative bg-swipe-surface',
+        'relative bg-card',
         full ? 'h-full w-full' : 'aspect-[3/4] w-full shrink-0',
         photos.length > 1 && 'cursor-pointer',
         className,
@@ -45,7 +45,7 @@ export function PhotoViewer({
     >
       {/* 複数枚ある場合だけ、現在位置と総数を右上へ表示する */}
       {photos.length > 1 && (
-        <span className="absolute right-3 top-3 z-10 rounded-full bg-swipe-background/70 px-3 py-1 text-sm font-semibold text-swipe-foreground">
+        <span className="absolute right-3 top-3 z-10 rounded-full bg-background/70 px-3 py-1 text-sm font-semibold text-foreground">
           {index + 1} / {photos.length}
         </span>
       )}

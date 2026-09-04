@@ -17,7 +17,7 @@ export function ProfilePreview({ profile }: { profile: ProfileDetail }) {
 
   return (
     <CardContainer className="!h-full !max-w-none !aspect-auto">
-      <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-swipe-sidebar">
+      <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-background">
         <ProfileEditNav active="preview" />
 
         <div className="relative min-h-0 flex-1">

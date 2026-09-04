@@ -23,7 +23,7 @@ export function LikeButton({
       disabled={disabled || isPending}
       onClick={onClick}
       className={cn(
-        'flex min-w-44 cursor-pointer items-center justify-center gap-2 rounded-full bg-swipe-accent px-8 py-4 text-lg font-bold text-swipe-foreground shadow-xl transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60',
+        'flex min-w-44 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-lg font-bold text-foreground shadow-xl transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60',
         className,
       )}
     >

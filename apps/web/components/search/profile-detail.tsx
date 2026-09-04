@@ -26,18 +26,18 @@ export function ProfileDetail({
   }
 
   return (
-    <main className="relative flex min-h-0 flex-1 flex-col bg-swipe-background">
+    <main className="relative flex min-h-0 flex-1 flex-col bg-background">
       {/* 遷移元へ戻る操作の隣に、表示中の相手の名前を示す */}
-      <header className="flex h-14 shrink-0 items-center gap-3 border-b border-swipe-border px-4">
+      <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4">
         <button
           type="button"
           onClick={handleBack}
           aria-label="一覧へ戻る"
-          className="flex size-9 cursor-pointer items-center justify-center rounded-full text-swipe-foreground transition hover:bg-swipe-surface"
+          className="flex size-9 cursor-pointer items-center justify-center rounded-full text-foreground transition hover:bg-card"
         >
           <ArrowLeft className="size-6" aria-hidden="true" />
         </button>
-        <p className="truncate text-lg font-bold text-swipe-foreground">
+        <p className="truncate text-lg font-bold text-foreground">
           {profile.nickname}
         </p>
       </header>
@@ -53,27 +53,27 @@ export function ProfileDetail({
           />
         </div>
 
-        <div className="rounded-t-3xl bg-swipe-sidebar px-5 pb-32 pt-6">
-          <h1 className="text-3xl font-extrabold text-swipe-foreground">
+        <div className="rounded-t-3xl bg-background px-5 pb-32 pt-6">
+          <h1 className="text-3xl font-extrabold text-foreground">
             {profile.nickname}
           </h1>
-          <p className="mt-2 text-lg font-medium text-swipe-muted-foreground">
+          <p className="mt-2 text-lg font-medium text-muted-foreground">
             {profile.age}歳{profile.prefecture && ` ・ ${profile.prefecture}`}
           </p>
 
           {/* 自己紹介は改行を維持し、未設定の場合も空欄にしない */}
           <section className="mt-8">
-            <h2 className="border-b border-swipe-border pb-2 text-xl font-bold text-swipe-foreground">
+            <h2 className="border-b border-border pb-2 text-xl font-bold text-foreground">
               自己紹介
             </h2>
-            <p className="mt-4 whitespace-pre-wrap text-base leading-7 text-swipe-foreground">
+            <p className="mt-4 whitespace-pre-wrap text-base leading-7 text-foreground">
               {profile.bio || '未設定'}
             </p>
           </section>
 
           {/* タグを除いた基本属性だけを2列で表示する */}
           <section className="mt-8">
-            <h2 className="border-b border-swipe-border pb-2 text-xl font-bold text-swipe-foreground">
+            <h2 className="border-b border-border pb-2 text-xl font-bold text-foreground">
               詳細情報
             </h2>
             <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-5">
@@ -102,8 +102,8 @@ export function ProfileDetail({
 function DetailItem({ label, value }: { label: string; value?: string }) {
   return (
     <div className="min-w-0">
-      <p className="text-sm text-swipe-muted-foreground">{label}</p>
-      <p className="mt-1 truncate text-base font-medium text-swipe-foreground">
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="mt-1 truncate text-base font-medium text-foreground">
         {value || '未設定'}
       </p>
     </div>

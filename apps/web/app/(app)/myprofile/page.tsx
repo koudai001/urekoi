@@ -22,8 +22,8 @@ export default async function MyProfilePage() {
   const profileImage = profile.images?.[0]?.url || '/placeholder.svg'
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col items-center bg-swipe-background px-6 pt-10 text-swipe-foreground">
-      <div className="relative size-44 overflow-hidden rounded-full bg-swipe-surface ring-4 ring-swipe-accent">
+    <main className="flex min-h-0 flex-1 flex-col items-center bg-background px-6 pt-10 text-foreground">
+      <div className="relative size-44 overflow-hidden rounded-full bg-card ring-4 ring-primary">
         <Image
           src={profileImage}
           alt={`${profile.nickname ?? ''}さんのプロフィール画像`}
@@ -63,9 +63,9 @@ function ProfileAction({
   return (
     <Link
       href={href}
-      className="flex w-32 flex-col items-center gap-3 text-center font-bold text-swipe-foreground"
+      className="flex w-32 flex-col items-center gap-3 text-center font-bold text-foreground"
     >
-      <span className="flex size-16 items-center justify-center rounded-full bg-swipe-surface shadow-lg ring-1 ring-swipe-border transition hover:scale-105">
+      <span className="flex size-16 items-center justify-center rounded-full bg-card shadow-lg ring-1 ring-border transition hover:scale-105">
         {children}
       </span>
       <span>{label}</span>

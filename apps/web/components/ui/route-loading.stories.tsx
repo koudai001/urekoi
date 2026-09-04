@@ -10,7 +10,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="mx-auto flex h-screen max-w-md bg-swipe-background">
+      <div className="mx-auto flex h-screen max-w-md bg-background">
         <Story />
       </div>
     ),

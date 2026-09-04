@@ -10,7 +10,7 @@ export function SignupLanding({
   onSelectEmail: () => void
 }) {
   return (
-    <main className="flex min-h-svh flex-col bg-swipe-background px-6 py-6 text-swipe-foreground">
+    <main className="flex min-h-svh flex-col bg-background px-6 py-6 text-foreground">
       <div className="mx-auto flex w-full max-w-[400px] flex-1 flex-col justify-center gap-10">
         <div className="flex flex-col items-center gap-4">
           <Image
@@ -22,10 +22,8 @@ export function SignupLanding({
             className="h-56 w-56 rounded-full shadow-2xl"
           />
           <div className="space-y-1.5 text-center">
-            <p className="text-lg font-bold text-swipe-foreground">
-              熟恋へようこそ
-            </p>
-            <p className="text-sm font-semibold tracking-[0.12em] text-swipe-muted-foreground">
+            <p className="text-lg font-bold text-foreground">熟恋へようこそ</p>
+            <p className="text-sm font-semibold tracking-[0.12em] text-muted-foreground">
               大人の出会いを、もっと自然に
             </p>
           </div>
@@ -35,7 +33,7 @@ export function SignupLanding({
           <Button
             type="button"
             onClick={onSelectEmail}
-            className="h-11 w-full gap-2.5 rounded-full bg-gradient-to-br from-swipe-accent to-primary text-base font-extrabold text-white hover:opacity-90"
+            className="h-11 w-full gap-2.5 rounded-full bg-gradient-to-br from-primary to-primary text-base font-extrabold text-white hover:opacity-90"
           >
             <Mail className="h-5 w-5" />
             メールアドレスで新規登録
@@ -43,7 +41,7 @@ export function SignupLanding({
           <Button
             type="button"
             variant="outline"
-            className="h-11 w-full gap-2.5 rounded-full border-swipe-border bg-transparent text-base font-bold text-swipe-foreground hover:bg-swipe-surface hover:text-swipe-foreground"
+            className="h-11 w-full gap-2.5 rounded-full border-border bg-transparent text-base font-bold text-foreground hover:bg-card hover:text-foreground"
           >
             <Apple className="h-5 w-5 fill-current" />
             Appleで始める
@@ -52,12 +50,12 @@ export function SignupLanding({
 
           <Link
             href="/login"
-            className="mt-1 py-3 text-center text-sm font-semibold text-swipe-accent underline underline-offset-4"
+            className="mt-1 py-3 text-center text-sm font-semibold text-primary underline underline-offset-4"
           >
             ログインはこちら
           </Link>
 
-          <div className="flex justify-center gap-4 pt-1 text-xs text-swipe-muted-foreground">
+          <div className="flex justify-center gap-4 pt-1 text-xs text-muted-foreground">
             <span>利用規約</span>
             <span>プライバシーポリシー</span>
           </div>

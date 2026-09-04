@@ -20,11 +20,11 @@ export function UserListItem({
     dummyProfileImageFor(profile.user_id)
 
   return (
-    <article className="flex gap-4 border-b border-swipe-border px-4 py-5">
+    <article className="flex gap-4 border-b border-border px-4 py-5">
       <Link
         href={href}
         aria-label={`${profile.nickname}さんのプロフィールを見る`}
-        className="relative size-24 shrink-0 overflow-hidden rounded-full bg-swipe-surface"
+        className="relative size-24 shrink-0 overflow-hidden rounded-full bg-card"
       >
         <Image
           src={imageUrl}
@@ -38,10 +38,10 @@ export function UserListItem({
 
       <div className="min-w-0 flex-1">
         <Link href={href} className="block min-w-0">
-          <p className="truncate text-xl font-bold text-swipe-foreground">
+          <p className="truncate text-xl font-bold text-foreground">
             {profile.nickname}
           </p>
-          <p className="mt-1 truncate text-base text-swipe-muted-foreground">
+          <p className="mt-1 truncate text-base text-muted-foreground">
             {profile.occupation || '職業未設定'} {profile.age}歳/
             {profile.prefecture}
           </p>

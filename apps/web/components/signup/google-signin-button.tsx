@@ -75,7 +75,7 @@ export function GoogleSignInButton({
     window.google.accounts.id.renderButton(buttonRef.current, {
       theme: 'filled_black',
       size: 'large',
-      shape: 'pill',
+      shape: 'rectangular',
       text,
       logo_alignment: 'left',
       width: buttonRef.current.offsetWidth,

@@ -4,9 +4,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react'
 
 export function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="mb-1 mt-10 text-lg font-bold text-swipe-foreground">
-      {children}
-    </h2>
+    <h2 className="mb-1 mt-10 text-lg font-bold text-foreground">{children}</h2>
   )
 }
 
@@ -23,14 +21,14 @@ export function InputRow({
   placeholder?: string
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-swipe-border py-4">
-      <span className="text-sm font-medium text-swipe-foreground">{label}</span>
+    <div className="flex items-center justify-between gap-4 border-b border-border py-4">
+      <span className="text-sm font-medium text-foreground">{label}</span>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-8 w-36 shrink-0 rounded-lg border border-swipe-border bg-swipe-surface px-3 text-left text-sm text-swipe-foreground outline-none transition-colors hover:border-swipe-accent focus:border-swipe-accent"
+        className="h-8 w-36 shrink-0 rounded-lg border border-border bg-card px-3 text-left text-sm text-foreground outline-none transition-colors hover:border-primary focus:border-primary"
       />
     </div>
   )
@@ -55,8 +53,8 @@ export function SelectRow({
   secondOptions?: string[]
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-swipe-border py-4">
-      <span className="text-sm font-medium text-swipe-foreground">{label}</span>
+    <div className="flex items-center justify-between gap-4 border-b border-border py-4">
+      <span className="text-sm font-medium text-foreground">{label}</span>
       <div className="flex items-center gap-2">
         <SelectControl
           value={value}
@@ -66,7 +64,7 @@ export function SelectRow({
         />
         {secondOptions ? (
           <>
-            <span className="text-swipe-muted-foreground">−</span>
+            <span className="text-muted-foreground">−</span>
             <SelectControl
               value={secondValue}
               options={secondOptions}
@@ -95,7 +93,7 @@ function SelectControl({
       <select
         value={value ?? ''}
         onChange={(e) => onChange?.(e.target.value)}
-        className="h-8 w-36 shrink-0 cursor-pointer appearance-none rounded-lg border border-swipe-border bg-swipe-surface px-3 pr-8 text-sm text-swipe-foreground outline-none transition-colors hover:border-swipe-accent focus:border-swipe-accent"
+        className="h-8 w-36 shrink-0 cursor-pointer appearance-none rounded-lg border border-border bg-card px-3 pr-8 text-sm text-foreground outline-none transition-colors hover:border-primary focus:border-primary"
       >
         <option value="" disabled>
           {placeholder}
@@ -106,7 +104,7 @@ function SelectControl({
           </option>
         ))}
       </select>
-      <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-swipe-muted-foreground" />
+      <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
     </div>
   )
 }
@@ -122,19 +120,19 @@ export function LinkRow({
   placeholder?: string
 }) {
   return (
-    <button className="flex w-full items-center justify-between gap-4 border-b border-swipe-border py-4 text-left transition-colors hover:bg-swipe-surface">
-      <span className="text-sm font-medium text-swipe-foreground">{label}</span>
+    <button className="flex w-full items-center justify-between gap-4 border-b border-border py-4 text-left transition-colors hover:bg-card">
+      <span className="text-sm font-medium text-foreground">{label}</span>
       <span className="flex items-center gap-2">
         <span
           className={
             value
-              ? 'text-sm font-medium text-swipe-foreground'
-              : 'text-sm text-swipe-muted-foreground'
+              ? 'text-sm font-medium text-foreground'
+              : 'text-sm text-muted-foreground'
           }
         >
           {value ?? placeholder}
         </span>
-        <ChevronRight className="h-4 w-4 text-swipe-muted-foreground" />
+        <ChevronRight className="h-4 w-4 text-muted-foreground" />
       </span>
     </button>
   )

@@ -24,12 +24,10 @@ export function SignupNickname({
       />
 
       {/* 見出し */}
-      <h1 className="mt-8 text-2xl font-bold text-balance text-swipe-foreground">
+      <h1 className="mt-8 text-2xl font-bold text-balance text-foreground">
         表示名を決めましょう
       </h1>
-      <p className="mt-2 text-sm text-swipe-muted-foreground">
-        あとから変更できます
-      </p>
+      <p className="mt-2 text-sm text-muted-foreground">あとから変更できます</p>
 
       {/* 表示名入力 */}
       <div className="mt-8">
@@ -38,7 +36,7 @@ export function SignupNickname({
           maxLength={20}
           placeholder="表示名を入力してください"
           {...register('nickname')}
-          className="w-full border-none border-b-2 border-swipe-accent bg-transparent px-0.5 pt-1 pb-3 text-[19px] text-swipe-foreground outline-none placeholder:text-swipe-muted-foreground"
+          className="w-full border-none border-b-2 border-primary bg-transparent px-0.5 pt-1 pb-3 text-[19px] text-foreground outline-none placeholder:text-muted-foreground"
         />
       </div>
 

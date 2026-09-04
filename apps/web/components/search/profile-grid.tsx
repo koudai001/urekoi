@@ -43,9 +43,9 @@ function ProfileGridCard({
     <Link
       href={href}
       aria-label={`${profile.nickname}さんのプロフィールを見る`}
-      className="overflow-hidden rounded-2xl bg-swipe-surface shadow-sm ring-1 ring-swipe-border transition hover:-translate-y-0.5 hover:shadow-md"
+      className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border transition hover:-translate-y-0.5 hover:shadow-md"
     >
-      <div className="relative aspect-square bg-swipe-surface">
+      <div className="relative aspect-square bg-card">
         <Image
           src={imageUrl}
           alt={`${profile.nickname}さんの写真`}
@@ -57,16 +57,16 @@ function ProfileGridCard({
       </div>
 
       <div className="space-y-1 px-3 py-2">
-        <p className="flex min-w-0 items-baseline gap-1 text-swipe-foreground">
+        <p className="flex min-w-0 items-baseline gap-1 text-foreground">
           <span className="shrink-0 text-base font-bold">{profile.age}歳</span>
           <span className="truncate text-sm font-semibold">
             {profile.prefecture}
           </span>
         </p>
-        <p className="truncate text-sm text-swipe-muted-foreground">
+        <p className="truncate text-sm text-muted-foreground">
           {profile.occupation || '職業未設定'}
         </p>
-        <p className="truncate text-sm text-swipe-muted-foreground">
+        <p className="truncate text-sm text-muted-foreground">
           {profile.bio || 'よろしくお願いします'}
         </p>
       </div>
