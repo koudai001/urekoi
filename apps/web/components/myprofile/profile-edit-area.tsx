@@ -121,7 +121,7 @@ export function ProfileEditArea({
 
   return (
     <CardContainer className="!h-full !max-w-none !aspect-auto">
-      <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-swipe-sidebar">
+      <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-background">
         {/* 編集タブ: 固定、スクロールしない */}
         <ProfileEditNav active="edit" />
 
@@ -163,7 +163,7 @@ export function ProfileEditArea({
 function PhotoArea() {
   return (
     <div className="flex h-full shrink-0 flex-col">
-      <h2 className="mt-4 shrink-0 text-lg font-bold text-swipe-foreground">
+      <h2 className="mt-4 shrink-0 text-lg font-bold text-foreground">
         プロフィール写真
       </h2>
       <div className="min-h-0 flex-1">
@@ -219,7 +219,7 @@ function BioArea({
         onChange={(e) => onChange(e.target.value)}
         placeholder="自己紹介を入力してください"
         rows={7}
-        className="mt-2 w-full rounded-2xl border border-swipe-border bg-swipe-surface p-4 text-sm leading-relaxed text-swipe-foreground outline-none placeholder:text-swipe-muted-foreground focus:border-swipe-accent"
+        className="mt-2 w-full rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
       />
     </div>
   )
@@ -367,7 +367,7 @@ function SaveButton({
         type="button"
         onClick={onClick}
         disabled={saving}
-        className="cursor-pointer whitespace-nowrap rounded-full bg-swipe-foreground px-12 py-3.5 text-[15px] font-bold text-swipe-background disabled:cursor-not-allowed disabled:opacity-60"
+        className="cursor-pointer whitespace-nowrap rounded-full bg-foreground px-12 py-3.5 text-[15px] font-bold text-background disabled:cursor-not-allowed disabled:opacity-60"
       >
         {saving ? '保存中...' : '保存'}
       </button>
@@ -393,9 +393,9 @@ function CategoryChips({
 
   return (
     <div>
-      <p className="text-sm font-medium text-swipe-foreground">
+      <p className="text-sm font-medium text-foreground">
         {category}
-        <span className="ml-2 text-xs text-swipe-muted-foreground">
+        <span className="ml-2 text-xs text-muted-foreground">
           ({selectedCount}/{TAGS_PER_CATEGORY_LIMIT})
         </span>
       </p>
@@ -430,8 +430,8 @@ function ChipToggle({
       className={cn(
         'rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
         selected
-          ? 'border-swipe-accent bg-swipe-accent/10 text-swipe-accent'
-          : 'border-swipe-border bg-swipe-surface text-swipe-muted-foreground hover:bg-swipe-surface/60',
+          ? 'border-primary bg-primary/10 text-primary'
+          : 'border-border bg-card text-muted-foreground hover:bg-card/60',
       )}
     >
       {label}

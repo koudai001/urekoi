@@ -39,10 +39,10 @@ describe('proxy', () => {
     vi.clearAllMocks()
   })
 
-  describe('保護パス(/)', () => {
+  describe('保護パス(/search)', () => {
     it('access_tokenあり → そのまま通すこと', async () => {
       const response = await proxy(
-        buildRequest('/', `${COOKIE_ACCESS_TOKEN}=valid`),
+        buildRequest('/search', `${COOKIE_ACCESS_TOKEN}=valid`),
       )
 
       expect(response.status).toBe(200)
@@ -52,7 +52,7 @@ describe('proxy', () => {
       mockRefresh(true)
 
       const response = await proxy(
-        buildRequest('/', `${COOKIE_REFRESH_TOKEN}=valid`),
+        buildRequest('/search', `${COOKIE_REFRESH_TOKEN}=valid`),
       )
 
       expect(response.status).toBe(200)
@@ -64,25 +64,25 @@ describe('proxy', () => {
       )
     })
 
-    it('access_tokenなし・refresh失敗 → /loginにリダイレクトすること', async () => {
+    it('access_tokenなし・refresh失敗 → Welcomeへリダイレクトすること', async () => {
       mockRefresh(false)
 
       const response = await proxy(
-        buildRequest('/', `${COOKIE_REFRESH_TOKEN}=invalid`),
+        buildRequest('/search', `${COOKIE_REFRESH_TOKEN}=invalid`),
       )
 
       expect(response.status).toBe(307)
       expect(response.headers.get('location')).toBe(
-        `${process.env.APP_URL}/login`,
+        `${process.env.APP_URL}/welcome`,
       )
     })
 
-    it('トークンなし → /loginにリダイレクトすること', async () => {
-      const response = await proxy(buildRequest('/'))
+    it('トークンなし → Welcomeへリダイレクトすること', async () => {
+      const response = await proxy(buildRequest('/search'))
 
       expect(response.status).toBe(307)
       expect(response.headers.get('location')).toBe(
-        `${process.env.APP_URL}/login`,
+        `${process.env.APP_URL}/welcome`,
       )
     })
   })

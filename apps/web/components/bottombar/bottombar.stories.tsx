@@ -9,7 +9,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="flex h-screen flex-col justify-end bg-swipe-background">
+      <div className="flex h-screen flex-col justify-end bg-background">
         <Story />
       </div>
     ),

@@ -6,7 +6,7 @@ export function LogoutButton() {
     <form action={logout}>
       <button
         type="submit"
-        className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-accent/60 hover:text-accent-foreground"
+        className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-card/60 hover:text-foreground"
       >
         <LogOut className="h-5 w-5" />
         ログアウト

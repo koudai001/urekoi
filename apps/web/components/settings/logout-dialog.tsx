@@ -42,13 +42,13 @@ export function LogoutDialog({ open, onClose }: LogoutDialogProps) {
         aria-modal="true"
         aria-labelledby="logout-dialog-title"
         aria-describedby="logout-dialog-description"
-        className="relative w-full max-w-sm rounded-2xl bg-swipe-surface px-6 py-8 text-center shadow-2xl"
+        className="relative w-full max-w-sm rounded-2xl bg-card px-6 py-8 text-center shadow-2xl"
       >
         <button
           type="button"
           aria-label="閉じる"
           onClick={onClose}
-          className="absolute right-4 top-4 cursor-pointer rounded-full p-1 text-swipe-muted-foreground transition-colors hover:text-swipe-foreground focus-visible:outline-2 focus-visible:outline-swipe-accent"
+          className="absolute right-4 top-4 cursor-pointer rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary"
         >
           <X className="size-5" />
         </button>
@@ -58,7 +58,7 @@ export function LogoutDialog({ open, onClose }: LogoutDialogProps) {
         </h2>
         <p
           id="logout-dialog-description"
-          className="mt-4 text-sm leading-6 text-swipe-muted-foreground"
+          className="mt-4 text-sm leading-6 text-muted-foreground"
         >
           再度ご利用いただくには、ログインが必要です
         </p>
@@ -66,7 +66,7 @@ export function LogoutDialog({ open, onClose }: LogoutDialogProps) {
         <form action={logout} className="mt-6">
           <button
             type="submit"
-            className="w-full cursor-pointer rounded-full bg-swipe-foreground px-5 py-3.5 text-lg font-bold text-swipe-background transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-swipe-accent"
+            className="w-full cursor-pointer rounded-full bg-foreground px-5 py-3.5 text-lg font-bold text-background transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             ログアウト
           </button>
@@ -76,7 +76,7 @@ export function LogoutDialog({ open, onClose }: LogoutDialogProps) {
           ref={cancelButtonRef}
           type="button"
           onClick={onClose}
-          className="mt-3 w-full cursor-pointer rounded-full px-5 py-3 text-lg font-bold transition-colors hover:bg-swipe-border focus-visible:outline-2 focus-visible:outline-swipe-accent"
+          className="mt-3 w-full cursor-pointer rounded-full px-5 py-3 text-lg font-bold transition-colors hover:bg-border focus-visible:outline-2 focus-visible:outline-primary"
         >
           キャンセル
         </button>

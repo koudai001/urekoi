@@ -21,7 +21,7 @@ export function SearchProfileDetail({ userId }: { userId: number }) {
     <div className="relative flex min-h-0 flex-1 flex-col">
       <ProfileDetail profile={profile} returnHref="/search" />
 
-      <div className="absolute inset-x-0 bottom-0 z-10 flex justify-center rounded-t-3xl bg-swipe-sidebar/99 px-6 py-4">
+      <div className="absolute inset-x-0 bottom-0 z-10 flex justify-center rounded-t-3xl bg-background/99 px-6 py-4">
         <SearchProfileActions
           userId={userId}
           nickname={profile.nickname}

@@ -133,7 +133,7 @@ export function ProfilePhotos() {
             return (
               <div
                 key={image.id}
-                className="relative overflow-hidden rounded-2xl bg-swipe-surface"
+                className="relative overflow-hidden rounded-2xl bg-card"
               >
                 <Image
                   src={image.url || '/placeholder.svg'}
@@ -181,7 +181,7 @@ function AddSlot({
       type="button"
       disabled={!active || uploading}
       onClick={onClick}
-      className="flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-swipe-surface text-swipe-muted-foreground transition-colors disabled:cursor-not-allowed enabled:hover:text-swipe-accent"
+      className="flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-card text-muted-foreground transition-colors disabled:cursor-not-allowed enabled:hover:text-primary"
     >
       {uploading ? (
         <Loader2 className="h-6 w-6 animate-spin" />
@@ -211,7 +211,7 @@ function DeleteBadge({
       aria-label="写真を削除"
       disabled={deleting}
       onClick={onClick}
-      className="absolute bottom-2 right-2 flex h-[26px] w-[26px] items-center justify-center rounded-full bg-swipe-foreground text-swipe-background shadow transition-colors disabled:opacity-60"
+      className="absolute bottom-2 right-2 flex h-[26px] w-[26px] items-center justify-center rounded-full bg-foreground text-background shadow transition-colors disabled:opacity-60"
     >
       {deleting ? (
         <Loader2 className="h-3.5 w-3.5 animate-spin" />

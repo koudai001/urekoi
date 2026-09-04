@@ -18,9 +18,9 @@ export function ChatViewHeader({
   const matchedDate = formatMatchedDate(matchedAt)
 
   return (
-    <div className="flex items-center justify-between border-b border-swipe-border px-6 py-5">
+    <div className="flex items-center justify-between border-b border-border px-6 py-5">
       <div className="flex items-center gap-4">
-        <span className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-swipe-surface">
+        <span className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-card">
           <Image
             src={conversation.image || '/placeholder.svg'}
             alt={`${conversation.name}さん`}
@@ -29,18 +29,18 @@ export function ChatViewHeader({
             className="h-full w-full object-cover"
           />
         </span>
-        <span className="text-lg text-swipe-foreground/90">
+        <span className="text-lg text-foreground/90">
           {matchedDate
             ? `${matchedDate}に${conversation.name}さんとマッチしました`
             : conversation.name}
         </span>
       </div>
-      <div className="flex items-center gap-4 text-swipe-muted-foreground">
+      <div className="flex items-center gap-4 text-muted-foreground">
         <MoreHorizontal className="h-5 w-5" />
         <Link
           href="/messages"
           aria-label="閉じる"
-          className="hover:text-swipe-foreground"
+          className="hover:text-foreground"
         >
           <X className="h-5 w-5" />
         </Link>

@@ -24,7 +24,7 @@ export function SignupStepNav({
         type="button"
         onClick={onBack}
         aria-label="前へ戻る"
-        className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-swipe-surface text-swipe-foreground transition-colors hover:bg-swipe-surface/70"
+        className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-card text-foreground transition-colors hover:bg-card/70"
       >
         <ChevronLeft className="h-5 w-5" />
       </button>
@@ -33,7 +33,7 @@ export function SignupStepNav({
         disabled={nextDisabled}
         onClick={onNext}
         aria-label="次へ進む"
-        className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-swipe-accent text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-primary text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <ChevronRight className="h-5 w-5" />
       </button>

@@ -12,7 +12,7 @@ export function SignupProgressBar({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-swipe-accent text-white">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-white">
         {icon}
       </span>
       <span className="flex flex-1 items-center gap-1.5 overflow-hidden">
@@ -20,7 +20,7 @@ export function SignupProgressBar({
           <span
             key={i}
             className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-              i < currentStep ? 'bg-swipe-accent' : 'bg-swipe-border'
+              i < currentStep ? 'bg-primary' : 'bg-border'
             }`}
           />
         ))}

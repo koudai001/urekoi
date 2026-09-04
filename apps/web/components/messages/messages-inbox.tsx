@@ -16,7 +16,7 @@ export function MessagesInbox({
   initialMessagedMatches: MatchProfileWithLastMessage[]
 }) {
   return (
-    <main className="flex h-full min-h-0 flex-1 flex-col bg-swipe-background">
+    <main className="flex h-full min-h-0 flex-1 flex-col bg-background">
       <div className="min-h-0 flex-1 overflow-y-auto pt-4">
         <NewMatches
           initialLikes={initialLikes}

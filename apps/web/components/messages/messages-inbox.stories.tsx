@@ -39,7 +39,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="h-screen max-w-sm bg-swipe-background">
+      <div className="h-screen max-w-sm bg-background">
         <Story />
       </div>
     ),

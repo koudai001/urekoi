@@ -14,7 +14,7 @@ export function PendingLikes() {
   const likes = currentLikes.profiles
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col bg-swipe-background">
+    <main className="flex min-h-0 flex-1 flex-col bg-background">
       {likes.length === 0 ? (
         <div className="flex flex-1 items-center justify-center px-5 pb-5">
           <LikeEmptyState />

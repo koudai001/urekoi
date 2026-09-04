@@ -12,14 +12,14 @@ export function LikeActions({
       <button
         aria-label="スキップ"
         onClick={onSkip}
-        className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-swipe-surface text-swipe-muted-foreground shadow-lg ring-1 ring-swipe-border transition hover:scale-105 hover:text-swipe-foreground"
+        className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-card text-muted-foreground shadow-lg ring-1 ring-border transition hover:scale-105 hover:text-foreground"
       >
         <Undo2 className="h-7 w-7" />
       </button>
       <button
         aria-label="いいね！を送る"
         onClick={onLike}
-        className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-swipe-accent text-white shadow-lg shadow-swipe-accent/30 transition hover:scale-105"
+        className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30 transition hover:scale-105"
       >
         <ThumbsUp className="h-7 w-7" />
       </button>

@@ -30,7 +30,7 @@ function SwipeCardDeckContent({
   submitDecision,
 }: RecsContextValue) {
   if (!current) {
-    return <p className="text-sm text-swipe-muted-foreground">候補がいません</p>
+    return <p className="text-sm text-muted-foreground">候補がいません</p>
   }
 
   return (
@@ -178,13 +178,13 @@ function SwipeCardDeckItem({
                 <ProfileLink href={`/recs/${profile.user_id}`} />
                 {/* スワイプ中のラベル */}
                 <span
-                  className="pointer-events-none absolute left-5 top-5 rotate-[-12deg] rounded-lg border-4 border-swipe-accent px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-accent"
+                  className="pointer-events-none absolute left-5 top-5 rotate-[-12deg] rounded-lg border-4 border-primary px-4 py-1 text-2xl font-extrabold tracking-wide text-primary"
                   style={{ opacity: likeOpacity }}
                 >
                   いいね！
                 </span>
                 <span
-                  className="pointer-events-none absolute right-5 top-5 rotate-[12deg] rounded-lg border-4 border-swipe-muted-foreground px-4 py-1 text-2xl font-extrabold tracking-wide text-swipe-muted-foreground"
+                  className="pointer-events-none absolute right-5 top-5 rotate-[12deg] rounded-lg border-4 border-muted-foreground px-4 py-1 text-2xl font-extrabold tracking-wide text-muted-foreground"
                   style={{ opacity: skipOpacity }}
                 >
                   スキップ

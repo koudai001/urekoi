@@ -15,7 +15,7 @@ export function CloseButton({
       onClick={onClick}
       aria-label="閉じる"
       className={cn(
-        'flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-card text-foreground shadow-lg transition-colors hover:bg-secondary',
+        'flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-card text-foreground shadow-lg transition-colors hover:bg-card',
         className,
       )}
     >

@@ -30,8 +30,8 @@ export function ProfileViewer({ profile }: { profile: ProfileDetail }) {
   const tags = profile.tags ?? []
 
   return (
-    <ScrollContainer className="h-full rounded-3xl bg-swipe-sidebar">
-      <div className="flex items-baseline gap-2.5 p-5 pb-3 text-3xl font-extrabold text-swipe-foreground">
+    <ScrollContainer className="h-full rounded-3xl bg-background">
+      <div className="flex items-baseline gap-2.5 p-5 pb-3 text-3xl font-extrabold text-foreground">
         <span>{profile.nickname}</span>
         <span>{profile.age}</span>
       </div>
@@ -81,7 +81,7 @@ function BioArea({ value }: { value?: string }) {
   return (
     <div className="shrink-0">
       <SectionTitle>自己紹介</SectionTitle>
-      <p className="mt-2 whitespace-pre-wrap rounded-2xl border border-swipe-border bg-swipe-surface p-4 text-sm leading-relaxed text-swipe-foreground">
+      <p className="mt-2 whitespace-pre-wrap rounded-2xl border border-border bg-card p-4 text-sm leading-relaxed text-foreground">
         {value || '未設定'}
       </p>
     </div>
@@ -145,13 +145,13 @@ function CategoryChips({
 
   return (
     <div>
-      <p className="text-sm font-medium text-swipe-foreground">{category}</p>
+      <p className="text-sm font-medium text-foreground">{category}</p>
       <div className="mt-2 flex flex-wrap gap-2">
         {tags.map((tag) => (
           <span
             key={tag.label}
             className={cn(
-              'rounded-full border border-swipe-accent bg-swipe-accent/10 px-3 py-1.5 text-sm font-medium text-swipe-accent',
+              'rounded-full border border-primary bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary',
             )}
           >
             {tag.label}
@@ -165,13 +165,11 @@ function CategoryChips({
 // 未設定のフィールドは「未設定」と表示する読み取り専用の行
 function AttributeRow({ label, value }: { label: string; value?: string }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-swipe-border py-4">
-      <span className="text-sm font-medium text-swipe-foreground">{label}</span>
+    <div className="flex items-center justify-between gap-4 border-b border-border py-4">
+      <span className="text-sm font-medium text-foreground">{label}</span>
       <span
         className={
-          value
-            ? 'text-sm text-swipe-foreground'
-            : 'text-sm text-swipe-muted-foreground'
+          value ? 'text-sm text-foreground' : 'text-sm text-muted-foreground'
         }
       >
         {value || '未設定'}

@@ -10,7 +10,7 @@ import {
 } from '@/lib/cookie'
 
 // ログイン不要でアクセスできるパス
-const PUBLIC_PATHS = ['/login', '/signup']
+const PUBLIC_PATHS = ['/welcome', '/login', '/signup']
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -33,9 +33,9 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 認証済みでない場合 x 保護されたパスへのアクセスはログインページにリダイレクト
+  // 認証済みでない場合 x 保護されたパスへのアクセスはWelcomeページにリダイレクト
   if (!isAuthenticated && !isPublicPath) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(new URL('/welcome', request.url))
   }
 
   // 認証済みかつログインページやサインアップページへのアクセスは、プロフィール作成済みなら検索画面へ、

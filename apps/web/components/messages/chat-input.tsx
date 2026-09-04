@@ -23,7 +23,7 @@ export function ChatInput({
   }
 
   return (
-    <div className="border-t border-swipe-border px-4 py-3">
+    <div className="border-t border-border px-4 py-3">
       <div className="flex items-center gap-2">
         <input
           type="text"
@@ -34,14 +34,14 @@ export function ChatInput({
             if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSubmit()
           }}
           placeholder="メッセージを入力"
-          className="min-w-0 flex-1 rounded-md border border-swipe-border bg-swipe-surface px-4 py-2.5 text-base text-swipe-foreground outline-none placeholder:text-swipe-muted-foreground focus:border-swipe-accent"
+          className="min-w-0 flex-1 rounded-md border border-border bg-card px-4 py-2.5 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
         />
         <button
           type="button"
           aria-label="送信"
           onClick={handleSubmit}
           disabled={sending || !input.trim()}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-swipe-accent text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-white transition-opacity hover:opacity-90 disabled:opacity-40"
         >
           <Send className="size-5" aria-hidden="true" />
         </button>

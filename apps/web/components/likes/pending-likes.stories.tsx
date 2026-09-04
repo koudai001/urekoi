@@ -21,7 +21,7 @@ const meta = {
   decorators: [
     (Story) => (
       <QueryClientProvider client={queryClient}>
-        <div className="mx-auto flex h-screen w-full max-w-md flex-col bg-swipe-background">
+        <div className="mx-auto flex h-screen w-full max-w-md flex-col bg-background">
           <Story />
         </div>
       </QueryClientProvider>

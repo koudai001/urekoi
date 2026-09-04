@@ -12,7 +12,7 @@ export function ProfileEditNav({ active }: { active: ProfileEditTab }) {
   return (
     <nav
       aria-label="プロフィール編集"
-      className="flex h-[8%] shrink-0 border-b border-swipe-border"
+      className="flex h-[8%] shrink-0 border-b border-border"
     >
       {tabs.map((tab) => (
         <Link
@@ -22,8 +22,8 @@ export function ProfileEditNav({ active }: { active: ProfileEditTab }) {
           className={cn(
             'flex flex-1 cursor-pointer items-center justify-center text-xl transition-colors',
             active === tab.value
-              ? 'border-b-2 border-swipe-accent font-bold text-swipe-accent'
-              : 'font-semibold text-swipe-muted-foreground hover:text-swipe-foreground',
+              ? 'border-b-2 border-primary font-bold text-primary'
+              : 'font-semibold text-muted-foreground hover:text-foreground',
           )}
         >
           {tab.label}
