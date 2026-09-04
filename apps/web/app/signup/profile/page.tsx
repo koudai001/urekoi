@@ -57,7 +57,7 @@ export default function SignupProfilePage() {
 
   return (
     <FormProvider {...form}>
-      <main className="flex min-h-svh flex-col items-center justify-center bg-background px-6 py-6 text-foreground">
+      <main className="flex min-h-svh flex-col bg-background text-foreground">
         {step === 'intro' ? (
           <SignupIntro onNext={() => setStep('gender')} />
         ) : step === 'gender' ? (

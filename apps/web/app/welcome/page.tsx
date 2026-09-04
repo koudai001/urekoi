@@ -1,12 +1,23 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 // 初回訪問時に登録・ログインの入口を案内する
 export default function WelcomePage() {
   return (
-    <main className="mx-auto flex min-h-svh max-w-md flex-col justify-center gap-16 bg-background px-6 text-foreground">
-      <header className="text-center">
-        <h1 className="text-6xl font-bold tracking-widest">熟恋</h1>
-        <p className="mt-2 text-md font-bold tracking-widest">UREKOI</p>
+    <main className="mx-auto flex min-h-svh max-w-md flex-col justify-center gap-12 bg-background px-6 text-foreground">
+      <header className="flex flex-col items-center text-center">
+        <Image
+          src="/login/urekoi-icon-final.png"
+          alt="熟恋"
+          width={192}
+          height={192}
+          priority
+          className="rounded-full shadow-2xl"
+        />
+        <h1 className="mt-6 text-2xl font-bold">熟恋へようこそ</h1>
+        <p className="mt-2 text-lg text-muted-foreground">
+          業界初の熟女好き専用アプリ
+        </p>
       </header>
 
       <div className="flex flex-col gap-3">

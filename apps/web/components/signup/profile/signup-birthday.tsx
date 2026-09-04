@@ -1,6 +1,6 @@
 import type { ChangeEvent } from 'react'
-import { Cake } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
+import { BackHeader } from '@/components/ui/back-header'
 import { SignupProgressBar } from './signup-progress-bar'
 import { SignupStepNav } from './signup-step-nav'
 import type { ProfileFormValues } from '@/app/signup/profile/schema'
@@ -46,74 +46,69 @@ export function SignupBirthday({
   }
 
   return (
-    <div className="flex min-h-[520px] w-full max-w-md flex-col p-8">
-      <SignupProgressBar
-        icon={<Cake className="h-5 w-5" />}
-        currentStep={2}
-        totalSteps={4}
-      />
+    <>
+      <BackHeader onBack={onBack} />
+      <div className="mx-auto w-full max-w-md px-14 pt-6">
+        <SignupProgressBar currentStep={2} totalSteps={4} />
 
-      {/* 見出し */}
-      <h1 className="mt-8 text-2xl font-bold text-balance text-foreground">
-        あなたの誕生日は？
-      </h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        女性は35歳以上、男性は35歳未満限定です。一度登録すると誕生日の変更はできません。
-      </p>
-
-      {/* 入力欄 */}
-      <div className="mt-12 flex items-baseline justify-center gap-2.5">
-        <div className="flex flex-col items-center gap-1.5">
-          <input
-            type="text"
-            inputMode="numeric"
-            maxLength={4}
-            placeholder="YYYY"
-            value={year}
-            onChange={handleYearChange}
-            className="w-[76px] border-none bg-transparent text-center text-[28px] font-bold text-foreground outline-none placeholder:text-border"
-          />
-          <span className="h-px w-[76px] bg-border" />
-        </div>
-        <span className="pb-3.5 text-[22px] text-border">/</span>
-        <div className="flex flex-col items-center gap-1.5">
-          <input
-            type="text"
-            inputMode="numeric"
-            maxLength={2}
-            placeholder="MM"
-            value={month}
-            onChange={handleMonthChange}
-            className="w-12 border-none bg-transparent text-center text-[28px] font-bold text-foreground outline-none placeholder:text-border"
-          />
-          <span className="h-px w-12 bg-border" />
-        </div>
-        <span className="pb-3.5 text-[22px] text-border">/</span>
-        <div className="flex flex-col items-center gap-1.5">
-          <input
-            type="text"
-            inputMode="numeric"
-            maxLength={2}
-            placeholder="DD"
-            value={day}
-            onChange={handleDayChange}
-            className="w-12 border-none bg-transparent text-center text-[28px] font-bold text-foreground outline-none placeholder:text-border"
-          />
-          <span className="h-px w-12 bg-border" />
-        </div>
-      </div>
-
-      {errors.birthDay && (
-        <p className="mt-3 text-center text-sm font-medium text-destructive">
-          {errors.birthDay.message}
+        {/* 見出し */}
+        <h1 className="mt-8 text-2xl font-bold text-balance text-foreground">
+          あなたの誕生日は？
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          女性は35歳以上、男性は35歳未満限定です。一度登録すると誕生日の変更はできません。
         </p>
-      )}
 
-      <SignupStepNav
-        onBack={onBack}
-        onNext={handleNext}
-        nextDisabled={!canProceed}
-      />
-    </div>
+        {/* 入力欄 */}
+        <div className="mt-12 flex items-baseline justify-center gap-2.5">
+          <div className="flex flex-col items-center gap-1.5">
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={4}
+              placeholder="YYYY"
+              value={year}
+              onChange={handleYearChange}
+              className="w-[76px] border-none bg-transparent text-center text-[28px] font-bold text-foreground outline-none placeholder:text-border"
+            />
+            <span className="h-px w-[76px] bg-border" />
+          </div>
+          <span className="pb-3.5 text-[22px] text-border">/</span>
+          <div className="flex flex-col items-center gap-1.5">
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={2}
+              placeholder="MM"
+              value={month}
+              onChange={handleMonthChange}
+              className="w-12 border-none bg-transparent text-center text-[28px] font-bold text-foreground outline-none placeholder:text-border"
+            />
+            <span className="h-px w-12 bg-border" />
+          </div>
+          <span className="pb-3.5 text-[22px] text-border">/</span>
+          <div className="flex flex-col items-center gap-1.5">
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={2}
+              placeholder="DD"
+              value={day}
+              onChange={handleDayChange}
+              className="w-12 border-none bg-transparent text-center text-[28px] font-bold text-foreground outline-none placeholder:text-border"
+            />
+            <span className="h-px w-12 bg-border" />
+          </div>
+        </div>
+
+        {errors.birthDay && (
+          <p className="mt-3 text-center text-sm font-medium text-destructive">
+            {errors.birthDay.message}
+          </p>
+        )}
+
+        <SignupStepNav onNext={handleNext} nextDisabled={!canProceed} />
+      </div>
+    </>
   )
 }

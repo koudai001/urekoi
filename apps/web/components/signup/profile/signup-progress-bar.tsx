@@ -1,30 +1,25 @@
-import type { ReactNode } from 'react'
-
-// signupフローの各ステップ共通の進捗バー(アイコン+ドット)。totalSteps個中currentStep個をprimary色で塗りつぶす
+// signupフローの現在位置を数字と細いバーで示す
 export function SignupProgressBar({
-  icon,
   currentStep,
   totalSteps,
 }: {
-  icon: ReactNode
   currentStep: number
   totalSteps: number
 }) {
   return (
-    <div className="flex items-center gap-2">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-white">
-        {icon}
-      </span>
-      <span className="flex flex-1 items-center gap-1.5 overflow-hidden">
-        {Array.from({ length: totalSteps }).map((_, i) => (
-          <span
-            key={i}
-            className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-              i < currentStep ? 'bg-primary' : 'bg-border'
-            }`}
-          />
-        ))}
-      </span>
+    <div>
+      <div className="mb-3 flex items-center justify-between text-sm">
+        <span className="font-medium">プロフィール登録</span>
+        <span className="text-muted-foreground">
+          {currentStep} / {totalSteps}
+        </span>
+      </div>
+      <div className="h-1 overflow-hidden rounded-full bg-border">
+        <div
+          className="h-full bg-primary"
+          style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+        />
+      </div>
     </div>
   )
 }
