@@ -79,7 +79,7 @@ export function EmailLoginForm() {
       <Button
         type="submit"
         disabled={isPending || !isValid}
-        className="mt-8 h-16 w-full rounded-xl bg-primary text-lg font-bold text-white"
+        className="mt-8 h-12 w-full rounded-lg bg-primary text-base font-bold text-white"
       >
         {isPending ? 'ログイン中...' : 'ログインする'}
       </Button>

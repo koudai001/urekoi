@@ -1,5 +1,5 @@
-import { IdCard } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
+import { BackHeader } from '@/components/ui/back-header'
 import { SignupProgressBar } from './signup-progress-bar'
 import { SignupStepNav } from './signup-step-nav'
 import type { ProfileFormValues } from '@/app/signup/profile/schema'
@@ -16,35 +16,32 @@ export function SignupNickname({
   const canProceed = watch('nickname').trim().length > 0
 
   return (
-    <div className="flex min-h-[520px] w-full max-w-md flex-col p-8">
-      <SignupProgressBar
-        icon={<IdCard className="h-5 w-5" />}
-        currentStep={4}
-        totalSteps={4}
-      />
+    <>
+      <BackHeader onBack={onBack} />
+      <div className="mx-auto w-full max-w-md px-14 pt-6">
+        <SignupProgressBar currentStep={4} totalSteps={4} />
 
-      {/* 見出し */}
-      <h1 className="mt-8 text-2xl font-bold text-balance text-foreground">
-        表示名を決めましょう
-      </h1>
-      <p className="mt-2 text-sm text-muted-foreground">あとから変更できます</p>
+        {/* 見出し */}
+        <h1 className="mt-8 text-2xl font-bold text-balance text-foreground">
+          表示名を決めましょう
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          あとから変更できます
+        </p>
 
-      {/* 表示名入力 */}
-      <div className="mt-8">
-        <input
-          type="text"
-          maxLength={20}
-          placeholder="表示名を入力してください"
-          {...register('nickname')}
-          className="w-full border-none border-b-2 border-primary bg-transparent px-0.5 pt-1 pb-3 text-[19px] text-foreground outline-none placeholder:text-muted-foreground"
-        />
+        {/* 表示名入力 */}
+        <div className="mt-8">
+          <input
+            type="text"
+            maxLength={20}
+            placeholder="表示名を入力してください"
+            {...register('nickname')}
+            className="w-full border-none border-b-2 border-primary bg-transparent px-0.5 pt-1 pb-3 text-[19px] text-foreground outline-none placeholder:text-muted-foreground"
+          />
+        </div>
+
+        <SignupStepNav onNext={onNext} nextDisabled={!canProceed} />
       </div>
-
-      <SignupStepNav
-        onBack={onBack}
-        onNext={onNext}
-        nextDisabled={!canProceed}
-      />
-    </div>
+    </>
   )
 }

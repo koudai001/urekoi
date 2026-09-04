@@ -6,13 +6,13 @@
   --font-sans:
     -apple-system, BlinkMacSystemFont, Roboto, 'Hiragino Sans', 'Noto Sans JP',
     sans-serif;
-  --color-background: oklch(0.1 0.01 330);
-  --color-foreground: oklch(0.98 0.01 80);
-  --color-card: oklch(0.24 0.02 330);
+  --color-background: oklch(0.98 0.01 80);
+  --color-foreground: oklch(0.2 0.02 330);
+  --color-card: oklch(0.98 0.01 80);
   --color-primary: oklch(0.6 0.2 338);
-  --color-muted-foreground: oklch(0.55 0.02 330);
+  --color-muted-foreground: oklch(0.5 0.02 330);
   --color-destructive: oklch(0.58 0.23 20);
-  --color-border: oklch(0.28 0.03 330);
+  --color-border: oklch(0.88 0.02 80);
   --radius-sm: 0.45rem;
   --radius-md: 0.6rem;
   --radius-lg: 0.75rem;

@@ -39,9 +39,12 @@ export default function SignupPage() {
 
   return (
     <FormProvider {...form}>
-      <main className="flex min-h-svh flex-col items-center justify-center bg-background px-6 py-6 text-foreground">
+      <main className="flex min-h-svh flex-col bg-background text-foreground">
         {step === 'consent' ? (
-          <SignupConsent onNext={() => setStep('email')} />
+          <SignupConsent
+            onBack={() => setStep('select')}
+            onNext={() => setStep('email')}
+          />
         ) : (
           <SignupEmailForm
             formAction={formAction}

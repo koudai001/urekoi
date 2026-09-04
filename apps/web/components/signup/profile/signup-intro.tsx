@@ -1,58 +1,36 @@
 import Image from 'next/image'
-import { ArrowRight, Timer } from 'lucide-react'
+import { Timer } from 'lucide-react'
+import { SignupProgressBar } from './signup-progress-bar'
+import { SignupStepNav } from './signup-step-nav'
 
-// signupフローのステップ3。オンボーディング導入(プロフィール入力の案内)
+// オンボーディング導入(プロフィール入力の案内)
 export function SignupIntro({ onNext }: { onNext: () => void }) {
   return (
-    <div className="w-full max-w-md overflow-hidden">
-      {/* 上部：所要時間 */}
-      <div className="flex items-center justify-center gap-2 px-8 pt-8 text-sm font-bold text-muted-foreground">
-        <Timer className="h-4 w-4" />
-        このステップは概ね30秒で完了します
-      </div>
+    <>
+      {/* ヘッダー部分 */}
+      <div className="h-16 shrink-0" />
+      <div className="mx-auto w-full max-w-md px-14 pt-6">
+        <SignupProgressBar currentStep={0} totalSteps={4} />
 
-      {/* Step1 チップ＋見出し */}
-      <div className="px-8 pt-6 pb-8">
-        <div className="flex items-center gap-2">
-          <span className="rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-white">
-            Step1
-          </span>
-          <span className="flex gap-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/40" />
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/40" />
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/40" />
-          </span>
-        </div>
-
-        <p className="mt-6 text-base font-bold text-primary">熟恋へようこそ</p>
-        <h1 className="mt-2 text-3xl leading-snug font-bold text-balance text-foreground">
-          まず、あなたのことを
-          <br />
-          教えてください
+        <h1 className="mt-8 text-2xl font-bold text-balance text-foreground">
+          あなたについて教えてください
         </h1>
+        <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+          <Timer className="size-4" aria-hidden="true" />
+          約30秒で完了します
+        </p>
 
-        <button
-          type="button"
-          onClick={onNext}
-          className="mt-8 inline-flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-br from-primary to-primary px-8 py-3 text-base font-bold text-white transition-opacity hover:opacity-90"
-        >
-          次へ
-          <ArrowRight className="h-4 w-4" />
-        </button>
-      </div>
+        <SignupStepNav onNext={onNext} />
 
-      {/* 下部：ビジュアルパネル */}
-      <div className="relative flex h-72 items-center justify-center overflow-hidden bg-card">
-        <div className="h-60 w-52 overflow-hidden rounded-2xl border-4 border-border shadow-lg">
-          <Image
-            src="/profiles/woman-3.png"
-            alt="登録イメージ"
-            width={208}
-            height={240}
-            className="h-full w-full object-cover"
-          />
-        </div>
+        <Image
+          src="/profiles/woman-3.png"
+          alt="登録イメージ"
+          width={208}
+          height={240}
+          priority
+          className="mx-auto mt-8 h-60 w-52 rounded-xl object-cover"
+        />
       </div>
-    </div>
+    </>
   )
 }

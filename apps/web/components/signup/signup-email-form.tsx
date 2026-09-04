@@ -1,9 +1,9 @@
 import { startTransition } from 'react'
 import { useFormContext } from 'react-hook-form'
 import type { SignupResult } from '@/actions/auth'
-import { BackButton } from '@/components/ui/back-button'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { BackHeader } from '@/components/ui/back-header'
 import { PasswordInput } from '@/components/ui/password-input'
 import type { AuthFormValues } from '@/app/signup/schema'
 
@@ -37,97 +37,90 @@ export function SignupEmailForm({
   })
 
   return (
-    <div className="flex min-h-[520px] w-full max-w-md flex-col p-8">
-      <BackButton
-        onClick={onBack}
-        className="h-12 self-start rounded-full px-4 text-base text-foreground hover:bg-card hover:text-foreground"
-      />
+    <>
+      <BackHeader onBack={onBack} />
+      <div className="flex justify-center px-6 pt-6">
+        <div className="w-full max-w-md px-2">
+          <h1 className="text-2xl font-bold text-balance text-foreground">
+            メールアドレスで新規登録
+          </h1>
+          <p className="mt-4 text-base leading-7">
+            メールアドレスとパスワードを入力してください。
+          </p>
 
-      <h1 className="mt-6 text-2xl font-bold text-balance text-foreground">
-        ログイン情報を作成してください
-      </h1>
+          <form className="mt-20 flex flex-col gap-8" onSubmit={onSubmit}>
+            {/* メール */}
+            <div>
+              <Input
+                id="email"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                required
+                placeholder="メールアドレス"
+                {...register('email')}
+                className="h-14 rounded-none border-0 border-b border-border bg-transparent px-0 text-lg placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-0"
+              />
+              {errors.email && (
+                <p className="mt-2 text-sm text-destructive">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-      <form className="mt-8 flex flex-1 flex-col gap-7" onSubmit={onSubmit}>
-        {/* メール */}
-        <div className="flex flex-col gap-2">
-          <label
-            htmlFor="email"
-            className="text-base font-bold text-foreground"
-          >
-            メールアドレス
-          </label>
-          <Input
-            id="email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            required
-            placeholder="sample@sample.com"
-            {...register('email')}
-            className="h-auto w-full rounded-none border-0 border-b border-border !bg-transparent p-0 pb-2 text-lg text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-0"
-          />
-          {errors.email && (
-            <p className="text-sm font-medium text-destructive">
-              {errors.email.message}
+            {/* パスワード */}
+            <div>
+              <PasswordInput
+                id="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                placeholder="パスワード"
+                {...register('password')}
+                className="h-14 rounded-none border-0 border-b border-border px-0 [&_input]:bg-transparent [&_input]:px-0 [&_input]:text-lg [&_input]:placeholder:text-muted-foreground"
+              />
+              {errors.password && (
+                <p className="mt-2 text-sm text-destructive">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            {/* 同意文 */}
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              アカウント登録すると、
+              <a href="#" className="font-bold text-foreground hover:underline">
+                利用規約
+              </a>
+              、
+              <a href="#" className="font-bold text-foreground hover:underline">
+                プライバシーポリシー
+              </a>
+              、
+              <a href="#" className="font-bold text-foreground hover:underline">
+                コミュニティガイドライン
+              </a>
+              に同意したこととみなします。
             </p>
-          )}
+
+            {/* 結果表示（エラーの場合） */}
+            {state?.success === false && (
+              <p className="text-sm font-medium text-destructive">
+                {state.error}
+              </p>
+            )}
+
+            {/* 登録ボタン */}
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="mt-8 h-12 w-full rounded-lg text-base font-bold text-white"
+            >
+              {isPending ? '登録中...' : '登録する'}
+            </Button>
+          </form>
         </div>
-
-        {/* パスワード */}
-        <div className="flex flex-col gap-2">
-          <label
-            htmlFor="password"
-            className="text-base font-bold text-foreground"
-          >
-            パスワード
-          </label>
-          <PasswordInput
-            id="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            placeholder="パスワード"
-            {...register('password')}
-            className="border-border pb-2 [&_button]:text-foreground [&_input]:!bg-transparent [&_input]:text-lg [&_input]:text-foreground [&_input]:placeholder:text-muted-foreground"
-          />
-          {errors.password && (
-            <p className="text-sm font-medium text-destructive">
-              {errors.password.message}
-            </p>
-          )}
-        </div>
-
-        {/* 同意文 */}
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          アカウント登録すると、
-          <a href="#" className="font-bold text-foreground hover:underline">
-            利用規約
-          </a>
-          、
-          <a href="#" className="font-bold text-foreground hover:underline">
-            プライバシーポリシー
-          </a>
-          、
-          <a href="#" className="font-bold text-foreground hover:underline">
-            コミュニティガイドライン
-          </a>
-          に同意したこととみなします。
-        </p>
-
-        {/* 結果表示（エラーの場合） */}
-        {state?.success === false && (
-          <p className="text-sm font-medium text-destructive">{state.error}</p>
-        )}
-
-        {/* 登録ボタン */}
-        <Button
-          type="submit"
-          disabled={isPending}
-          className="mt-auto h-auto w-full cursor-pointer rounded-full bg-gradient-to-br from-primary to-primary py-4 text-base font-bold text-white hover:opacity-90"
-        >
-          {isPending ? '登録中...' : '登録する'}
-        </Button>
-      </form>
-    </div>
+      </div>
+    </>
   )
 }
