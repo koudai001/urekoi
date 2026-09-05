@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { CardContainer } from '@/components/ui/card-container'
 import { ScrollContainer } from '@/components/ui/scroll-container'
-import { ProfileEditNav } from '@/components/myprofile/profile-edit-nav'
+import { BackHeader } from '@/components/ui/back-header'
 import { ProfilePhotos } from '@/components/myprofile/profile-photos'
 import {
   SectionTitle,
@@ -122,8 +122,7 @@ export function ProfileEditArea({
   return (
     <CardContainer className="!h-full !max-w-none !aspect-auto">
       <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-background">
-        {/* 編集タブ: 固定、スクロールしない */}
-        <ProfileEditNav active="edit" />
+        <BackHeader href="/myprofile" title="プロフィール編集" />
 
         {/* 各セクション: 残り領域内でスクロール可能 */}
         <ScrollContainer className="px-7">
@@ -367,7 +366,7 @@ function SaveButton({
         type="button"
         onClick={onClick}
         disabled={saving}
-        className="cursor-pointer whitespace-nowrap rounded-full bg-foreground px-12 py-3.5 text-[15px] font-bold text-background disabled:cursor-not-allowed disabled:opacity-60"
+        className="cursor-pointer whitespace-nowrap rounded-full bg-primary px-12 py-3.5 text-[15px] font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
       >
         {saving ? '保存中...' : '保存'}
       </button>
