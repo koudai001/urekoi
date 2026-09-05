@@ -15,9 +15,5 @@ export default async function MyProfilePreviewPage() {
     throw new Error('プロフィールの取得に失敗しました')
   }
 
-  return (
-    <main className="flex min-h-0 flex-1 justify-center pt-2">
-      <ProfilePreview profile={profileRes.data} />
-    </main>
-  )
+  return <ProfilePreview profile={profileRes.data} />
 }

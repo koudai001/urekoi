@@ -70,7 +70,7 @@ export function SearchProfileGrid({ feed }: { feed: SearchFeed }) {
       {/* 絞り込み条件 */}
       <button
         type="button"
-        className="absolute bottom-5 left-1/2 flex -translate-x-1/2 cursor-pointer items-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-bold text-foreground shadow-lg transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="absolute bottom-5 left-1/2 flex -translate-x-1/2 cursor-pointer items-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-bold text-white shadow-lg transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
         <Filter className="size-5" aria-hidden="true" />
         絞り込む

@@ -23,7 +23,11 @@ export default async function MyProfilePage() {
 
   return (
     <main className="flex min-h-0 flex-1 flex-col items-center bg-background px-6 pt-10 text-foreground">
-      <div className="relative size-44 overflow-hidden rounded-full bg-card ring-4 ring-primary">
+      <Link
+        href="/myprofile/preview"
+        aria-label="プロフィールをプレビュー"
+        className="relative size-44 overflow-hidden rounded-full bg-card ring-4 ring-primary"
+      >
         <Image
           src={profileImage}
           alt={`${profile.nickname ?? ''}さんのプロフィール画像`}
@@ -32,7 +36,7 @@ export default async function MyProfilePage() {
           loading="eager"
           className="object-cover"
         />
-      </div>
+      </Link>
 
       <div className="mt-6 flex items-baseline gap-2 text-3xl font-bold">
         <span>{profile.nickname}</span>
